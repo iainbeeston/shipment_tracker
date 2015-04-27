@@ -1,0 +1,12 @@
+%h1 Release Audits
+
+= form_tag(release_audits_path, method: "get") do
+  = label_tag(:from, "From:")
+  = text_field_tag(:from)
+  = label_tag(:to, "To:")
+  = text_field_tag(:to)
+  = submit_tag("Submit")
+
+- if @release_audit
+  - @release_audit[:authors].each do |author|
+    .author=author[:name]

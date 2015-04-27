@@ -5,6 +5,7 @@ gem 'rails', '~> 4.2.1'
 
 gem 'haml-rails'
 gem 'pg'
+gem 'rugged'
 gem 'sass-rails'
 
 group :development do
