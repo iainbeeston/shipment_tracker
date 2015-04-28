@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root 'release_audits#index'
+  root 'heartbeat#index'
 
   get 'heartbeat', to: 'heartbeat#index'
 

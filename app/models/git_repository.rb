@@ -8,7 +8,7 @@ class GitRepository
   end
 
   def self.load(repository_name)
-    remote_repository = Repository.find_by_name(repository_name)
+    remote_repository = RepositoryLocation.find_by_name(repository_name)
     dir = Dir.mktmpdir
 
     repository = Rugged::Repository.clone_at(

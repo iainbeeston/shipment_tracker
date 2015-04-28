@@ -4,7 +4,7 @@ Given 'a repository called "$name"' do |name|
   @repo.config['user.name'] = "Unconfigured"
   @repo.config['user.email'] = "unconfigured@example.com"
 
-  Repository.create(:uri => "file://#{dir}", name: name)
+  RepositoryLocation.create(uri: "file://#{dir}", name: name)
 end
 
 Given 'a commit by "$name" is created' do |name|
