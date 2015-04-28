@@ -14,5 +14,6 @@ Scenario: View Git Authors through a section of tree
   And a commit by "Bob" is created
   And a commit by "Collin" is created
   And a commit by "David" is created
+  And a commit by "Edgar" is created
   When I compare the second commit with the fourth commit for "Manhattan"
   Then I should see the authors "Collin" and "David"
