@@ -9,8 +9,8 @@ module Pages
       @url_helpers = url_helpers
     end
 
-    def request(from:, to:)
-      page.visit url_helpers.release_audits_path
+    def request(project_name:, from:, to:)
+      page.visit url_helpers.release_audit_path(project_name)
       page.fill_in :from, with: from
       page.fill_in :to, with: to
       page.click_link_or_button('Submit')
