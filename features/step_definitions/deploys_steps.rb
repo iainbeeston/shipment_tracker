@@ -1,7 +1,7 @@
 World(Rack::Test::Methods)
 
 Given "$user has deployed an app" do |user|
-  post_json '/deploys', { deployed_by: user }
+  post_json '/deploys', deployed_by: user
 end
 
 When "I visit /deploys" do

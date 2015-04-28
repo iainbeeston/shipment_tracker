@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 describe HeartbeatController do
-
   describe "GET #index" do
     it "returns http success" do
       get :index
@@ -9,5 +8,4 @@ describe HeartbeatController do
       expect(response.body).to eq('ok')
     end
   end
-
 end

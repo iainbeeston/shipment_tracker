@@ -10,6 +10,6 @@ class ReleaseAuditsController < ApplicationController
   private
 
   def clean_params
-    @clean_params ||= params.select{|k,v|v.present?}
+    @clean_params ||= params.select { |_k, v| v.present? }
   end
 end

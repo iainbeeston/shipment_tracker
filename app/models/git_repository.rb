@@ -3,7 +3,7 @@ require 'rugged'
 class GitRepository
   def self.author_names_for(repository_name:, to:, from: nil)
     return [] unless to
-    loader = self.load(repository_name)
+    loader = load(repository_name)
     loader.author_names_between(from, to)
   end
 
@@ -12,11 +12,11 @@ class GitRepository
     dir = Dir.mktmpdir
 
     repository = Rugged::Repository.clone_at(
-       remote_repository.uri,
-       dir
+      remote_repository.uri,
+      dir
     )
 
-    self.new(repository)
+    new(repository)
   end
 
   def initialize(repository)
@@ -24,7 +24,7 @@ class GitRepository
   end
 
   def author_names_between(from, to)
-    commits_between(from, to).map {|c| c.author[:name] }.uniq
+    commits_between(from, to).map { |c| c.author[:name] }.uniq
   end
 
   private

@@ -8,4 +8,3 @@ class DeploysController < ApplicationController
     head :ok
   end
 end
-

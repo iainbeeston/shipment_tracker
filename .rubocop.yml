@@ -1,0 +1,15 @@
+AllCops:
+  Exclude:
+    - 'bin/*'
+    - 'db/*'
+    - 'script/*'
+    - 'lib/tasks/cucumber.rake'
+
+Metrics/LineLength:
+  Max: 110
+
+Style/Documentation:
+  Enabled: false
+
+Style/StringLiterals:
+  Enabled: false

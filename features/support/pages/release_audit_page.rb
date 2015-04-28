@@ -2,8 +2,6 @@ require 'uri'
 
 module Pages
   class ReleaseAuditPage
-
-
     def initialize(page:, url_helpers:)
       @page        = page
       @url_helpers = url_helpers
@@ -21,7 +19,7 @@ module Pages
       page.all('.author').map(&:text)
     end
 
-  private
+    private
 
     attr_reader :page, :url_helpers
   end
