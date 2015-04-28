@@ -15,6 +15,8 @@ end
 group :development, :test do
   gem 'rspec-rails'
   gem 'rubocop'
+  gem 'guard'
+  gem 'guard-rspec'
 end
 
 group :production do
