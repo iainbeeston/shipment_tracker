@@ -32,4 +32,10 @@ ActiveRecord::Schema.define(version: 20150428100731) do
 
   add_index "repositories", ["name"], name: "index_repositories_on_name", unique: true, using: :btree
 
+  create_table "events", force: :cascade do |t|
+    t.jsonb    "details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
 end

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe HeartbeatController, type: :controller do
+describe HeartbeatController do
 
   describe "GET #index" do
     it "returns http success" do

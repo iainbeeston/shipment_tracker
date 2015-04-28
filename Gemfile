@@ -21,6 +21,8 @@ group :production do
 end
 
 group :test do
-  gem 'cucumber-rails', :require => false
+  gem 'capybara'
+  gem 'cucumber-rails', require: false
   gem 'database_cleaner'
+  gem 'rack-test', require: 'rack/test'
 end
