@@ -11,7 +11,7 @@ class ReleaseAuditsController < ApplicationController
     flash[:error] = "Commit '#{e.message}' could not be found in #{repository_name}"
   rescue GitRepository::CommitNotValid => e
     flash[:error] = "Commit '#{e.message}' is not valid"
-  rescue => e
+  rescue
     flash[:error] = "Please contact tech support"
   end
 

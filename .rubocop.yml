@@ -4,6 +4,7 @@ AllCops:
     - 'db/*'
     - 'script/*'
     - 'lib/tasks/cucumber.rake'
+    - Guardfile
 
 Metrics/LineLength:
   Max: 110
@@ -12,4 +13,7 @@ Style/Documentation:
   Enabled: false
 
 Style/StringLiterals:
+  Enabled: false
+
+Style/BlockDelimiters:
   Enabled: false

@@ -10,14 +10,15 @@ class GitRepository
     loader.author_names_between(from, to)
   end
 
-  def self.load(repository_name)
+  def self.load(repository_name, cache_dir: Dir.tmpdir)
     remote_repository = RepositoryLocation.find_by_name(repository_name)
-    dir = Dir.mktmpdir
+    dir = File.join(cache_dir, "#{remote_repository.id}-#{repository_name}")
 
-    repository = Rugged::Repository.clone_at(
-        remote_repository.uri,
-        dir
-    )
+    repository = begin
+      Rugged::Repository.new(dir).tap { |r| r.fetch('origin') }
+    rescue Rugged::OSError, Rugged::RepositoryError
+      Rugged::Repository.clone_at(remote_repository.uri, dir)
+    end
 
     new(repository)
   end
@@ -44,7 +45,7 @@ class GitRepository
   end
 
   def validate_commit!(commit)
-    raise CommitNotFound, commit unless repository.exists?(commit)
+    fail CommitNotFound, commit unless repository.exists?(commit)
   rescue Rugged::InvalidError
     raise CommitNotValid, commit
   end

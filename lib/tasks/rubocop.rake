@@ -3,7 +3,7 @@ begin
   RuboCop::RakeTask.new
 rescue LoadError
   desc 'Disabled as RuboCop gem is unavailable'
-  task :rubocop do 
+  task :rubocop do
     raise 'Disabled as RuboCop gem is unavailable'
   end
 end

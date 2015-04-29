@@ -29,9 +29,9 @@ end
 
 When 'I compare the commit "$commit" with the second commit for "$name"' do |commit, name|
   release_audit_page.request(
-      project_name: name,
-      from: commit,
-      to: @repo.commits.fetch(1)
+    project_name: name,
+    from: commit,
+    to: @repo.commits.fetch(1)
   )
 end
 
