@@ -1,6 +1,9 @@
 require 'rugged'
 
 class GitRepository
+  class CommitNotFound < StandardError; end
+  class CommitNotValid < StandardError; end
+
   def self.author_names_for(repository_name:, to:, from: nil)
     return [] unless to
     loader = load(repository_name)
@@ -12,8 +15,8 @@ class GitRepository
     dir = Dir.mktmpdir
 
     repository = Rugged::Repository.clone_at(
-      remote_repository.uri,
-      dir
+        remote_repository.uri,
+        dir
     )
 
     new(repository)
@@ -24,6 +27,9 @@ class GitRepository
   end
 
   def author_names_between(from, to)
+    validate_commit!(from) unless from.nil?
+    validate_commit!(to)
+
     commits_between(from, to).map { |c| c.author[:name] }.uniq
   end
 
@@ -35,6 +41,12 @@ class GitRepository
     walker.push(to)
     walker.hide(from) if from
     walker
+  end
+
+  def validate_commit!(commit)
+    raise CommitNotFound, commit unless repository.exists?(commit)
+  rescue Rugged::InvalidError
+    raise CommitNotValid, commit
   end
 
   attr_reader :repository

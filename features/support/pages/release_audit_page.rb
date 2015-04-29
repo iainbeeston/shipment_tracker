@@ -1,5 +1,3 @@
-require 'uri'
-
 module Pages
   class ReleaseAuditPage
     def initialize(page:, url_helpers:)

@@ -22,11 +22,20 @@ end
 When 'I compare the second commit with the fourth commit for "$name"' do |name|
   release_audit_page.request(
     project_name: name,
-    from: @repo.commits[1],
-    to: @repo.commits[3]
+    from: @repo.commits.fetch(1),
+    to: @repo.commits.fetch(3)
+  )
+end
+
+When 'I compare the commit "$commit" with the second commit for "$name"' do |commit, name|
+  release_audit_page.request(
+      project_name: name,
+      from: commit,
+      to: @repo.commits.fetch(1)
   )
 end
 
 Then 'I should see the authors "$author1" and "$author2"' do |author1, author2|
+  expect(error_message).to_not be_present, "Did not expect any errors, but got: #{error_message.text}"
   expect(release_audit_page.authors).to include(author1, author2)
 end
