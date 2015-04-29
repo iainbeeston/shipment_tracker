@@ -3,6 +3,6 @@ Rails.application.routes.draw do
 
   get 'heartbeat', to: 'heartbeat#index'
 
+  resources :deploys, only: :create
   resources :release_audits, only: :show
-  resources :deploys, only: [:index, :create]
 end

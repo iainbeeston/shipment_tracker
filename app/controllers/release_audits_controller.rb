@@ -8,7 +8,8 @@ class ReleaseAuditsController < ApplicationController
       to:   clean_params[:to]
     )
 
-    deploys = Event.where("details ->> 'type' = 'deploy'")
+
+    deploys = Deploy.deploys_for_app(params[:id])
     @deploys = map_deploy(deploys)
 
   rescue GitRepository::CommitNotFound => e
@@ -31,9 +32,12 @@ class ReleaseAuditsController < ApplicationController
 
   def map_deploy(deploys)
     deploys.map(&:details).map do |deploy|
-      deploy = deploy['message']
-      deploy['deployed_at'] = Time.at(deploy['deployed_at']).strftime("%F %H:%M")
-      deploy
+      {
+        server: deploy['server'],
+        version: deploy['version'],
+        deployed_at: Time.at(deploy['deployed_at']).strftime("%F %H:%M"),
+        deployed_by: deploy['deployed_by']
+      }
     end
   end
 end
