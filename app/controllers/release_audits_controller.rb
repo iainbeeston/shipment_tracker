@@ -7,6 +7,10 @@ class ReleaseAuditsController < ApplicationController
       from: clean_params[:from],
       to:   clean_params[:to]
     )
+
+    deploys = Event.where("details ->> 'type' = 'deploy'")
+    @deploys = map_deploy(deploys)
+
   rescue GitRepository::CommitNotFound => e
     flash[:error] = "Commit '#{e.message}' could not be found in #{repository_name}"
   rescue GitRepository::CommitNotValid => e
@@ -23,5 +27,13 @@ class ReleaseAuditsController < ApplicationController
 
   def clean_params
     @clean_params ||= params.select { |_k, v| v.present? }
+  end
+
+  def map_deploy(deploys)
+    deploys.map(&:details).map do |deploy|
+      deploy = deploy['message']
+      deploy['deployed_at'] = Time.at(deploy['deployed_at']).strftime("%F %H:%M")
+      deploy
+    end
   end
 end

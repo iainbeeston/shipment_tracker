@@ -6,7 +6,7 @@ class DeploysController < ApplicationController
   end
 
   def create
-    Event.create_deploy(deployed_by: params.fetch('deployed_by'))
+    Event.create_deploy(message: params.fetch('deploy'))
     head :ok
   end
 end

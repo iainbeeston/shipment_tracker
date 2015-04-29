@@ -3,7 +3,7 @@ class Event < ActiveRecord::Base
     all
   end
 
-  def self.create_deploy(deployed_by:)
-    Event.create(details: { deployed_by: deployed_by })
+  def self.create_deploy(message:)
+    Event.create(details: { type: 'deploy', message: message })
   end
 end

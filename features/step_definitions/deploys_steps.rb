@@ -1,15 +1,28 @@
 World(Rack::Test::Methods)
 
-Given "$user has deployed an app" do |user|
-  post_json '/deploys', deployed_by: user
+Given 'a deploy' do |table|
+  @hashes = table.hashes.each do |hash|
+    post_json '/deploys',
+              server: hash['server'],
+              app_name: hash['app_name'],
+              version: hash['software version'],
+              deployed_at: Time.parse(hash['time']).to_i,
+              deployed_by: hash['deployer']
+  end
 end
 
-When "I visit /deploys" do
-  visit '/deploys'
+When 'I visit "$path"' do |path|
+  visit path
 end
 
-Then "I should see a deploy by $user" do |user|
-  expect(page).to have_content("Deployed by #{user}")
+Then 'I should see a deploy' do |table|
+  @hashes = table.hashes
+
+  @hashes.each do |hash|
+    hash.each_value do |value|
+      expect(all('.deploy').map(&:text)).to have_content(value)
+    end
+  end
 end
 
 def post_json(url, payload)

@@ -11,8 +11,8 @@ describe Event do
 
   describe ".create_deploy" do
     it "creates a deploy event" do
-      expect { Event.create_deploy(deployed_by: "Alice") }.to change { Event.count }.by(1)
-      expect(Event.last.details).to eq('deployed_by' => "Alice")
+      expect { Event.create_deploy(message: { deployed_by: "Alice" }) }.to change { Event.count }.by(1)
+      expect(Event.last.details).to eq("type" => "deploy", "message" => { "deployed_by" => "Alice" })
     end
   end
 end

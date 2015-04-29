@@ -13,8 +13,8 @@ describe DeploysController do
 
   describe "POST #create" do
     it "creates a deploy event" do
-      expect(Event).to receive(:create_deploy).with(deployed_by: "alice")
-      post :create, { deployed_by: "alice" }, format: :json
+      expect(Event).to receive(:create_deploy).with(message: { deployed_by: "alice" })
+      post :create, { deploy: { deployed_by: "alice" } }, format: :json
       expect(response).to have_http_status(:ok)
     end
   end
