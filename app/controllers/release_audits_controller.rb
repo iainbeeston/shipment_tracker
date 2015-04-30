@@ -7,10 +7,7 @@ class ReleaseAuditsController < ApplicationController
       from: clean_params[:from],
       to:   clean_params[:to]
     )
-
-
-    deploys = Deploy.deploys_for_app(params[:id])
-    @deploys = map_deploy(deploys)
+    @deploys = deploys
 
   rescue GitRepository::CommitNotFound => e
     flash[:error] = "Commit '#{e.message}' could not be found in #{repository_name}"
@@ -30,8 +27,12 @@ class ReleaseAuditsController < ApplicationController
     @clean_params ||= params.select { |_k, v| v.present? }
   end
 
-  def map_deploy(deploys)
-    deploys.map(&:details).map do |deploy|
+  def raw_deploys
+    Deploy.deploys_for_app(params[:id])
+  end
+
+  def deploys
+    raw_deploys.map(&:details).map do |deploy|
       {
         server: deploy['server'],
         version: deploy['version'],

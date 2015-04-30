@@ -11,12 +11,13 @@
   - @authors.each do |author|
     .author=author
 
-%h2 Deploys
-%table
-  %tr
-    - @deploys.first.try(:each_key) do |key|
-      %th= key
-  - @deploys.each do |deploy|
-    %tr.deploy
-      - deploy.each_value do |value|
-        %td= value
+- if @deploys.present?
+  %h2 Deploys
+  %table
+    %tr
+      - @deploys.first.try(:each_key) do |key|
+        %th= key
+    - @deploys.each do |deploy|
+      %tr.deploy
+        - deploy.each_value do |value|
+          %td= value
