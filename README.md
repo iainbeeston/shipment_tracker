@@ -1,4 +1,5 @@
 # shipment_tracker
+[![Circle CI](https://circleci.com/gh/FundingCircle/shipment_tracker.svg?style=shield)](https://circleci.com/gh/FundingCircle/shipment_tracker)
 
 Tracks shipment of software versions for audit purposes
 
