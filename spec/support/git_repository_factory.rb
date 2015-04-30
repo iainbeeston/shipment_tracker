@@ -21,9 +21,9 @@ module Support
 
       options = commit_options(author_name, oid)
 
-      commit = Rugged::Commit.create(repo, options)
-      commit.push commit
-      commit
+      Rugged::Commit.create(repo, options).tap do |commit|
+        commits.push commit
+      end
     end
 
     def commits
