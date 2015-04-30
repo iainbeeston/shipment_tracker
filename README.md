@@ -9,6 +9,12 @@ bundle install
 bundle exec rake db:setup
 ```
 
+## Setup Git hooks
+
+```
+rake git:setup_hooks
+```
+
 ## License
 
 Copyright © 2015 Funding Circle Ltd.
