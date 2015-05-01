@@ -1,23 +1,33 @@
-%h1 Release Audits
+%h1= "Feature Audit for #{params[:id]}"
 
-= form_tag(feature_audit_path(params[:id]), method: "get") do
-  = label_tag(:from, "From:")
-  = text_field_tag(:from)
-  = label_tag(:to, "To:")
-  = text_field_tag(:to)
-  = submit_tag("Submit")
+= form_tag(feature_audit_path(params[:id]), method: "get", class: 'form-horizontal') do
+  .form-group.row
+    = label_tag(:to, "To:", class: 'col-md-1 control-label')
+    .col-md-2
+      = text_field_tag(:to, "", class: 'form-control')
+  .form-group.row
+    = label_tag(:from, "From:", class: 'col-md-1 control-label')
+    .col-md-2
+      = text_field_tag(:from, "", class: 'form-control')
+  .row
+    .col-md-3
+      = submit_tag("Submit", class: "btn btn-primary pull-right")
 
 - if @authors
+  %h2 Authors
+  %ul
   - @authors.each do |author|
-    .author=author
+    %li.author=author
 
 - if @deploys.present?
   %h2 Deploys
-  %table
-    %tr
-      - @deploys.first.try(:each_key) do |key|
-        %th= key
-    - @deploys.each do |deploy|
-      %tr.deploy
-        - deploy.each_value do |value|
-          %td= value
+  %table.table
+    %thead
+      %tr
+        - @deploys.first.try(:each_key) do |key|
+          %th= key
+    %tbody
+      - @deploys.each do |deploy|
+        %tr.deploy.table-striped
+          - deploy.each_value do |value|
+            %td= value

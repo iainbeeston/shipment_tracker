@@ -6,6 +6,7 @@
     = stylesheet_link_tag    'application', media: 'all'
     = csrf_meta_tags
   %body
-    - if flash[:error]
-      .flash.error= flash[:error]
-    = yield
+    .container
+      - if flash[:error]
+        .flash.error= flash[:error]
+      = yield

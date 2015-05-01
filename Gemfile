@@ -3,6 +3,7 @@ ruby '2.2.0'
 
 gem 'rails', '~> 4.2.1'
 
+gem 'bootstrap-sass'
 gem 'haml-rails'
 gem 'pg'
 gem 'rugged'
@@ -29,4 +30,5 @@ group :test do
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
   gem 'rack-test', require: 'rack/test'
+  gem 'launchy'
 end
