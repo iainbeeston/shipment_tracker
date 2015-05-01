@@ -6,7 +6,7 @@ module Pages
     end
 
     def request(project_name:, from: nil, to: nil)
-      page.visit url_helpers.release_audit_path(project_name)
+      page.visit url_helpers.feature_audit_path(project_name)
       if to
         page.fill_in :from, with: from
         page.fill_in :to, with: to

@@ -1,6 +1,6 @@
 %h1 Release Audits
 
-= form_tag(release_audit_path(params[:id]), method: "get") do
+= form_tag(feature_audit_path(params[:id]), method: "get") do
   = label_tag(:from, "From:")
   = text_field_tag(:from)
   = label_tag(:to, "To:")

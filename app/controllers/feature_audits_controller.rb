@@ -1,6 +1,6 @@
 require 'git_repository'
 
-class ReleaseAuditsController < ApplicationController
+class FeatureAuditsController < ApplicationController
   def show
     commits = GitRepository.commits_for(
       repository_name: repository_name,
