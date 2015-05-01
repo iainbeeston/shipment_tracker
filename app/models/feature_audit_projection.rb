@@ -1,31 +1,20 @@
 require 'git_repository'
 
 class FeatureAuditProjection
-
-  def self.for(repository_name:, from:, to:)
-    commits = GitRepository.commits_for(
-      repository_name: repository_name,
-      from: from,
-      to:   to
-    )
-
-    authors = commits.map { |commit| commit.fetch(:author_name) }
-    deploys = deploys(repository_name, commits.map { |c| c[:id] })
-
-    new(authors: authors, deploys: deploys)
-  end
-
   attr_reader :authors, :deploys
 
-  def initialize(authors:, deploys:)
-    @authors = authors
-    @deploys = deploys
+  def initialize(app_name:, from:, to:)
+    @app_name = app_name
+    @from = from
+    @to = to
   end
 
-  def self.deploys(repository_name, commit_ids = [])
-    raw_deploys_for_versions = Deploy.deploys_for_app(repository_name).select { |deploy| commit_ids.include?(deploy.details['version']) }
+  def authors
+    commits.map { |commit| commit.fetch(:author_name) }
+  end
 
-    raw_deploys_for_versions.map(&:details).map do |deploy|
+  def deploys
+    deploys_for_app.map(&:details).map do |deploy|
       {
         server: deploy['server'],
         version: deploy['version'],
@@ -35,4 +24,25 @@ class FeatureAuditProjection
     end
   end
 
+  private
+
+  attr_reader :app_name, :from, :to
+
+  def commits
+    @commits ||= GitRepository.commits_for(
+      repository_name: app_name,
+      from: from,
+      to:   to
+    )
+  end
+
+  def shas
+    commits.map { |c| c.fetch(:id) }
+  end
+
+  def deploys_for_app
+    Deploy.deploys_for_app(app_name).select { |deploy|
+      shas.include?(deploy.details['version'])
+    }
+  end
 end
