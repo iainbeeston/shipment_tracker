@@ -2,19 +2,19 @@ require 'git_repository'
 
 class ReleaseAuditsController < ApplicationController
   def show
-    @authors = GitRepository.author_names_for(
+    commits = GitRepository.commits_for(
       repository_name: repository_name,
       from: clean_params[:from],
       to:   clean_params[:to]
     )
-    @deploys = deploys
+
+    @authors = commits.map { |commit| commit.fetch(:author_name) }
+    @deploys = deploys(commits.map { |c| c[:id] })
 
   rescue GitRepository::CommitNotFound => e
     flash[:error] = "Commit '#{e.message}' could not be found in #{repository_name}"
   rescue GitRepository::CommitNotValid => e
     flash[:error] = "Commit '#{e.message}' is not valid"
-  rescue
-    flash[:error] = "Please contact tech support"
   end
 
   private
@@ -31,8 +31,10 @@ class ReleaseAuditsController < ApplicationController
     Deploy.deploys_for_app(params[:id])
   end
 
-  def deploys
-    raw_deploys.map(&:details).map do |deploy|
+  def deploys(commit_ids = [])
+    raw_deploys_for_versions = raw_deploys.select { |deploy| commit_ids.include?(deploy.details['version']) }
+
+    raw_deploys_for_versions.map(&:details).map do |deploy|
       {
         server: deploy['server'],
         version: deploy['version'],

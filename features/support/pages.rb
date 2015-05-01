@@ -1,6 +1,6 @@
 module Pages
-  def release_audit_page
-    Pages::ReleaseAuditPage.new(
+  def feature_audit_page
+    Pages::FeatureAuditPage.new(
       page: page,
       url_helpers: Rails.application.routes.url_helpers
     )

@@ -4,10 +4,10 @@ class GitRepository
   class CommitNotFound < StandardError; end
   class CommitNotValid < StandardError; end
 
-  def self.author_names_for(repository_name:, to:, from: nil)
+  def self.commits_for(repository_name:, to:, from: nil)
     return [] unless to
     loader = load(repository_name)
-    loader.author_names_between(from, to)
+    loader.commits_between(from, to)
   end
 
   def self.load(repository_name, cache_dir: Dir.tmpdir)
@@ -27,21 +27,27 @@ class GitRepository
     @repository = repository
   end
 
-  def author_names_between(from, to)
+  def commits_between(from, to)
     validate_commit!(from) unless from.nil?
     validate_commit!(to)
 
-    commits_between(from, to).map { |c| c.author[:name] }.uniq
-  end
-
-  private
-
-  def commits_between(from, to)
     walker = Rugged::Walker.new(repository)
     walker.sorting(Rugged::SORT_TOPO | Rugged::SORT_REVERSE) # optional
     walker.push(to)
     walker.hide(from) if from
-    walker
+
+    decorate_commits(walker)
+  end
+
+  private
+
+  def decorate_commits(commits)
+    commits.map { |c|
+      {
+        id: c.oid,
+        author_name: c.author[:name],
+      }
+    }.uniq
   end
 
   def validate_commit!(commit)

@@ -1,10 +1,11 @@
 AllCops:
   Exclude:
-    - 'bin/*'
-    - 'db/*'
-    - 'script/*'
+    - 'bin/**/*'
+    - 'db/**/*'
+    - 'script/**/*'
     - 'lib/tasks/cucumber.rake'
     - Guardfile
+    - 'hooks/**/*'
 
 Metrics/LineLength:
   Max: 110
@@ -23,3 +24,12 @@ Style/IndentHash:
 
 Style/TrailingComma:
   Enabled: false
+
+Style/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+
+Metrics/MethodLength:
+  Max: 15
+
+Metrics/AbcSize:
+  Max: 23

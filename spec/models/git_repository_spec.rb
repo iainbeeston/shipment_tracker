@@ -34,7 +34,7 @@ RSpec.describe GitRepository do
     end
   end
 
-  describe '#author_names_between' do
+  xdescribe '#author_names_between' do
     let(:test_git_repo) { Support::GitRepositoryFactory.new }
 
     subject { described_class.new(Rugged::Repository.new(test_git_repo.dir)) }

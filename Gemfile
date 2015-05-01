@@ -7,6 +7,7 @@ gem 'haml-rails'
 gem 'pg'
 gem 'rugged'
 gem 'sass-rails'
+gem 'virtus'
 
 group :development do
   gem 'spring'

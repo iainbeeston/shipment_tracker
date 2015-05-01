@@ -1,3 +1,5 @@
+require 'rails_helper'
+
 describe Deploy do
   describe ".deploys_for_app" do
     let(:my_app_name) { 'hello_world_app' }

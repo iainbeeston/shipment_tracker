@@ -1,6 +1,14 @@
 require 'rugged'
 
 module Support
+  class GitCommit
+    attr_reader :version, :pretend_version
+    def initialize(version, pretend_version)
+      @version = version
+      @pretend_version = pretend_version
+    end
+  end
+
   class GitRepositoryFactory
     attr_reader :dir
 
@@ -11,7 +19,7 @@ module Support
       @repo.config['user.email'] = "unconfigured@example.com"
     end
 
-    def create_commit(author_name:)
+    def create_commit(author_name:, pretend_version: nil)
       oid = repo.write("This is about #{author_name} at #{Time.now}", :blob)
       index = repo.index
 
@@ -19,11 +27,18 @@ module Support
       index.add(path: "README.md", oid: oid, mode: 0100644)
       oid = index.write_tree(repo)
 
-      options = commit_options(author_name, oid)
-
-      Rugged::Commit.create(repo, options).tap do |commit|
-        commits.push commit
+      Rugged::Commit.create(
+        repo,
+        commit_options(author_name, oid)
+      ).tap do |commit|
+        commits.push GitCommit.new(commit, pretend_version)
       end
+    end
+
+    def commit_for_pretend_version(pretend_version)
+      commit = commits.find { |c| c.pretend_version == pretend_version }
+      fail "Commit not found for #{c.pretend_version}. Commits available: #{commits.inspect}" unless commit
+      commit.version
     end
 
     def commits

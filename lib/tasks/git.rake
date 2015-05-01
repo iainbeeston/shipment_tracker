@@ -1,11 +1,11 @@
 namespace :git do
   def root
-    File.expand_path(File.join(File.dirname(__FILE__),'..','..'))
+    File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
   end
 
   class GitHook
     def self.all
-      Dir.glob(File.join(root,'hooks','*')).map {|p| new(p) }
+      Dir.glob(File.join(root, 'hooks', '*')).map { |p| new(p) }
     end
 
     attr_reader :source_path
