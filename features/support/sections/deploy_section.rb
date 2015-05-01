@@ -1,11 +1,13 @@
 module Sections
   class DeploySection
-    include Virtus::ValueObject
+    include Virtus.value_object
 
-    attribute :server, String
-    attribute :version, String
-    attribute :deployed_at, String
-    attribute :deployed_by, String
+    values do
+      attribute :server, String
+      attribute :version, String
+      attribute :deployed_at, String
+      attribute :deployed_by, String
+    end
 
     def self.from_element(deploy_element)
       values = deploy_element.all('td').map(&:text).to_a

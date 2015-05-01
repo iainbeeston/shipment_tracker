@@ -36,18 +36,13 @@ class GitRepository
     walker.push(to)
     walker.hide(from) if from
 
-    decorate_commits(walker)
+    build_commits(walker)
   end
 
   private
 
-  def decorate_commits(commits)
-    commits.map { |c|
-      {
-        id: c.oid,
-        author_name: c.author[:name],
-      }
-    }.uniq
+  def build_commits(commits)
+    commits.map { |c| GitCommit.new(id: c.oid, author_name: c.author[:name]) }
   end
 
   def validate_commit!(commit)

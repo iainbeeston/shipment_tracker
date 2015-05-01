@@ -34,32 +34,23 @@ RSpec.describe GitRepository do
     end
   end
 
-  xdescribe '#author_names_between' do
+  describe '#commits_between' do
     let(:test_git_repo) { Support::GitRepositoryFactory.new }
 
     subject { described_class.new(Rugged::Repository.new(test_git_repo.dir)) }
 
-    it 'returns all authors names between two commits' do
-      alfred_commit = test_git_repo.create_commit(author_name: 'alfred')
-      test_git_repo.create_commit(author_name: 'bobby')
-      carl_commit = test_git_repo.create_commit(author_name: 'carl')
-      test_git_repo.create_commit(author_name: 'david')
+    it 'returns all commits between two commits' do
+      commit_first  = test_git_repo.create_commit(author_name: 'a')
+      commit_second = test_git_repo.create_commit(author_name: 'b')
+      commit_third  = test_git_repo.create_commit(author_name: 'c')
+      test_git_repo.create_commit(author_name: 'd')
 
-      author_names = subject.author_names_between(alfred_commit, carl_commit)
+      commits = subject.commits_between(commit_first, commit_third)
 
-      expect(author_names).to contain_exactly('bobby', 'carl')
-    end
-
-    it 'omits duplicated author names' do
-      alfred_commit = test_git_repo.create_commit(author_name: 'alfred')
-      test_git_repo.create_commit(author_name: 'bobby')
-      test_git_repo.create_commit(author_name: 'bobby')
-      carl_commit = test_git_repo.create_commit(author_name: 'carl')
-      test_git_repo.create_commit(author_name: 'david')
-
-      author_names = subject.author_names_between(alfred_commit, carl_commit)
-
-      expect(author_names).to contain_exactly('bobby', 'carl')
+      expect(commits).to contain_exactly(
+        GitCommit.new(author_name: 'b', id: commit_second),
+        GitCommit.new(author_name: 'c', id: commit_third)
+      )
     end
 
     context 'when an invalid commit is provided' do
@@ -68,7 +59,7 @@ RSpec.describe GitRepository do
         invalid_commit = 'INVALID!!!'
 
         expect {
-          subject.author_names_between(valid_commit, invalid_commit)
+          subject.commits_between(valid_commit, invalid_commit)
         }.to raise_error(GitRepository::CommitNotValid, invalid_commit)
       end
     end
@@ -79,7 +70,7 @@ RSpec.describe GitRepository do
         non_existent_commit = '8120765f3fce2da11a5c8e17d3ca800847912424'
 
         expect {
-          subject.author_names_between(valid_commit, non_existent_commit)
+          subject.commits_between(valid_commit, non_existent_commit)
         }.to raise_error(GitRepository::CommitNotFound, non_existent_commit)
       end
     end

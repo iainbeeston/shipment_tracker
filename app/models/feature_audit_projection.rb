@@ -10,7 +10,7 @@ class FeatureAuditProjection
   end
 
   def authors
-    commits.map { |commit| commit.fetch(:author_name) }
+    commits.map(&:author_name).uniq
   end
 
   def deploys
@@ -32,12 +32,12 @@ class FeatureAuditProjection
     @commits ||= GitRepository.commits_for(
       repository_name: app_name,
       from: from,
-      to:   to
+      to: to
     )
   end
 
   def shas
-    commits.map { |c| c.fetch(:id) }
+    commits.map(&:id)
   end
 
   def deploys_for_app
