@@ -1,0 +1,2 @@
+class CircleCi < Event
+end
