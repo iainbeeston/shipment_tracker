@@ -30,16 +30,13 @@ When 'I compare the commit "$commit" with the second commit for "$name"' do |com
   )
 end
 
-Then 'I should only see the authors $authors' do |authors|
+Then 'I should only see the authors "$authors"' do |authors_list|
+  authors = argument_array(authors_list)
   expect(error_message).to_not be_present, "Did not expect any errors, but got: #{error_message.text}"
-  expect(feature_audit_page.authors).to match_array(authors.gsub(' and ', ', ').split(', '))
+  expect(feature_audit_page.authors).to match_array(authors)
 end
 
-When 'I review the deploys for "$app_name"' do |app_name|
-  feature_audit_page.request(project_name: app_name)
-end
-
-Then 'I should only see the deploys' do |table|
+Then 'the deploys' do |table|
   expected_deploys = table.hashes.map {|deploy|
     Sections::DeploySection.new(
       server: deploy.fetch("server"),
@@ -50,4 +47,9 @@ Then 'I should only see the deploys' do |table|
   }
 
   expect(feature_audit_page.deploys).to match_array(expected_deploys)
+end
+
+Then 'the tickets "$tickets"' do |tickets_list|
+  tickets = argument_array(tickets_list)
+  expect(feature_audit_page.tickets).to match_array(tickets)
 end

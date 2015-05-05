@@ -42,7 +42,7 @@ class GitRepository
   private
 
   def build_commits(commits)
-    commits.map { |c| GitCommit.new(id: c.oid, author_name: c.author[:name]) }
+    commits.map { |c| GitCommit.new(id: c.oid, author_name: c.author[:name], message: c.message) }
   end
 
   def validate_commit!(commit)

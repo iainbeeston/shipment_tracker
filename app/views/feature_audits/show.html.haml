@@ -19,6 +19,12 @@
   - @authors.each do |author|
     %li.author=author
 
+- if @tickets.present?
+  %h2 Tickets
+  %ul
+  - @tickets.each do |ticket|
+    %li.ticket= ticket
+
 - if @deploys.present?
   %h2 Deploys
   %table.table

@@ -40,16 +40,16 @@ RSpec.describe GitRepository do
     subject { described_class.new(Rugged::Repository.new(test_git_repo.dir)) }
 
     it 'returns all commits between two commits' do
-      commit_first  = test_git_repo.create_commit(author_name: 'a')
-      commit_second = test_git_repo.create_commit(author_name: 'b')
-      commit_third  = test_git_repo.create_commit(author_name: 'c')
+      commit_first  = test_git_repo.create_commit(author_name: 'a', message: 'message 1')
+      commit_second = test_git_repo.create_commit(author_name: 'b', message: 'message 2')
+      commit_third  = test_git_repo.create_commit(author_name: 'c', message: 'message 3')
       test_git_repo.create_commit(author_name: 'd')
 
       commits = subject.commits_between(commit_first, commit_third)
 
       expect(commits).to contain_exactly(
-        GitCommit.new(author_name: 'b', id: commit_second),
-        GitCommit.new(author_name: 'c', id: commit_third)
+        GitCommit.new(author_name: 'b', id: commit_second, message: 'message 2'),
+        GitCommit.new(author_name: 'c', id: commit_third, message: 'message 3')
       )
     end
 

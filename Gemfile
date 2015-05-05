@@ -31,4 +31,5 @@ group :test do
   gem 'database_cleaner'
   gem 'rack-test', require: 'rack/test'
   gem 'launchy'
+  gem 'factory_girl'
 end

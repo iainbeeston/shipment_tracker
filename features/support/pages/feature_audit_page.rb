@@ -23,6 +23,10 @@ module Pages
       page.all('.deploy').map { |deploy_line| Sections::DeploySection.from_element(deploy_line) }
     end
 
+    def tickets
+      page.all('.ticket').map(&:text)
+    end
+
     private
 
     attr_reader :page, :url_helpers

@@ -6,7 +6,8 @@ describe FeatureAuditsController do
       instance_double(
         FeatureAuditProjection,
         authors: %w(Alice Bob Mike),
-        deploys: %w(deploy1 deploy2 deploy3)
+        deploys: %w(deploy1 deploy2 deploy3),
+        tickets: %w()
       )
     end
 

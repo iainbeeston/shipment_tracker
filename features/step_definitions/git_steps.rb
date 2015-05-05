@@ -10,3 +10,11 @@ end
 Given 'a commit "$version" by "$name" is created' do |version, name|
   @repo.create_commit(author_name: name, pretend_version: version)
 end
+
+Given 'a commit "$version" by "$name" is created with message "$message"' do |version, name, message|
+  @repo.create_commit(
+    author_name: name,
+    pretend_version: version,
+    message: message
+  )
+end

@@ -19,8 +19,8 @@ module Support
       @repo.config['user.email'] = "unconfigured@example.com"
     end
 
-    def create_commit(author_name:, pretend_version: nil)
-      oid = repo.write("This is about #{author_name} at #{Time.now}", :blob)
+    def create_commit(author_name:, pretend_version: nil, message: "A new commit")
+      oid = repo.write('file contents', :blob)
       index = repo.index
 
       index.read_tree(repo.head.target.tree) unless repo.empty?
@@ -29,7 +29,7 @@ module Support
 
       Rugged::Commit.create(
         repo,
-        commit_options(author_name, oid)
+        commit_options(author_name, oid, message)
       ).tap do |commit|
         commits.push GitCommit.new(commit, pretend_version)
       end
@@ -49,12 +49,12 @@ module Support
 
     attr_reader :repo
 
-    def commit_options(author_name, oid)
+    def commit_options(author_name, oid, message)
       {
         tree: oid,
         author: author(author_name),
         commiter: author(author_name),
-        message: "#{author_name} making a commit",
+        message: message,
         parents: repo.empty? ? [] : [repo.head.target].compact,
         update_ref: 'HEAD'
       }

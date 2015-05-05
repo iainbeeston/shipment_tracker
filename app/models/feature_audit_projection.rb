@@ -1,12 +1,11 @@
 require 'git_repository'
 
 class FeatureAuditProjection
-  attr_reader :authors, :deploys
-
-  def initialize(app_name:, from:, to:)
+  def initialize(app_name:, from:, to:, git_repository: GitRepository)
     @app_name = app_name
     @from = from
     @to = to
+    @git_repository = git_repository
   end
 
   def authors
@@ -24,12 +23,19 @@ class FeatureAuditProjection
     end
   end
 
+  # Scans for JIRA tickets that have the format:
+  # two or more uppercase letters, followed by a hyphen and the issue number,
+  # for example BAM-123
+  def tickets
+    commits.map { |commit| commit.message.scan(/(?<=\b)[A-Z]{2,}-\d+(?=\b)/) }.flatten
+  end
+
   private
 
-  attr_reader :app_name, :from, :to
+  attr_reader :app_name, :from, :to, :git_repository
 
   def commits
-    @commits ||= GitRepository.commits_for(
+    @commits ||= git_repository.commits_for(
       repository_name: app_name,
       from: from,
       to: to
