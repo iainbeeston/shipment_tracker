@@ -37,3 +37,16 @@
         %tr.deploy.table-striped
           - deploy.each_value do |value|
             %td= value
+
+- if @builds.present?
+  %h2 Builds
+  %table.table
+    %thead
+      %tr
+        - @builds.first.try(:each_key) do |key|
+          %th= key
+    %tbody
+      - @builds.each do |build|
+        %tr.build.table-striped
+          - build.each_value do |value|
+            %td= value

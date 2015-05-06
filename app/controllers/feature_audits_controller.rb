@@ -8,6 +8,7 @@ class FeatureAuditsController < ApplicationController
     @authors = projection.authors
     @deploys = projection.deploys
     @tickets = projection.tickets
+    @builds = projection.builds
   rescue GitRepository::CommitNotFound => e
     flash[:error] = "Commit '#{e.message}' could not be found in #{app_name}"
   rescue GitRepository::CommitNotValid => e

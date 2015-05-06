@@ -23,6 +23,15 @@ class FeatureAuditProjection
     end
   end
 
+  def builds
+    builds_for_versions.map(&:details).map do |build|
+      {
+        status: build['payload']['status'],
+        version: build['payload']['vcs_revision'],
+      }
+    end
+  end
+
   # Returns a list of JIRA tickets extracted from the commit messages. Ignores duplicates.
   # Scans for JIRA tickets that have the format:
   # Two or more uppercase letters, followed by a hyphen and the issue number. E.g. BAM-123
@@ -44,6 +53,10 @@ class FeatureAuditProjection
 
   def shas
     commits.map(&:id)
+  end
+
+  def builds_for_versions
+    CircleCi.find_all_for_versions(shas)
   end
 
   def deploys_for_app

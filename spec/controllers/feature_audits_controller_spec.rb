@@ -7,7 +7,8 @@ describe FeatureAuditsController do
         FeatureAuditProjection,
         authors: %w(Alice Bob Mike),
         deploys: %w(deploy1 deploy2 deploy3),
-        tickets: %w()
+        tickets: %w(some tickets),
+        builds: %w(some builds)
       )
     end
 
@@ -22,6 +23,8 @@ describe FeatureAuditsController do
 
       expect(assigns(:authors)).to eql(feature_audit_projection.authors)
       expect(assigns(:deploys)).to eql(feature_audit_projection.deploys)
+      expect(assigns(:tickets)).to eql(feature_audit_projection.tickets)
+      expect(assigns(:builds)).to eql(feature_audit_projection.builds)
     end
   end
 end

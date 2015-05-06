@@ -49,6 +49,17 @@ Then 'the deploys' do |table|
   expect(feature_audit_page.deploys).to match_array(expected_deploys)
 end
 
+Then 'the builds' do |table|
+  expected_builds = table.hashes.map {|build|
+    Sections::BuildSection.new(
+      status: build.fetch("status"),
+      version: @repo.commit_for_pretend_version(build.fetch("commit")),
+    )
+  }
+
+  expect(feature_audit_page.builds).to match_array(expected_builds)
+end
+
 Then 'the tickets "$tickets"' do |tickets_list|
   tickets = argument_array(tickets_list)
   expect(feature_audit_page.tickets).to match_array(tickets)

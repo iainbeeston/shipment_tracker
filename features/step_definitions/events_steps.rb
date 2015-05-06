@@ -13,6 +13,22 @@ Given '"$app_name" was deployed' do |app_name, table|
   end
 end
 
+Given 'a failing CircleCi build for "$version"' do |version|
+  post_json '/events/circleci',
+    'payload' => {
+      'status' => 'failing',
+      'vcs_revision' => @repo.commit_for_pretend_version(version),
+    }
+end
+
+Given 'a passing CircleCi build for "$version"' do |version|
+  post_json '/events/circleci',
+    'payload' => {
+      'status' => 'success',
+      'vcs_revision' => @repo.commit_for_pretend_version(version),
+    }
+end
+
 def post_json(url, payload)
   post url, payload.to_json, "CONTENT_TYPE" => "application/json"
 end

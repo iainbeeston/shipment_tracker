@@ -23,6 +23,10 @@ module Pages
       page.all('.deploy').map { |deploy_line| Sections::DeploySection.from_element(deploy_line) }
     end
 
+    def builds
+      page.all('.build').map { |build_line| Sections::BuildSection.from_element(build_line) }
+    end
+
     def tickets
       page.all('.ticket').map(&:text)
     end

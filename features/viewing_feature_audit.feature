@@ -9,7 +9,9 @@ Scenario: Viewing information between 2 versions
     | pub1.fundingcircle.co.uk | 2014-03-20 19:03 | Alice       |
     | pub2.fundingcircle.co.uk | 2014-03-20 19:04 | Alice       |
   And a commit "#2" by "Collin" is created with message "JIRA-456 Fix repayments"
+  And a failing CircleCi build for "#2"
   And a commit "#3" by "David" is created with message "Add autolend feature JIRA-789"
+  And a passing CircleCi build for "#3"
   And "project1" was deployed
     | server             | deployed_at      | deployed_by |
     | galaga.fcuat.co.uk | 2014-03-20 21:10 | Alice       |
@@ -19,6 +21,10 @@ Scenario: Viewing information between 2 versions
 
   Then I should only see the authors "Collin, David and Edgar"
   And the tickets "JIRA-456, JIRA-789 and JIRA-814"
+  And the builds
+    | status   | commit |
+    | success  | #3     |
+    | failing  | #2     |
   And the deploys
     | server             | deployed_at      | deployed_by | commit |
     | galaga.fcuat.co.uk | 2014-03-20 21:10 | Alice       | #3     |
