@@ -27,26 +27,28 @@
 
 - if @deploys.present?
   %h2 Deploys
-  %table.table
+  %table.table.table-striped
     %thead
       %tr
         - @deploys.first.try(:each_key) do |key|
           %th= key
     %tbody
       - @deploys.each do |deploy|
-        %tr.deploy.table-striped
+        %tr.deploy
           - deploy.each_value do |value|
             %td= value
 
 - if @builds.present?
   %h2 Builds
-  %table.table
+  %table.table.table-striped
     %thead
       %tr
-        - @builds.first.try(:each_key) do |key|
-          %th= key
+        %th Source
+        %th Status
+        %th Software Version
     %tbody
       - @builds.each do |build|
-        %tr.build.table-striped
-          - build.each_value do |value|
-            %td= value
+        %tr.build
+          %td= build.source
+          %td= build.status
+          %td= build.version

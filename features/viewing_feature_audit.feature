@@ -12,6 +12,7 @@ Scenario: Viewing information between 2 versions
   And a failing CircleCi build for "#2"
   And a commit "#3" by "David" is created with message "Add autolend feature JIRA-789"
   And a passing CircleCi build for "#3"
+  And a passing Jenkins build for "#3"
   And "project1" was deployed
     | server             | deployed_at      | deployed_by |
     | galaga.fcuat.co.uk | 2014-03-20 21:10 | Alice       |
@@ -22,9 +23,10 @@ Scenario: Viewing information between 2 versions
   Then I should only see the authors "Collin, David and Edgar"
   And the tickets "JIRA-456, JIRA-789 and JIRA-814"
   And the builds
-    | status  | commit |
-    | success | #3     |
-    | failed  | #2     |
+    | source   | status  | commit |
+    | CircleCi | success | #3     |
+    | Jenkins  | success | #3     |
+    | CircleCi | failed  | #2     |
   And the deploys
     | server             | deployed_at      | deployed_by | commit |
     | galaga.fcuat.co.uk | 2014-03-20 21:10 | Alice       | #3     |

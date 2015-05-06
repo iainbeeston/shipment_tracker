@@ -3,6 +3,7 @@ module Sections
     include Virtus.value_object
 
     values do
+      attribute :source, String
       attribute :status, String
       attribute :version, String
     end
@@ -10,8 +11,9 @@ module Sections
     def self.from_element(build_element)
       values = build_element.all('td').map(&:text).to_a
       new(
-        status:  values.fetch(0),
-        version: values.fetch(1),
+        source:  values.fetch(0),
+        status:  values.fetch(1),
+        version: values.fetch(2),
       )
     end
   end

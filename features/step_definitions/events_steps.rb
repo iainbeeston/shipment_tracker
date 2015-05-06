@@ -29,6 +29,16 @@ Given 'a passing CircleCi build for "$version"' do |version|
     }
 end
 
+Given 'a passing Jenkins build for "$version"' do |version|
+  post_json '/events/jenkins',
+    'build' => {
+      'scm' => {
+        'commit' => @repo.commit_for_pretend_version(version),
+      },
+      'status' => 'SUCCESS'
+    }
+end
+
 def post_json(url, payload)
   post url, payload.to_json, "CONTENT_TYPE" => "application/json"
 end

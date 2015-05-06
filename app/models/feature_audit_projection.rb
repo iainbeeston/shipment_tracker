@@ -24,12 +24,7 @@ class FeatureAuditProjection
   end
 
   def builds
-    builds_for_versions.map(&:details).map do |build|
-      {
-        status: build['payload']['outcome'],
-        version: build['payload']['vcs_revision'],
-      }
-    end
+    CircleCi.find_all_for_versions(shas) + Jenkins.find_all_for_versions(shas)
   end
 
   # Returns a list of JIRA tickets extracted from the commit messages. Ignores duplicates.
@@ -53,10 +48,6 @@ class FeatureAuditProjection
 
   def shas
     commits.map(&:id)
-  end
-
-  def builds_for_versions
-    CircleCi.find_all_for_versions(shas)
   end
 
   def deploys_for_app

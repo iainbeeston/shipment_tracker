@@ -52,6 +52,7 @@ end
 Then 'the builds' do |table|
   expected_builds = table.hashes.map {|build|
     Sections::BuildSection.new(
+      source: build.fetch("source"),
       status: build.fetch("status"),
       version: @repo.commit_for_pretend_version(build.fetch("commit")),
     )
