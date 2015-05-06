@@ -26,6 +26,18 @@ describe EventsController do
         expect(response).to have_http_status(:success)
       end
     end
+    context "/jenkins with valid JSON" do
+      let(:route_params) { { type: 'jenkins' } }
+
+      it { should route(:post, '/events/jenkins').to(action: :create, type: 'jenkins') }
+
+      it "saves an event object with correct details" do
+        post :create, route_params.merge('jenkins' => 'hudson'), format: :json
+
+        expect(Jenkins.last.details).to eql('jenkins' => 'hudson')
+        expect(response).to have_http_status(:success)
+      end
+    end
     context "/other with valid JSON" do
       let(:route_params) { { type: 'other' } }
 

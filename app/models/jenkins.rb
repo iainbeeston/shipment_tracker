@@ -1,0 +1,2 @@
+class Jenkins < Event
+end

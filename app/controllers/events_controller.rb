@@ -10,6 +10,7 @@ class EventsController < ActionController::Metal
     {
       'deploy'   => Deploy,
       'circleci' => CircleCi,
+      'jenkins'  => Jenkins,
     }.fetch(params[:type])
   end
 end
