@@ -8,10 +8,10 @@ class CircleCi < Event
   end
 
   def status
-    details['payload']['outcome']
+    details.fetch('payload', {}).fetch('outcome', 'unknown')
   end
 
   def version
-    details['payload']['vcs_revision']
+    details.fetch('payload', {}).fetch('vcs_revision', 'unknown')
   end
 end

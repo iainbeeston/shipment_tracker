@@ -8,10 +8,17 @@ class Jenkins < Event
   end
 
   def status
-    details['build']['status'].downcase
+    status = details
+             .fetch('build', {})
+             .fetch('status', 'unknown').downcase
+
+    status == 'failure' ? 'failed' : status
   end
 
   def version
-    details['build']['scm']['commit']
+    details
+      .fetch('build', {})
+      .fetch('scm', {})
+      .fetch('commit', 'unknown')
   end
 end
