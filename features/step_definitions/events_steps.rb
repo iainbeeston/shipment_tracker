@@ -16,7 +16,7 @@ end
 Given 'a failing CircleCi build for "$version"' do |version|
   post_json '/events/circleci',
     'payload' => {
-      'status' => 'failing',
+      'outcome' => 'failed',
       'vcs_revision' => @repo.commit_for_pretend_version(version),
     }
 end
@@ -24,7 +24,7 @@ end
 Given 'a passing CircleCi build for "$version"' do |version|
   post_json '/events/circleci',
     'payload' => {
-      'status' => 'success',
+      'outcome' => 'success',
       'vcs_revision' => @repo.commit_for_pretend_version(version),
     }
 end

@@ -26,7 +26,7 @@ class FeatureAuditProjection
   def builds
     builds_for_versions.map(&:details).map do |build|
       {
-        status: build['payload']['status'],
+        status: build['payload']['outcome'],
         version: build['payload']['vcs_revision'],
       }
     end

@@ -22,9 +22,9 @@ Scenario: Viewing information between 2 versions
   Then I should only see the authors "Collin, David and Edgar"
   And the tickets "JIRA-456, JIRA-789 and JIRA-814"
   And the builds
-    | status   | commit |
-    | success  | #3     |
-    | failing  | #2     |
+    | status  | commit |
+    | success | #3     |
+    | failed  | #2     |
   And the deploys
     | server             | deployed_at      | deployed_by | commit |
     | galaga.fcuat.co.uk | 2014-03-20 21:10 | Alice       | #3     |
