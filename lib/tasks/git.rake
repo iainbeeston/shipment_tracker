@@ -25,6 +25,7 @@ namespace :git do
     end
   end
 
+  desc "Set up git hooks on the local machine"
   task :setup_hooks do
     require 'fileutils'
     GitHook.all.each do |git_hook|
