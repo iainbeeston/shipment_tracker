@@ -23,11 +23,11 @@ class FeatureAuditProjection
     end
   end
 
+  # Returns a list of JIRA tickets extracted from the commit messages. Ignores duplicates.
   # Scans for JIRA tickets that have the format:
-  # two or more uppercase letters, followed by a hyphen and the issue number,
-  # for example BAM-123
+  # Two or more uppercase letters, followed by a hyphen and the issue number. E.g. BAM-123
   def tickets
-    commits.map { |commit| commit.message.scan(/(?<=\b)[A-Z]{2,}-\d+(?=\b)/) }.flatten
+    commits.map { |commit| extract_tickets(commit.message) }.flatten.uniq
   end
 
   private
@@ -50,5 +50,9 @@ class FeatureAuditProjection
     Deploy.deploys_for_app(app_name).select { |deploy|
       shas.include?(deploy.details['version'])
     }
+  end
+
+  def extract_tickets(message)
+    message.scan(/(?<=\b)[A-Z]{2,}-\d+(?=\b)/)
   end
 end

@@ -30,7 +30,8 @@ RSpec.describe FeatureAuditProjection do
           'FL-1 at the start',
           'In the GII-312312 middle',
           'At the end ERBB-845',
-          'Multiple tickets FL-2, FL-3, FL-4 and FL-5'
+          'Multiple tickets FL-2, FL-3, FL-4 and FL-5',
+          'FL-1 again',
         ]
       end
 
