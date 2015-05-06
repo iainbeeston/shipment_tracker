@@ -4,15 +4,24 @@ require 'feature_audit_projection'
 RSpec.describe FeatureAuditProjection do
   let(:git_repository) { class_double(GitRepository) }
 
+  subject(:projection) do
+    described_class.new(
+      app_name: 'app_name',
+      from: 'a_commit',
+      to: 'another_commit',
+      git_repository: git_repository
+    )
+  end
+
   describe "#tickets" do
-    subject(:tickets) {
-      described_class.new(
-        app_name: 'app_name',
-        from: 'a_commit',
-        to: 'another_commit',
-        git_repository: git_repository
-      ).tickets
-    }
+    let(:commit_messages) do
+      [
+        'FL-1 at the start',
+        'In the GII-312312 middle',
+        'At the end ERBB-845',
+        'Multiple tickets FL-2, FL-3, FL-4 and FL-5',
+      ]
+    end
 
     let(:commits) do
       commit_messages.map { |message| build(:git_commit, message: message) }
@@ -24,23 +33,29 @@ RSpec.describe FeatureAuditProjection do
         .and_return(commits)
     end
 
-    context "when there are multiple valid tickets" do
+    it "returns the list of tickets for the feature audit" do
+      expect(projection.tickets).to match_array(%w(FL-1 FL-2 FL-3 FL-4 FL-5 GII-312312 ERBB-845))
+    end
+
+    context "when there are multiple commits for the same ticket" do
       let(:commit_messages) do
         [
           'FL-1 at the start',
-          'In the GII-312312 middle',
-          'At the end ERBB-845',
-          'Multiple tickets FL-2, FL-3, FL-4 and FL-5',
+          'FL-2 in the middle',
           'FL-1 again',
         ]
       end
 
-      it { is_expected.to match_array(%w(FL-1 FL-2 FL-3 FL-4 FL-5 GII-312312 ERBB-845)) }
+      it "ignores the duplicates" do
+        expect(projection.tickets).to match_array(%w(FL-1 FL-2))
+      end
     end
 
-    context "when there are multiple invalid tickets" do
+    context "when there invalid tickets" do
       let(:commit_messages) do
         [
+          'The only valid ticket (FL-123)',
+          'Message without ticket',
           'Invalid ticket with digits F99-123',
           'bar-123 invalid lowercase ticket',
           'Invalid ticket min char length E-123',
@@ -53,7 +68,9 @@ RSpec.describe FeatureAuditProjection do
         ]
       end
 
-      it { is_expected.to match_array([]) }
+      it "ignores them" do
+        expect(projection.tickets).to eq(['FL-123'])
+      end
     end
   end
 end
