@@ -1,10 +1,13 @@
 Rails.application.routes.draw do
   root 'heartbeat#index'
 
+  # Status
   get 'heartbeat', to: 'heartbeat#index'
 
-  post 'events/circle', to: 'ci#circle'
+  # Events
+  post 'events/:type', to: 'events#create'
+  post 'deploys', to: 'events#create', defaults: { type: 'deploy' } # Legacy while we transition
 
-  resources :deploys, only: :create
+  # Projections
   resources :feature_audits, only: :show
 end

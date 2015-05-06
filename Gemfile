@@ -32,4 +32,5 @@ group :test do
   gem 'rack-test', require: 'rack/test'
   gem 'launchy'
   gem 'factory_girl'
+  gem 'shoulda-matchers'
 end
