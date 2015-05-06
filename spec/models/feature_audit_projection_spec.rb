@@ -17,9 +17,10 @@ RSpec.describe FeatureAuditProjection do
     let(:commit_messages) do
       [
         'FL-1 at the start',
-        'In the GII-312312 middle',
+        'In the GII-3123 middle',
         'At the end ERBB-845',
         'Multiple tickets FL-2, FL-3, FL-4 and FL-5',
+        "Merge pull request #1 from FundingCircle/foo\n\nPR Title\nImplements JI-123\nRelated to JI-111",
       ]
     end
 
@@ -34,7 +35,7 @@ RSpec.describe FeatureAuditProjection do
     end
 
     it "returns the list of tickets for the feature audit" do
-      expect(projection.tickets).to match_array(%w(FL-1 FL-2 FL-3 FL-4 FL-5 GII-312312 ERBB-845))
+      expect(projection.tickets).to match_array(%w(FL-1 FL-2 FL-3 FL-4 FL-5 GII-3123 ERBB-845 JI-123 JI-111))
     end
 
     context "when there are multiple commits for the same ticket" do
