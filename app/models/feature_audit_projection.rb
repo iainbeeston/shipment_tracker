@@ -42,7 +42,8 @@ class FeatureAuditProjection
   def apply(event)
     case event
     when JiraEvent
-      tickets.add(Ticket.from_jira_event(event)) if expected_tickets.include?(event.key)
+      ticket = Ticket.from_jira_event(event)
+      tickets.add(ticket) if expected_ticket_keys.include?(ticket.key)
     end
   end
 
@@ -64,11 +65,11 @@ class FeatureAuditProjection
     }
   end
 
-  def expected_tickets
-    @expected_tickets ||= commits.map { |commit| extract_tickets(commit.message) }.flatten.uniq
+  def expected_ticket_keys
+    @expected_ticket_keys ||= commits.map { |commit| extract_ticket_keys(commit.message) }.flatten.uniq
   end
 
-  def extract_tickets(message)
+  def extract_ticket_keys(message)
     message.scan(/(?<=\b)[A-Z]{2,}-\d+(?=\b)/)
   end
 end
