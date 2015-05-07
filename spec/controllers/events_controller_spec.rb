@@ -14,6 +14,7 @@ describe EventsController do
         expect(response).to have_http_status(:success)
       end
     end
+
     context "/circle with valid JSON" do
       let(:route_params) { { type: 'circleci' } }
 
@@ -26,6 +27,7 @@ describe EventsController do
         expect(response).to have_http_status(:success)
       end
     end
+
     context "/jenkins with valid JSON" do
       let(:route_params) { { type: 'jenkins' } }
 
