@@ -14,29 +14,37 @@ Given '"$app_name" was deployed' do |app_name, table|
 end
 
 Given 'a failing CircleCi build for "$version"' do |version|
-  post_json '/events/circleci',
-    'payload' => {
-      'outcome' => 'failed',
-      'vcs_revision' => @repo.commit_for_pretend_version(version),
-    }
+  payload = FactoryGirl.build(
+    :circle_ci,
+    success?: false,
+    version: @repo.commit_for_pretend_version(version)
+  ).details
+  post_json '/events/circleci', payload
 end
 
 Given 'a passing CircleCi build for "$version"' do |version|
-  post_json '/events/circleci',
-    'payload' => {
-      'outcome' => 'success',
-      'vcs_revision' => @repo.commit_for_pretend_version(version),
-    }
+  payload = FactoryGirl.build(
+    :circle_ci,
+    success?: true,
+    version: @repo.commit_for_pretend_version(version)
+  ).details
+  post_json '/events/circleci', payload
 end
 
 Given 'a passing Jenkins build for "$version"' do |version|
-  post_json '/events/jenkins',
-    'build' => {
-      'scm' => {
-        'commit' => @repo.commit_for_pretend_version(version),
-      },
-      'status' => 'SUCCESS'
-    }
+  payload = FactoryGirl.build(
+    :jenkins,
+    success?: true,
+    version: @repo.commit_for_pretend_version(version)
+  ).details
+  post_json '/events/jenkins', payload
+end
+
+Given 'these tickets are created' do |table|
+  table.hashes.each do |hash|
+    payload = FactoryGirl.build(:jira, hash.slice('id', 'title')).details
+    post_json '/events/jira', payload
+  end
 end
 
 def post_json(url, payload)
