@@ -3,12 +3,12 @@ Feature: Viewing Feature Audit
 
 Scenario: Viewing information between 2 versions
   Given an application called "project1"
-  And these tickets are created
-    | key      | summary      |
-    | JIRA-123 | Ticket zero  |
-    | JIRA-456 | Ticket one   |
-    | JIRA-789 | Ticket two   |
-    | JIRA-814 | Ticket three |
+  And these tickets
+    | key      | summary      | status           |
+    | JIRA-123 | Ticket zero  | To Do            |
+    | JIRA-456 | Ticket one   | In Progress      |
+    | JIRA-789 | Ticket two   | Ready For Review |
+    | JIRA-814 | Ticket three | Done             |
   And a commit "#1" by "Alice" is created with message "JIRA-123 Change copy"
   And "project1" was deployed
     | server                   | deployed_at      | deployed_by |
@@ -28,10 +28,10 @@ Scenario: Viewing information between 2 versions
 
   Then I should only see the authors "Collin, David and Edgar"
   And the tickets
-    | key      | summary      |
-    | JIRA-456 | Ticket one   |
-    | JIRA-789 | Ticket two   |
-    | JIRA-814 | Ticket three |
+    | key      | summary      | status           |
+    | JIRA-456 | Ticket one   | In Progress      |
+    | JIRA-789 | Ticket two   | Ready For Review |
+    | JIRA-814 | Ticket three | Done             |
   And the builds
     | source   | status  | commit |
     | CircleCi | success | #3     |

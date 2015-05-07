@@ -26,11 +26,13 @@
       %tr
         %th key
         %th summary
+        %th status
     %tbody
       - @tickets.each do |ticket|
         %tr.ticket
           %td= ticket.key
           %td= ticket.summary
+          %td= ticket.status
 
 - if @deploys.present?
   %h2 Deploys

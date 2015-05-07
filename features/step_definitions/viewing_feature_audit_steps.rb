@@ -65,7 +65,8 @@ Then 'the tickets' do |table|
   expected_tickets = table.hashes.map do |ticket|
     Sections::TicketSection.new(
       key: ticket.fetch("key"),
-      summary: ticket.fetch("summary")
+      summary: ticket.fetch("summary"),
+      status: ticket.fetch("status")
     )
   end
 

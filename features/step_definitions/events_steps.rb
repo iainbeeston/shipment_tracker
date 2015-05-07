@@ -40,10 +40,13 @@ Given 'a passing Jenkins build for "$version"' do |version|
   post_json '/events/jenkins', payload
 end
 
-Given 'these tickets are created' do |table|
+Given 'these tickets' do |table|
   table.hashes.each do |hash|
-    payload = FactoryGirl.build(:jira_event, hash.slice('key', 'summary')).details
-    post_json '/events/jira', payload
+    end_status = hash.fetch('status').parameterize.underscore.to_sym
+    events = jira_events(end_status, hash.slice('key', 'summary'))
+    events.each do |event|
+      post_json '/events/jira', event.details
+    end
   end
 end
 

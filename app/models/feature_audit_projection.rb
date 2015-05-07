@@ -12,6 +12,14 @@ class FeatureAuditProjection
     events.each { |e| apply(e) }
   end
 
+  def apply(event)
+    case event
+    when JiraEvent
+      ticket = Ticket.from_jira_event(event)
+      tickets_table[ticket.key] = ticket if expected_ticket_keys.include?(ticket.key)
+    end
+  end
+
   def authors
     commits.map(&:author_name).uniq
   end
@@ -32,19 +40,15 @@ class FeatureAuditProjection
   end
 
   def tickets
-    @tickets ||= Set.new
+    tickets_table.values
   end
 
   private
 
   attr_reader :app_name, :from, :to, :git_repository
 
-  def apply(event)
-    case event
-    when JiraEvent
-      ticket = Ticket.from_jira_event(event)
-      tickets.add(ticket) if expected_ticket_keys.include?(ticket.key)
-    end
+  def tickets_table
+    @tickets_table ||= {}
   end
 
   def commits

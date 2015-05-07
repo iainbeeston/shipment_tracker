@@ -5,6 +5,7 @@ module Sections
     values do
       attribute :key, String
       attribute :summary, String
+      attribute :status, String
     end
 
     def self.from_element(ticket_element)
@@ -12,6 +13,7 @@ module Sections
       new(
         key: values.fetch(0),
         summary: values.fetch(1),
+        status: values.fetch(2),
       )
     end
   end

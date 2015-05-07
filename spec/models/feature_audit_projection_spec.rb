@@ -36,17 +36,6 @@ RSpec.describe FeatureAuditProjection do
       ])
     end
 
-    context 'when there are multiple events for the same ticket' do
-      let(:jira_event_keys) { %w(JIRA-123 JIRA-123) }
-      let(:commit_messages) { ['JIRA-123 first'] }
-
-      it "ignores the commit messages" do
-        projection.apply_all(events)
-
-        expect(projection.tickets).to match_array([Ticket.new(key: 'JIRA-123')])
-      end
-    end
-
     context 'when there are multiple commits for the same ticket' do
       let(:jira_event_keys) { %w(JIRA-123) }
       let(:commit_messages) { ['JIRA-123 first', 'JIRA-123 second'] }
@@ -77,6 +66,26 @@ RSpec.describe FeatureAuditProjection do
         projection.apply_all(events)
 
         expect(projection.tickets).to match_array([Ticket.new(key: 'JIRA-123')])
+      end
+    end
+
+    context 'as the state of a ticket changes' do
+      let(:commit_messages) { ['JIRA-123 first'] }
+
+      it 'tracks the current status' do
+        projection.apply(build(:jira_event, :to_do, key: 'JIRA-123'))
+        expect(projection.tickets.first.status).to eq('To Do')
+
+        projection.apply(build(:jira_event, :in_progress, key: 'JIRA-123'))
+        expect(projection.tickets.first.status).to eq('In Progress')
+
+        projection.apply(build(:jira_event, :ready_for_review, key: 'JIRA-123'))
+        expect(projection.tickets.first.status).to eq('Ready For Review')
+
+        projection.apply(build(:jira_event, :done, key: 'JIRA-123'))
+        expect(projection.tickets.first.status).to eq('Done')
+
+        expect(projection.tickets.size).to eql(1)
       end
     end
   end
