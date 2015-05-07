@@ -1,10 +1,10 @@
-class Jenkins < Event
+class JenkinsEvent < Event
   def self.find_all_for_versions(versions)
     where("details -> 'build' -> 'scm' ->> 'commit' in (?)", versions)
   end
 
   def source
-    self.class.to_s
+    "Jenkins"
   end
 
   def status

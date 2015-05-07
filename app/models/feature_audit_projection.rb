@@ -24,7 +24,7 @@ class FeatureAuditProjection
   end
 
   def builds
-    CircleCi.find_all_for_versions(shas) + Jenkins.find_all_for_versions(shas)
+    CircleCiEvent.find_all_for_versions(shas) + JenkinsEvent.find_all_for_versions(shas)
   end
 
   # Returns a list of JIRA tickets extracted from the commit messages. Ignores duplicates.
@@ -51,7 +51,7 @@ class FeatureAuditProjection
   end
 
   def deploys_for_app
-    Deploy.deploys_for_app(app_name).select { |deploy|
+    DeployEvent.deploys_for_app(app_name).select { |deploy|
       shas.include?(deploy.details['version'])
     }
   end

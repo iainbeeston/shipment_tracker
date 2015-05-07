@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :jenkins do
+  factory :circle_ci_event do
     skip_create
 
     transient do
@@ -9,11 +9,9 @@ FactoryGirl.define do
 
     details {
       {
-        'build' => {
-          'scm' => {
-            'commit' => version,
-          },
-          'status' => success? ? 'SUCCESS' : 'FAILURE'
+        'payload' => {
+          'outcome' => success? ? 'success' : 'failed',
+          'vcs_revision' => version,
         }
       }
     }

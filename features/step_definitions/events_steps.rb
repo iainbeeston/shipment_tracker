@@ -15,7 +15,7 @@ end
 
 Given 'a failing CircleCi build for "$version"' do |version|
   payload = FactoryGirl.build(
-    :circle_ci,
+    :circle_ci_event,
     success?: false,
     version: @repo.commit_for_pretend_version(version)
   ).details
@@ -24,7 +24,7 @@ end
 
 Given 'a passing CircleCi build for "$version"' do |version|
   payload = FactoryGirl.build(
-    :circle_ci,
+    :circle_ci_event,
     success?: true,
     version: @repo.commit_for_pretend_version(version)
   ).details
@@ -33,7 +33,7 @@ end
 
 Given 'a passing Jenkins build for "$version"' do |version|
   payload = FactoryGirl.build(
-    :jenkins,
+    :jenkins_event,
     success?: true,
     version: @repo.commit_for_pretend_version(version)
   ).details
@@ -42,7 +42,7 @@ end
 
 Given 'these tickets are created' do |table|
   table.hashes.each do |hash|
-    payload = FactoryGirl.build(:jira, hash.slice('id', 'title')).details
+    payload = FactoryGirl.build(:jira_event, hash.slice('id', 'title')).details
     post_json '/events/jira', payload
   end
 end

@@ -1,18 +1,18 @@
 FactoryGirl.define do
-  factory :jira do
+  factory :jira_event do
     skip_create
 
     transient do
-      sequence(:id) { |n| "JIRA-#{n}" }
-      sequence(:title) { |n| "Implement Autoloan #{n}" }
+      sequence(:key) { |n| "JIRA-#{n}" }
+      sequence(:summary) { |n| "Implement Autoloan #{n}" }
     end
 
     details {
       {
         'issue' => {
-          'key' => id,
+          'key' => key,
           'fields' => {
-            'summary' => title,
+            'summary' => summary,
           }
         }
       }
