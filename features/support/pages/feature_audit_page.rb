@@ -28,7 +28,7 @@ module Pages
     end
 
     def tickets
-      page.all('.ticket').map(&:text)
+      page.all('.ticket').map { |ticket_line| Sections::TicketSection.from_element(ticket_line) }
     end
 
     private

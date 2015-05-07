@@ -13,20 +13,9 @@ RSpec.describe FeatureAuditProjection do
     )
   end
 
-  describe "#tickets" do
-    let(:commit_messages) do
-      [
-        'FL-1 at the start',
-        'In the GII-3123 middle',
-        'At the end ERBB-845',
-        'Multiple tickets FL-2, FL-3, FL-4 and FL-5',
-        "Merge pull request #1 from FundingCircle/foo\n\nPR Title\nImplements JI-123\nRelated to JI-111",
-      ]
-    end
-
-    let(:commits) do
-      commit_messages.map { |message| build(:git_commit, message: message) }
-    end
+  describe "#apply_all" do
+    let(:events) { jira_event_keys.map { |key| build(:jira_event, key: key) } }
+    let(:commits) { commit_messages.map { |message| build(:git_commit, message: message) } }
 
     before do
       allow(git_repository).to receive(:commits_for)
@@ -34,43 +23,60 @@ RSpec.describe FeatureAuditProjection do
         .and_return(commits)
     end
 
-    it "returns the list of tickets for the feature audit" do
-      expect(projection.tickets).to match_array(%w(FL-1 FL-2 FL-3 FL-4 FL-5 GII-3123 ERBB-845 JI-123 JI-111))
+    let(:jira_event_keys) { %w(JIRA-123 JIRA-456 JIRA-789) }
+    let(:commit_messages) { ['JIRA-123 first', 'JIRA-456 second', 'JIRA-789 third'] }
+
+    it "builds the list of tickets" do
+      projection.apply_all(events)
+
+      expect(projection.tickets).to match_array([
+        Ticket.new(key: 'JIRA-123'),
+        Ticket.new(key: 'JIRA-456'),
+        Ticket.new(key: 'JIRA-789'),
+      ])
     end
 
-    context "when there are multiple commits for the same ticket" do
-      let(:commit_messages) do
-        [
-          'FL-1 at the start',
-          'FL-2 in the middle',
-          'FL-1 again',
-        ]
-      end
+    context 'when there are multiple events for the same ticket' do
+      let(:jira_event_keys) { %w(JIRA-123 JIRA-123) }
+      let(:commit_messages) { ['JIRA-123 first'] }
 
-      it "ignores the duplicates" do
-        expect(projection.tickets).to match_array(%w(FL-1 FL-2))
+      it "ignores the commit messages" do
+        projection.apply_all(events)
+
+        expect(projection.tickets).to match_array([Ticket.new(key: 'JIRA-123')])
       end
     end
 
-    context "when there invalid tickets" do
-      let(:commit_messages) do
-        [
-          'The only valid ticket (FL-123)',
-          'Message without ticket',
-          'Invalid ticket with digits F99-123',
-          'bar-123 invalid lowercase ticket',
-          'Invalid ticket min char length E-123',
-          'A long word with a ticketE-123in the middle',
-          'A short one F-123',
-          'A wrong separator BAR_123',
-          'Letters in the ticket number BAR-123bar456',
-          'Ticket without number BAR-',
-          'Ticket with number at start 0BAR-123',
-        ]
-      end
+    context 'when there are multiple commits for the same ticket' do
+      let(:jira_event_keys) { %w(JIRA-123) }
+      let(:commit_messages) { ['JIRA-123 first', 'JIRA-123 second'] }
 
-      it "ignores them" do
-        expect(projection.tickets).to eq(['FL-123'])
+      it "ignores the commit messages" do
+        projection.apply_all(events)
+
+        expect(projection.tickets).to match_array([Ticket.new(key: 'JIRA-123')])
+      end
+    end
+
+    context 'when commits reference JIRA tickets that we have not received events for' do
+      let(:jira_event_keys) { %w(JIRA-123) }
+      let(:commit_messages) { ['JIRA-123 first', 'JIRA-000 ignored'] }
+
+      it "ignores the commit messages" do
+        projection.apply_all(events)
+
+        expect(projection.tickets).to match_array([Ticket.new(key: 'JIRA-123')])
+      end
+    end
+
+    context 'when events reference JIRA tickets that we have not seen commits for' do
+      let(:jira_event_keys) { %w(JIRA-000 JIRA-123) }
+      let(:commit_messages) { ['JIRA-123 first'] }
+
+      it "ignores the commit messages" do
+        projection.apply_all(events)
+
+        expect(projection.tickets).to match_array([Ticket.new(key: 'JIRA-123')])
       end
     end
   end

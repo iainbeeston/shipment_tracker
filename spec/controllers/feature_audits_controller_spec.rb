@@ -12,12 +12,20 @@ describe FeatureAuditsController do
       )
     end
 
-    it "shows a feature audit" do
+    let(:events) { [Event.new, Event.new, Event.new] }
+
+    before do
       allow(FeatureAuditProjection).to receive(:new).with(
         app_name: 'app1',
         from: 'abc',
         to:   'xyz'
       ).and_return(feature_audit_projection)
+
+      allow(Event).to receive(:all).and_return(events)
+    end
+
+    it "shows a feature audit" do
+      expect(feature_audit_projection).to receive(:apply_all).with(events)
 
       get :show, id: 'app1', from: 'abc', to: 'xyz'
 

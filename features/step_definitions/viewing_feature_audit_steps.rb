@@ -37,31 +37,37 @@ Then 'I should only see the authors "$authors"' do |authors_list|
 end
 
 Then 'the deploys' do |table|
-  expected_deploys = table.hashes.map {|deploy|
+  expected_deploys = table.hashes.map do |deploy|
     Sections::DeploySection.new(
       server: deploy.fetch("server"),
       deployed_at: deploy.fetch("deployed_at"),
       deployed_by: deploy.fetch("deployed_by"),
       version: @repo.commit_for_pretend_version(deploy.fetch("commit"))
     )
-  }
+  end
 
   expect(feature_audit_page.deploys).to match_array(expected_deploys)
 end
 
 Then 'the builds' do |table|
-  expected_builds = table.hashes.map {|build|
+  expected_builds = table.hashes.map do |build|
     Sections::BuildSection.new(
       source: build.fetch("source"),
       status: build.fetch("status"),
       version: @repo.commit_for_pretend_version(build.fetch("commit")),
     )
-  }
+  end
 
   expect(feature_audit_page.builds).to match_array(expected_builds)
 end
 
-Then 'the tickets "$tickets"' do |tickets_list|
-  tickets = argument_array(tickets_list)
-  expect(feature_audit_page.tickets).to match_array(tickets)
+Then 'the tickets' do |table|
+  expected_tickets = table.hashes.map do |ticket|
+    Sections::TicketSection.new(
+      key: ticket.fetch("key"),
+      summary: ticket.fetch("summary")
+    )
+  end
+
+  expect(feature_audit_page.tickets).to match_array(expected_tickets)
 end

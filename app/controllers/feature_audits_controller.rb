@@ -5,6 +5,9 @@ class FeatureAuditsController < ApplicationController
       from: clean_params[:from],
       to:   clean_params[:to]
     )
+
+    projection.apply_all(Event.all)
+
     @authors = projection.authors
     @deploys = projection.deploys
     @tickets = projection.tickets

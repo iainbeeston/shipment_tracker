@@ -8,6 +8,10 @@ class FeatureAuditProjection
     @git_repository = git_repository
   end
 
+  def apply_all(events)
+    events.each { |e| apply(e) }
+  end
+
   def authors
     commits.map(&:author_name).uniq
   end
@@ -27,16 +31,20 @@ class FeatureAuditProjection
     CircleCiEvent.find_all_for_versions(shas) + JenkinsEvent.find_all_for_versions(shas)
   end
 
-  # Returns a list of JIRA tickets extracted from the commit messages. Ignores duplicates.
-  # Scans for JIRA tickets that have the format:
-  # Two or more uppercase letters, followed by a hyphen and the issue number. E.g. BAM-123
   def tickets
-    commits.map { |commit| extract_tickets(commit.message) }.flatten.uniq
+    @tickets ||= Set.new
   end
 
   private
 
   attr_reader :app_name, :from, :to, :git_repository
+
+  def apply(event)
+    case event
+    when JiraEvent
+      tickets.add(Ticket.from_jira_event(event)) if expected_tickets.include?(event.key)
+    end
+  end
 
   def commits
     @commits ||= git_repository.commits_for(
@@ -54,6 +62,10 @@ class FeatureAuditProjection
     DeployEvent.deploys_for_app(app_name).select { |deploy|
       shas.include?(deploy.details['version'])
     }
+  end
+
+  def expected_tickets
+    @expected_tickets ||= commits.map { |commit| extract_tickets(commit.message) }.flatten.uniq
   end
 
   def extract_tickets(message)

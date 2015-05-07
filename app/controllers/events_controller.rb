@@ -11,6 +11,7 @@ class EventsController < ActionController::Metal
       'deploy'   => DeployEvent,
       'circleci' => CircleCiEvent,
       'jenkins'  => JenkinsEvent,
+      'jira'     => JiraEvent,
     }.fetch(params[:type])
   end
 end

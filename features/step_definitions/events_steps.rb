@@ -42,7 +42,7 @@ end
 
 Given 'these tickets are created' do |table|
   table.hashes.each do |hash|
-    payload = FactoryGirl.build(:jira_event, hash.slice('id', 'title')).details
+    payload = FactoryGirl.build(:jira_event, hash.slice('key', 'summary')).details
     post_json '/events/jira', payload
   end
 end

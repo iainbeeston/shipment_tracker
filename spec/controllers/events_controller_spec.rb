@@ -40,6 +40,20 @@ describe EventsController do
         expect(response).to have_http_status(:success)
       end
     end
+
+    context "/jira with valid JSON" do
+      let(:route_params) { { type: 'jira' } }
+
+      it { should route(:post, '/events/jira').to(action: :create, type: 'jira') }
+
+      it "saves an event object with correct details" do
+        post :create, route_params.merge('issue' => { 'key' => 'JIRA-123' }), format: :json
+
+        expect(JiraEvent.last.details).to eql('issue' => { 'key' => 'JIRA-123' })
+        expect(response).to have_http_status(:success)
+      end
+    end
+
     context "/other with valid JSON" do
       let(:route_params) { { type: 'other' } }
 
