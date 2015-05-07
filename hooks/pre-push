@@ -1,6 +1,11 @@
 #!/usr/bin/env ruby
 $LOAD_PATH.unshift File.expand_path('../..', File.realpath(__FILE__))
 
+remote_name, remote_address = ARGV
+local_ref, local_sha1, remote_ref, remote_sha1 = STDIN.read.split
+
+exit 0 unless remote_ref == 'refs/heads/master'
+
 require 'rake'
 load 'Rakefile'
 
