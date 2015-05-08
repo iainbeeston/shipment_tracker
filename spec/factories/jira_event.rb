@@ -27,7 +27,7 @@ FactoryGirl.define do
           },
         },
         'changelog' => {
-          'items'=> change_log_items
+          'items' => change_log_items
         },
       }
     }
@@ -39,17 +39,17 @@ FactoryGirl.define do
     end
 
     trait :in_progress do
-      change_log_items [{'field'=>'status', 'toString'=>'In Progress'}]
+      change_log_items [{ 'field' => 'status', 'toString' => 'In Progress' }]
       status 'In Progress'
     end
 
     trait :ready_for_review do
-      change_log_items [{'field'=>'status', 'toString'=>'Ready For Review'}]
+      change_log_items [{ 'field' => 'status', 'toString' => 'Ready For Review' }]
       status 'Ready For Review'
     end
 
     trait :done do
-      change_log_items [{'field'=>'status', 'toString'=>'Done'}]
+      change_log_items [{ 'field' => 'status', 'toString' => 'Done' }]
       status 'Done'
     end
   end
