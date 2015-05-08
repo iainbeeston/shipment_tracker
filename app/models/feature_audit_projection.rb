@@ -6,6 +6,7 @@ class FeatureAuditProjection
     @from = from
     @to = to
     @git_repository = git_repository
+    @tickets_table = {}
   end
 
   def apply_all(events)
@@ -15,8 +16,7 @@ class FeatureAuditProjection
   def apply(event)
     case event
     when JiraEvent
-      ticket = Ticket.from_jira_event(event)
-      tickets_table[ticket.key] = ticket if expected_ticket_keys.include?(ticket.key)
+      update_ticket_from_jira_event(event) if expected_ticket_keys.include?(event.key)
     end
   end
 
@@ -40,16 +40,12 @@ class FeatureAuditProjection
   end
 
   def tickets
-    tickets_table.values
+    @tickets_table.values
   end
 
   private
 
   attr_reader :app_name, :from, :to, :git_repository
-
-  def tickets_table
-    @tickets_table ||= {}
-  end
 
   def commits
     @commits ||= git_repository.commits_for(
@@ -75,5 +71,23 @@ class FeatureAuditProjection
 
   def extract_ticket_keys(message)
     message.scan(/(?<=\b)[A-Z]{2,}-\d+(?=\b)/)
+  end
+
+  def update_ticket_from_jira_event(jira_event)
+    new_attributes = {
+      key: jira_event.key,
+      summary: jira_event.summary,
+      status: jira_event.status,
+    }
+    new_attributes[:approver_email] = jira_event.user_email if jira_event.status_changed_to?('Done')
+
+    update_ticket(jira_event.key) do |ticket|
+      ticket.update_attributes(new_attributes)
+    end
+  end
+
+  def update_ticket(key, &block)
+    ticket = @tickets_table.fetch(key, Ticket.new)
+    @tickets_table[key] = block.call(ticket)
   end
 end

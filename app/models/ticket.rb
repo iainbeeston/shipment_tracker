@@ -5,9 +5,10 @@ class Ticket
     attribute :key, String
     attribute :summary, String
     attribute :status, String
+    attribute :approver_email, String
   end
 
-  def self.from_jira_event(jira_event)
-    new(key: jira_event.key, summary: jira_event.summary, status: jira_event.status)
+  def update_attributes(new_attributes)
+    Ticket.new(attributes.merge(new_attributes))
   end
 end
