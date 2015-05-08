@@ -29,7 +29,6 @@ class FeatureAuditProjection
       {
         server: deploy['server'],
         version: deploy['version'],
-        deployed_at: Time.at(deploy['deployed_at']).strftime("%F %H:%M"),
         deployed_by: deploy['deployed_by'],
       }
     end

@@ -37,7 +37,7 @@ module Support
 
     def commit_for_pretend_version(pretend_version)
       commit = commits.find { |c| c.pretend_version == pretend_version }
-      fail "Commit not found for #{c.pretend_version}. Commits available: #{commits.inspect}" unless commit
+      fail "Commit not found for #{pretend_version}. Commits available: #{commits.inspect}" unless commit
       commit.version
     end
 

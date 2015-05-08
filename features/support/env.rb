@@ -59,6 +59,3 @@ end
 Cucumber::Rails::Database.javascript_strategy = :truncation
 
 FactoryGirl.find_definitions
-
-require 'support/factory_helpers'
-World(Support::FactoryHelpers)

@@ -1,33 +1,17 @@
-When 'I compare the beginning with the last commit for "$name"' do |name|
+When 'I compare commit "$ver1" with commit "$ver2" for "$application"' do |ver1, ver2, application|
+  git_commit_1 = ver1.start_with?("#") ? @repo.commit_for_pretend_version(ver1) : ver1
+  git_commit_2 = ver2.start_with?("#") ? @repo.commit_for_pretend_version(ver2) : ver2
+
   feature_audit_page.request(
-    project_name: name,
-    from: nil,
-    to: @repo.commits.last.version
+    project_name: application,
+    from: git_commit_1,
+    to: git_commit_2
   )
 end
 
-When 'I compare the first commit with the fourth commit for "$name"' do |name|
-  feature_audit_page.request(
-    project_name: name,
-    from: @repo.commits.fetch(0).version,
-    to: @repo.commits.fetch(3).version
-  )
-end
-
-When 'I compare the second commit with the fourth commit for "$name"' do |name|
-  feature_audit_page.request(
-    project_name: name,
-    from: @repo.commits.fetch(1).version,
-    to: @repo.commits.fetch(3).version
-  )
-end
-
-When 'I compare the commit "$commit" with the second commit for "$name"' do |commit, name|
-  feature_audit_page.request(
-    project_name: name,
-    from: commit,
-    to: @repo.commits.fetch(1).version
-  )
+Then 'I should only see the authors:' do |authors_table|
+  authors = authors_table.hashes.map { |row| row['author'] }
+  expect(feature_audit_page.authors).to match_array(authors)
 end
 
 Then 'I should only see the authors "$authors"' do |authors_list|
@@ -40,7 +24,6 @@ Then 'the deploys' do |table|
   expected_deploys = table.hashes.map do |deploy|
     Sections::DeploySection.new(
       server: deploy.fetch("server"),
-      deployed_at: deploy.fetch("deployed_at"),
       deployed_by: deploy.fetch("deployed_by"),
       version: @repo.commit_for_pretend_version(deploy.fetch("commit"))
     )
