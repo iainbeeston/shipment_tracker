@@ -16,6 +16,7 @@ group :development do
   gem 'guard-rspec'
   gem 'guard-cucumber'
   gem 'terminal-notifier-guard'
+  gem 'pry-rails'
 end
 
 group :development, :test do
