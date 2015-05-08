@@ -12,6 +12,10 @@ gem 'virtus'
 
 group :development do
   gem 'spring'
+  gem 'guard'
+  gem 'guard-rspec'
+  gem 'guard-cucumber'
+  gem 'terminal-notifier-guard'
 end
 
 group :development, :test do
