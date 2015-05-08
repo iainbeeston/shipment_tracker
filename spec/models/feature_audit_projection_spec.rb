@@ -14,7 +14,7 @@ RSpec.describe FeatureAuditProjection do
   end
 
   describe "#apply_all" do
-    let(:events) { jira_event_keys.map { |key| build(:jira_event, key: key) } }
+    let(:events) { jira_event_keys.map { |key| build(:jira_event, ticket_attributes(key: key)) } }
     let(:commits) { commit_messages.map { |message| build(:git_commit, message: message) } }
 
     before do
@@ -30,9 +30,9 @@ RSpec.describe FeatureAuditProjection do
       projection.apply_all(events)
 
       expect(projection.tickets).to match_array([
-        Ticket.new(key: 'JIRA-123'),
-        Ticket.new(key: 'JIRA-456'),
-        Ticket.new(key: 'JIRA-789'),
+        ticket(key: 'JIRA-123'),
+        ticket(key: 'JIRA-456'),
+        ticket(key: 'JIRA-789'),
       ])
     end
 
@@ -43,7 +43,7 @@ RSpec.describe FeatureAuditProjection do
       it "ignores the commit messages" do
         projection.apply_all(events)
 
-        expect(projection.tickets).to match_array([Ticket.new(key: 'JIRA-123')])
+        expect(projection.tickets).to match_array([ticket(key: 'JIRA-123')])
       end
     end
 
@@ -54,7 +54,7 @@ RSpec.describe FeatureAuditProjection do
       it "ignores the commit messages" do
         projection.apply_all(events)
 
-        expect(projection.tickets).to match_array([Ticket.new(key: 'JIRA-123')])
+        expect(projection.tickets).to match_array([ticket(key: 'JIRA-123')])
       end
     end
 
@@ -65,7 +65,7 @@ RSpec.describe FeatureAuditProjection do
       it "ignores the commit messages" do
         projection.apply_all(events)
 
-        expect(projection.tickets).to match_array([Ticket.new(key: 'JIRA-123')])
+        expect(projection.tickets).to match_array([ticket(key: 'JIRA-123')])
       end
     end
 
@@ -88,5 +88,13 @@ RSpec.describe FeatureAuditProjection do
         expect(projection.tickets.size).to eql(1)
       end
     end
+  end
+
+  def ticket_attributes(key:, summary: 'summary', status: 'To Do')
+    { key: key, summary: summary, status: status }
+  end
+
+  def ticket(opts)
+    Ticket.new(ticket_attributes(opts))
   end
 end
