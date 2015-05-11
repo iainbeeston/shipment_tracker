@@ -1,5 +1,13 @@
 class DeployEvent < Event
-  def self.deploys_for_app(app_name)
-    where("details ->> 'app_name' = '#{app_name}'")
+  def server
+    details['server']
+  end
+
+  def version
+    details['version']
+  end
+
+  def deployed_by
+    details['deployed_by']
   end
 end

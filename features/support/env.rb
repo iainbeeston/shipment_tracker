@@ -59,3 +59,7 @@ end
 Cucumber::Rails::Database.javascript_strategy = :truncation
 
 FactoryGirl.find_definitions
+World(FactoryGirl::Syntax::Methods)
+
+require 'rack/test'
+World(Rack::Test::Methods)

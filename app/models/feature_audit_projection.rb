@@ -1,12 +1,15 @@
 require 'git_repository'
 
 class FeatureAuditProjection
+  attr_reader :deploys
+
   def initialize(app_name:, from:, to:, git_repository: GitRepository)
     @app_name = app_name
     @from = from
     @to = to
     @git_repository = git_repository
     @tickets_table = {}
+    @deploys = []
   end
 
   def apply_all(events)
@@ -17,21 +20,13 @@ class FeatureAuditProjection
     case event
     when JiraEvent
       update_ticket_from_jira_event(event) if expected_ticket_keys.include?(event.key)
+    when DeployEvent
+      @deploys << deploy_from_event(event) if shas.include?(event.details['version'])
     end
   end
 
   def authors
     commits.map(&:author_name).uniq
-  end
-
-  def deploys
-    deploys_for_app.map(&:details).map do |deploy|
-      {
-        server: deploy['server'],
-        version: deploy['version'],
-        deployed_by: deploy['deployed_by'],
-      }
-    end
   end
 
   def builds
@@ -58,12 +53,6 @@ class FeatureAuditProjection
     commits.map(&:id)
   end
 
-  def deploys_for_app
-    DeployEvent.deploys_for_app(app_name).select { |deploy|
-      shas.include?(deploy.details['version'])
-    }
-  end
-
   def expected_ticket_keys
     @expected_ticket_keys ||= commits.map { |commit| extract_ticket_keys(commit.message) }.flatten.uniq
   end
@@ -88,5 +77,11 @@ class FeatureAuditProjection
   def update_ticket(key, &block)
     ticket = @tickets_table.fetch(key, Ticket.new)
     @tickets_table[key] = block.call(ticket)
+  end
+
+  def deploy_from_event(deploy_event)
+    Deploy.new(server: deploy_event.server,
+               version: deploy_event.version,
+               deployed_by: deploy_event.deployed_by)
   end
 end

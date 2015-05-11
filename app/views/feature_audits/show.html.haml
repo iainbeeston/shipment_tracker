@@ -41,13 +41,15 @@
   %table.table.table-striped
     %thead
       %tr
-        - @deploys.first.try(:each_key) do |key|
-          %th= key
+        %th Server
+        %th Software Version
+        %th Deployed by
     %tbody
       - @deploys.each do |deploy|
         %tr.deploy
-          - deploy.each_value do |value|
-            %td= value
+          %td= deploy.server
+          %td= deploy.version
+          %td= deploy.deployed_by
 
 - if @builds.present?
   %h2 Builds
