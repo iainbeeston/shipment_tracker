@@ -26,8 +26,7 @@ class JiraEvent < Event
   private
 
   def status_changed?
-    details.fetch('changelog').fetch('items').any? do |item|
-      item['field'] == 'status'
-    end
+    changelog = details.fetch('changelog', 'items' => [])
+    changelog.fetch('items').any? { |item| item['field'] == 'status' }
   end
 end

@@ -10,28 +10,27 @@ FactoryGirl.define do
       user_email 'joe.bloggs@example.com'
       status 'To Do'
       updated "2015-05-07T15:24:34.957+0100"
-      change_log_items []
+
+      default_details do
+        {
+            'user' => {
+                'displayName' => display_name,
+                'emailAddress' => user_email
+            },
+            'issue' => {
+                'key' => key,
+                'fields' => {
+                    'summary' => summary,
+                    'status' => { 'name' => status }
+                },
+                'updated' => updated
+            },
+        }
+      end
+      changelog_details({})
     end
 
-    details {
-      {
-        'user' => {
-          'displayName' => display_name,
-          'emailAddress' => user_email
-        },
-        'issue' => {
-          'key' => key,
-          'fields' => {
-            'summary' => summary,
-            'status' => { 'name' => status }
-          },
-          'updated' => updated
-        },
-        'changelog' => {
-          'items' => change_log_items
-        },
-      }
-    }
+    details { default_details.merge(changelog_details) }
 
     initialize_with { new(attributes) }
 
@@ -40,17 +39,29 @@ FactoryGirl.define do
     end
 
     trait :in_progress do
-      change_log_items [{ 'field' => 'status', 'toString' => 'In Progress' }]
+      changelog_details(
+        'changelog' => {
+          'items' => [{ 'field' => 'status', 'toString' => 'In Progress' }]
+        }
+      )
       status 'In Progress'
     end
 
     trait :ready_for_review do
-      change_log_items [{ 'field' => 'status', 'toString' => 'Ready For Review' }]
+      changelog_details(
+        'changelog' => {
+          'items' => [{ 'field' => 'status', 'toString' => 'Ready For Review' }]
+        }
+      )
       status 'Ready For Review'
     end
 
     trait :done do
-      change_log_items [{ 'field' => 'status', 'toString' => 'Done' }]
+      changelog_details(
+        'changelog' => {
+          'items' => [{ 'field' => 'status', 'toString' => 'Done' }]
+        }
+      )
       status 'Done'
     end
   end

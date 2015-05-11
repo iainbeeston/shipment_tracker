@@ -143,7 +143,11 @@ RSpec.describe FeatureAuditProjection do
             key: 'JIRA-1',
             user_email: 'user_who_changed_description@foo.io',
             updated: "2015-07-08T16:14:38.123+0100",
-            change_log_items: [{ 'field' => 'description', 'toString' => 'New description' }]
+            changelog_details: {
+              'items' => {
+                'changelog' => [{ 'field' => 'description', 'toString' => 'New description' }]
+              }
+            }
           )
         )
 
