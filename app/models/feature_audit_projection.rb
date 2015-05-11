@@ -1,7 +1,7 @@
 require 'git_repository'
 
 class FeatureAuditProjection
-  attr_reader :deploys
+  attr_reader :deploys, :builds
 
   def initialize(app_name:, from:, to:, git_repository: GitRepository)
     @app_name = app_name
@@ -10,6 +10,7 @@ class FeatureAuditProjection
     @git_repository = git_repository
     @tickets_table = {}
     @deploys = []
+    @builds = []
   end
 
   def apply_all(events)
@@ -19,18 +20,16 @@ class FeatureAuditProjection
   def apply(event)
     case event
     when JiraEvent
-      update_ticket_from_jira_event(event) if expected_ticket_keys.include?(event.key)
+      update_ticket_from_jira_event(event)
     when DeployEvent
-      @deploys << deploy_from_event(event) if shas.include?(event.details['version'])
+      record_deploy(event)
+    when CircleCiEvent, JenkinsEvent
+      record_build(event)
     end
   end
 
   def authors
     commits.map(&:author_name).uniq
-  end
-
-  def builds
-    CircleCiEvent.find_all_for_versions(shas) + JenkinsEvent.find_all_for_versions(shas)
   end
 
   def tickets
@@ -62,6 +61,8 @@ class FeatureAuditProjection
   end
 
   def update_ticket_from_jira_event(jira_event)
+    return unless expected_ticket_keys.include?(jira_event.key)
+
     new_attributes = {
       key: jira_event.key,
       summary: jira_event.summary,
@@ -83,5 +84,17 @@ class FeatureAuditProjection
     Deploy.new(server: deploy_event.server,
                version: deploy_event.version,
                deployed_by: deploy_event.deployed_by)
+  end
+
+  def record_deploy(deploy_event)
+    @deploys << deploy_from_event(deploy_event) if shas.include?(deploy_event.details['version'])
+  end
+
+  def record_build(build_event)
+    @builds << build_from_event(build_event) if shas.include?(build_event.version)
+  end
+
+  def build_from_event(build_event)
+    Build.new(source: build_event.source, status: build_event.status, version: build_event.version)
   end
 end

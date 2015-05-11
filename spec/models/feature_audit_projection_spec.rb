@@ -20,8 +20,8 @@ RSpec.describe FeatureAuditProjection do
   end
 
   describe 'deploys projection' do
-    let(:commit_versions) { %w(middle_commit another_commit) }
     let(:commits) { commit_versions.map { |version| build(:git_commit, id: version) } }
+    let(:commit_versions) { %w(middle_commit another_commit) }
 
     it 'builds the list of deploys' do
       events = [
@@ -145,6 +145,27 @@ RSpec.describe FeatureAuditProjection do
 
         expect(projection.tickets.first.approver_email).to eq('approver@foo.io')
       end
+    end
+  end
+
+  describe 'builds projection' do
+    let(:commits) { commit_versions.map { |version| build(:git_commit, id: version) } }
+    let(:commit_versions) { %w(middle_commit another_commit) }
+
+    it 'builds the list of builds' do
+      events = [
+        build(:circle_ci_event, success?: true, version: 'a_commit'),
+        build(:circle_ci_event, success?: true, version: 'another_commit'),
+        build(:jenkins_event, success?: false, version: 'another_commit'),
+        build(:jenkins_event, success?: false, version: 'a_commit'),
+      ]
+
+      projection.apply_all(events)
+
+      expect(projection.builds).to match_array([
+        Build.new(source: 'CircleCi', status: 'success', version: 'another_commit'),
+        Build.new(source: 'Jenkins', status: 'failed', version: 'another_commit'),
+      ])
     end
   end
 end
