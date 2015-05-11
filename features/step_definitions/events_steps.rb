@@ -31,8 +31,8 @@ Given 'CircleCi passes for commit "$version"' do |version|
   post_json '/events/circleci', payload
 end
 
-Given 'ticket "$key" is approved' do |jira_key|
-  event = FactoryGirl.build(:jira_event, :done, @tickets.fetch(jira_key))
+Given 'ticket "$key" is approved by "$approver_email"' do |jira_key, approver_email|
+  event = FactoryGirl.build(:jira_event, :done, @tickets.fetch(jira_key).merge(user_email: approver_email))
   post_json '/events/jira', event.details
 end
 

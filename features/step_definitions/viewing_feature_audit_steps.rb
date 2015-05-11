@@ -49,7 +49,8 @@ Then 'the tickets' do |table|
     Sections::TicketSection.new(
       key: ticket.fetch("key"),
       summary: ticket.fetch("summary"),
-      status: ticket.fetch("status")
+      status: ticket.fetch("status"),
+      approver_email: ticket.fetch("approver email")
     )
   end
 
