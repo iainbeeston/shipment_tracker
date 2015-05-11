@@ -28,6 +28,7 @@
         %th summary
         %th status
         %th approver email
+        %th approved at
     %tbody
       - @tickets.each do |ticket|
         %tr.ticket
@@ -35,6 +36,7 @@
           %td= ticket.summary
           %td= ticket.status
           %td= ticket.approver_email
+          %td= ticket.approved_at.utc
 
 - if @deploys.present?
   %h2 Deploys

@@ -68,7 +68,10 @@ class FeatureAuditProjection
       summary: jira_event.summary,
       status: jira_event.status,
     }
-    new_attributes[:approver_email] = jira_event.user_email if jira_event.status_changed_to?('Done')
+
+    if jira_event.status_changed_to?('Done')
+      new_attributes.merge!(approver_email: jira_event.user_email, approved_at: jira_event.updated)
+    end
 
     update_ticket(jira_event.key) do |ticket|
       ticket.update_attributes(new_attributes)

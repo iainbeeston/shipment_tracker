@@ -27,8 +27,8 @@ Given 'CircleCi passes for commit "$version"' do |version|
   post_json '/events/circleci', payload
 end
 
-Given 'ticket "$key" is approved by "$approver_email"' do |jira_key, approver_email|
-  event = build(:jira_event, :done, @tickets.fetch(jira_key).merge(user_email: approver_email))
+Given 'ticket "$key" is approved by "$approver_email" at "$time"' do |jira_key, approver_email, time|
+  event = build(:jira_event, :done, @tickets.fetch(jira_key).merge(user_email: approver_email, updated: time))
   post_json '/events/jira', event.details
 end
 

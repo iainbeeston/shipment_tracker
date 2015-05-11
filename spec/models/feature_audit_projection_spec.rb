@@ -128,10 +128,13 @@ RSpec.describe FeatureAuditProjection do
 
       it 'records the approver' do
         projection.apply(build(:jira_event, :to_do, key: 'JIRA-1'))
-        projection.apply(build(:jira_event, :done, key: 'JIRA-1', user_email: 'approver@foo.io'))
+        projection.apply(build(:jira_event, :done, key: 'JIRA-1',
+                                                   user_email: 'approver@foo.io',
+                                                   updated: "2015-06-07T15:24:34.957+0100"))
         expect(projection.tickets.first.status).to eq('Done')
 
         expect(projection.tickets.first.approver_email).to eq('approver@foo.io')
+        expect(projection.tickets.first.approved_at).to eq(Time.parse("2015-06-07T15:24:34.957+0100"))
 
         projection.apply(
           build(
@@ -139,11 +142,13 @@ RSpec.describe FeatureAuditProjection do
             :done,
             key: 'JIRA-1',
             user_email: 'user_who_changed_description@foo.io',
+            updated: "2015-07-08T16:14:38.123+0100",
             change_log_items: [{ 'field' => 'description', 'toString' => 'New description' }]
           )
         )
 
         expect(projection.tickets.first.approver_email).to eq('approver@foo.io')
+        expect(projection.tickets.first.approved_at).to eq(Time.parse("2015-06-07T15:24:34.957+0100"))
       end
     end
   end

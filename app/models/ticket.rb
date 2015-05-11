@@ -6,6 +6,7 @@ class Ticket
     attribute :summary, String
     attribute :status, String
     attribute :approver_email, String
+    attribute :approved_at, Time
   end
 
   def update_attributes(new_attributes)

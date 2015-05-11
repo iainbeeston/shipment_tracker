@@ -1,8 +1,4 @@
 class JiraEvent < Event
-  # def self.find_all_for_versions(versions)
-  #   where("details -> 'payload' ->> 'vcs_revision' in (?)", versions)
-  # end
-
   def key
     details.fetch('issue').fetch('key')
   end
@@ -21,6 +17,10 @@ class JiraEvent < Event
 
   def status_changed_to?(final_status)
     status_changed? && status == final_status
+  end
+
+  def updated
+    details.fetch('issue').fetch('updated')
   end
 
   private
