@@ -36,7 +36,7 @@
           %td= ticket.summary
           %td= ticket.status
           %td= ticket.approver_email
-          %td= ticket.approved_at.utc
+          %td= ticket.approved_at.try(:utc)
 
 - if @deploys.present?
   %h2 Deploys
