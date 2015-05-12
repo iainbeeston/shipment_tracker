@@ -70,16 +70,15 @@ class FeatureAuditProjection
   def update_ticket_from_jira_event(jira_event)
     return unless expected_ticket_keys.include?(jira_event.key)
 
-    new_attributes = {
-      key: jira_event.key,
-      summary: jira_event.summary,
-      status: jira_event.status,
-    }
+    new_attributes = { key: jira_event.key, summary: jira_event.summary, status: jira_event.status }
 
-    if jira_event.status_changed_to?('Done')
-      new_attributes.merge!(approver_email: jira_event.user_email, approved_at: jira_event.updated)
-    else
-      new_attributes.merge!(approver_email: nil, approved_at: nil)
+    if jira_event.status_changed?
+      approver_attributes = if jira_event.status == 'Done'
+                              { approver_email: jira_event.user_email, approved_at: jira_event.updated }
+                            else
+                              { approver_email: nil, approved_at: nil }
+                            end
+      new_attributes.merge!(approver_attributes)
     end
 
     update_ticket(jira_event.key) do |ticket|

@@ -33,6 +33,11 @@ FactoryGirl.define do
     initialize_with { new(attributes) }
 
     trait :to_do do
+      changelog_details(
+        'changelog' => {
+          'items' => [{ 'field' => 'status', 'toString' => 'To Do' }]
+        }
+      )
       status 'To Do'
     end
 
