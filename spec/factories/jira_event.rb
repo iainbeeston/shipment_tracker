@@ -15,15 +15,15 @@ FactoryGirl.define do
         {
             'user' => {
                 'displayName' => display_name,
-                'emailAddress' => user_email
+                'emailAddress' => user_email,
             },
             'issue' => {
                 'key' => key,
                 'fields' => {
                     'summary' => summary,
-                    'status' => { 'name' => status }
+                    'status' => { 'name' => status },
+                    'updated' => updated,
                 },
-                'updated' => updated
             },
         }
       end

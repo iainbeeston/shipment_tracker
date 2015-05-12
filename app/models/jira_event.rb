@@ -20,7 +20,7 @@ class JiraEvent < Event
   end
 
   def updated
-    details.fetch('issue').fetch('updated')
+    details.fetch('issue').fetch('fields').fetch('updated')
   end
 
   private
