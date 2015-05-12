@@ -2,13 +2,7 @@ class FeatureAuditsController < ApplicationController
   def show
     @return_to = request.original_fullpath
 
-    projection = FeatureAuditProjection.new(
-      app_name: app_name,
-      from: clean_params[:from],
-      to:   clean_params[:to]
-    )
-
-    projection.apply_all(Event.in_order_of_creation)
+    projection = build_projection(Event.in_order_of_creation)
 
     @to_version = projection.to
     @authors = projection.authors
@@ -25,6 +19,16 @@ class FeatureAuditsController < ApplicationController
   end
 
   private
+
+  def build_projection(events)
+    FeatureAuditProjection.new(
+      app_name: app_name,
+      from: clean_params[:from],
+      to: clean_params[:to]
+    ).tap do |projection|
+      projection.apply_all(events)
+    end
+  end
 
   def app_name
     clean_params[:id]
