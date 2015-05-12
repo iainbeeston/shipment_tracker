@@ -3,23 +3,22 @@
 = form_tag(feature_audit_path(params[:id]), method: "get", class: 'form-horizontal') do
   .form-group.row
     = label_tag(:to, "To:", class: 'col-md-1 control-label')
-    .col-md-2
+    .col-md-4
       = text_field_tag(:to, "", class: 'form-control')
   .form-group.row
     = label_tag(:from, "From:", class: 'col-md-1 control-label')
-    .col-md-2
+    .col-md-4
       = text_field_tag(:from, "", class: 'form-control')
   .row
-    .col-md-3
+    .col-md-5
       = submit_tag("Submit", class: "btn btn-primary pull-right")
 
-- if @authors
+- if @valid
   %h2 Authors
   %ul
   - @authors.each do |author|
     %li.author=author
 
-- if @tickets.present?
   %h2 Tickets
   %table.table.table-striped
     %thead
@@ -38,7 +37,6 @@
           %td= ticket.approver_email
           %td= ticket.approved_at.try(:utc)
 
-- if @deploys.present?
   %h2 Deploys
   %table.table.table-striped
     %thead
@@ -53,7 +51,6 @@
           %td= deploy.version
           %td= deploy.deployed_by
 
-- if @builds.present?
   %h2 Builds
   %table.table.table-striped
     %thead
@@ -67,3 +64,30 @@
           %td= build.source
           %td= build.status
           %td= build.version
+
+  %h2 Comments
+  %table.table.table-striped
+    %thead
+      %tr
+        %th Name
+        %th Message
+    %tbody
+      - @comments.each do |comment|
+        %tr.comment
+          %td= comment.name
+          %td= comment.message
+
+  = form_tag(events_path(type: 'comments'), class: 'form-horizontal') do
+    = hidden_field_tag(:version, @to_version)
+    = hidden_field_tag(:return_to, @return_to)
+    .form-group.row
+      = label_tag(:name, "Name:", class: 'col-md-1 control-label')
+      .col-md-4
+        = text_field_tag(:name, "", class: 'form-control')
+    .form-group.row
+      = label_tag(:message, "Message:", class: 'col-md-1 control-label')
+      .col-md-4
+        = text_area_tag(:message, "", class: 'form-control')
+    .row
+      .col-md-5
+        = submit_tag("Comment", class: "btn btn-primary pull-right")

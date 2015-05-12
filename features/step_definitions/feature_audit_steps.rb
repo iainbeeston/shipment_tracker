@@ -9,15 +9,28 @@ When 'I compare commit "$ver1" with commit "$ver2" for "$application"' do |ver1,
   )
 end
 
+Given 'I am on the feature audit page for the last commit' do
+  feature_audit_page.request(
+    project_name: @application,
+    from: @repo.commits.first.version,
+    to: @repo.commits.last.version
+  )
+end
+
 Then 'I should only see the authors:' do |authors_table|
   authors = authors_table.hashes.map { |row| row['author'] }
   expect(feature_audit_page.authors).to match_array(authors)
 end
 
-Then 'I should only see the authors "$authors"' do |authors_list|
-  authors = argument_array(authors_list)
-  expect(error_message).to_not be_present, "Did not expect any errors, but got: #{error_message.text}"
-  expect(feature_audit_page.authors).to match_array(authors)
+Then 'I should see the comments' do |table|
+  expected_comments = table.hashes.map do |comment|
+    Sections::CommentSection.new(
+      message: comment.fetch("message"),
+      name: comment.fetch("name"),
+    )
+  end
+
+  expect(feature_audit_page.comments).to match_array(expected_comments)
 end
 
 Then 'the deploys' do |table|
@@ -56,4 +69,11 @@ Then 'the tickets' do |table|
   end
 
   expect(feature_audit_page.tickets).to match_array(expected_tickets)
+end
+
+When 'I submit a comment with message "$message" and name "$name"' do |message, name|
+  feature_audit_page.comment(
+    message: message,
+    name: name
+  )
 end

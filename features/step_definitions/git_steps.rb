@@ -1,11 +1,21 @@
 require 'support/git_repository_factory'
 
-Given 'an application called "$name"' do |name|
+def setup_application(name)
   dir = Dir.mktmpdir
   @application = name
   @repo = Support::GitRepositoryFactory.new(dir)
 
   RepositoryLocation.create(uri: "file://#{dir}", name: name)
+end
+
+Given 'an application called "$name"' do |name|
+  setup_application(name)
+end
+
+Given 'an application with some commits' do
+  setup_application('my_app')
+  @repo.create_commit(author_name: 'Adam', pretend_version: '#1')
+  @repo.create_commit(author_name: 'Eve', pretend_version: '#2')
 end
 
 Given 'a commit "$version" by "$name" is created' do |version, name|

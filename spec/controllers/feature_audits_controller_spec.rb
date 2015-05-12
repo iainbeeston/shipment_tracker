@@ -6,9 +6,12 @@ describe FeatureAuditsController do
       instance_double(
         FeatureAuditProjection,
         authors: %w(Alice Bob Mike),
+        builds: %w(some builds),
+        comments: %w(some comments),
         deploys: %w(deploy1 deploy2 deploy3),
         tickets: %w(some tickets),
-        builds: %w(some builds)
+        valid?: true,
+        to: 'xyz'
       )
     end
 
@@ -29,10 +32,14 @@ describe FeatureAuditsController do
 
       get :show, id: 'app1', from: 'abc', to: 'xyz'
 
+      expect(assigns(:to_version)).to eql('xyz')
+      expect(assigns(:valid)).to be(true)
+
       expect(assigns(:authors)).to eql(feature_audit_projection.authors)
+      expect(assigns(:builds)).to eql(feature_audit_projection.builds)
+      expect(assigns(:comments)).to eql(feature_audit_projection.comments)
       expect(assigns(:deploys)).to eql(feature_audit_projection.deploys)
       expect(assigns(:tickets)).to eql(feature_audit_projection.tickets)
-      expect(assigns(:builds)).to eql(feature_audit_projection.builds)
     end
   end
 end

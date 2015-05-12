@@ -1,7 +1,7 @@
 require 'git_repository'
 
 class FeatureAuditProjection
-  attr_reader :deploys, :builds
+  attr_reader :deploys, :builds, :comments, :from, :to
 
   def initialize(app_name:, from:, to:, git_repository: GitRepository)
     @app_name = app_name
@@ -11,6 +11,7 @@ class FeatureAuditProjection
     @tickets_table = {}
     @deploys = []
     @builds = []
+    @comments = []
   end
 
   def apply_all(events)
@@ -25,6 +26,8 @@ class FeatureAuditProjection
       record_deploy(event)
     when CircleCiEvent, JenkinsEvent
       record_build(event)
+    when CommentEvent
+      record_comment(event)
     end
   end
 
@@ -36,9 +39,13 @@ class FeatureAuditProjection
     @tickets_table.values
   end
 
+  def valid?
+    commits.any?
+  end
+
   private
 
-  attr_reader :app_name, :from, :to, :git_repository
+  attr_reader :app_name, :git_repository
 
   def commits
     @commits ||= git_repository.commits_for(
@@ -95,6 +102,10 @@ class FeatureAuditProjection
 
   def record_build(build_event)
     @builds << build_from_event(build_event) if shas.include?(build_event.version)
+  end
+
+  def record_comment(comment_event)
+    @comments << comment_event if shas.include?(comment_event.version)
   end
 
   def build_from_event(build_event)

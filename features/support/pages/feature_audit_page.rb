@@ -19,6 +19,17 @@ module Pages
       page.all('.author').map(&:text)
     end
 
+    def comment(message:, name:)
+      page.fill_in :message, with: message
+      page.fill_in :name, with: name
+      page.click_link_or_button('Comment')
+      self
+    end
+
+    def comments
+      page.all('.comment').map { |comment_line| Sections::CommentSection.from_element(comment_line) }
+    end
+
     def deploys
       page.all('.deploy').map { |deploy_line| Sections::DeploySection.from_element(deploy_line) }
     end

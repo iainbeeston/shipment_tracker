@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   get 'heartbeat', to: 'heartbeat#index'
 
   # Events
-  post 'events/:type', to: 'events#create'
+  post 'events/:type', to: 'events#create', as: 'events'
   post 'deploys', to: 'events#create', defaults: { type: 'deploy' } # Legacy while we transition
 
   # Projections
