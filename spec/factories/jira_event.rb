@@ -1,7 +1,5 @@
 FactoryGirl.define do
   factory :jira_event do
-    skip_create
-
     transient do
       sequence(:key) { |n| "JIRA-#{n}" }
       sequence(:summary) { |n| "Implement Autoloan #{n}" }

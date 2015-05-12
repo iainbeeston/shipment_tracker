@@ -1,7 +1,5 @@
 FactoryGirl.define do
   factory :jenkins_event do
-    skip_create
-
     transient do
       success? true
       sequence(:version)

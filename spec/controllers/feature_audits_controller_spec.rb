@@ -24,7 +24,7 @@ describe FeatureAuditsController do
         to:   'xyz'
       ).and_return(feature_audit_projection)
 
-      allow(Event).to receive(:all).and_return(events)
+      allow(Event).to receive(:in_order_of_creation).and_return(events)
     end
 
     it "shows a feature audit" do

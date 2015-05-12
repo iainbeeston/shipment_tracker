@@ -1,7 +1,5 @@
 FactoryGirl.define do
   factory :circle_ci_event do
-    skip_create
-
     transient do
       success? true
       sequence(:version)

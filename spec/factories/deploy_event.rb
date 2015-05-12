@@ -1,7 +1,5 @@
 FactoryGirl.define do
   factory :deploy_event do
-    skip_create
-
     transient do
       server 'prod.example.com'
       sequence(:version) { |n| "abc#{n}" }
