@@ -154,6 +154,17 @@ RSpec.describe FeatureAuditProjection do
         expect(projection.tickets.first.approver_email).to eq('approver@foo.io')
         expect(projection.tickets.first.approved_at).to eq(Time.parse("2015-06-07T15:24:34.957+0100"))
       end
+
+      context 'when the ticket is unapproved' do
+        it 'removes the approver information' do
+          projection.apply(build(:jira_event, :to_do, key: 'JIRA-1'))
+          projection.apply(build(:jira_event, :done, key: 'JIRA-1'))
+          projection.apply(build(:jira_event, :to_do, key: 'JIRA-1'))
+
+          expect(projection.tickets.first.approver_email).to be nil
+          expect(projection.tickets.first.approved_at).to be nil
+        end
+      end
     end
   end
 
