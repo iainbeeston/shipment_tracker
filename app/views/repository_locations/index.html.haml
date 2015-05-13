@@ -1,0 +1,15 @@
+= form_for(@new_repository_location) do |form|
+  = form.label(:name)
+  = form.text_field(:name)
+  = form.label(:uri)
+  = form.text_field(:uri)
+  = form.submit
+
+%table
+  %tr
+    %th Name
+    %th Uri
+  - @repository_locations.each do |repository_location|
+    %tr[repository_location]
+      %td= repository_location.name
+      %td= repository_location.uri
