@@ -23,42 +23,42 @@ Then 'I should only see the authors:' do |authors_table|
 end
 
 Then 'I should see the comments' do |table|
-  expected_comments = table.hashes.map do |comment|
+  expected_comments = table.hashes.map { |comment|
     Sections::CommentSection.new(
       message: comment.fetch("message"),
       name: comment.fetch("name"),
     )
-  end
+  }
 
   expect(feature_audit_page.comments).to match_array(expected_comments)
 end
 
 Then 'the deploys' do |table|
-  expected_deploys = table.hashes.map do |deploy|
+  expected_deploys = table.hashes.map { |deploy|
     Sections::DeploySection.new(
       server: deploy.fetch("server"),
       deployed_by: deploy.fetch("deployed_by"),
       version: @repo.commit_for_pretend_version(deploy.fetch("commit"))
     )
-  end
+  }
 
   expect(feature_audit_page.deploys).to match_array(expected_deploys)
 end
 
 Then 'the builds' do |table|
-  expected_builds = table.hashes.map do |build|
+  expected_builds = table.hashes.map { |build|
     Sections::BuildSection.new(
       source: build.fetch("source"),
       status: build.fetch("status"),
       version: @repo.commit_for_pretend_version(build.fetch("commit")),
     )
-  end
+  }
 
   expect(feature_audit_page.builds).to match_array(expected_builds)
 end
 
 Then 'the tickets' do |table|
-  expected_tickets = table.hashes.map do |ticket|
+  expected_tickets = table.hashes.map { |ticket|
     Sections::TicketSection.new(
       key: ticket.fetch("key"),
       summary: ticket.fetch("summary"),
@@ -66,7 +66,7 @@ Then 'the tickets' do |table|
       approver_email: ticket.fetch("approver email"),
       approved_at: ticket.fetch("approved at")
     )
-  end
+  }
 
   expect(feature_audit_page.tickets).to match_array(expected_tickets)
 end

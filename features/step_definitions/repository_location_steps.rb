@@ -7,9 +7,9 @@ When 'I enter "$name" and "$uri"' do |name, uri|
 end
 
 Then 'I should see the repository locations:' do |table|
-  expected_repository_locations = table.hashes.map do |line|
+  expected_repository_locations = table.hashes.map { |line|
     Sections::RepositoryLocation.new(name: line.fetch('name'), uri: line.fetch('uri'))
-  end
+  }
 
   expect(repository_location_page.repository_locations).to eq(expected_repository_locations)
 end

@@ -1,3 +1,4 @@
+# rubocop:disable Style/BlockDelimiters
 FactoryGirl.define do
   factory :jira_event do
     transient do
@@ -69,3 +70,4 @@ FactoryGirl.define do
     end
   end
 end
+# rubocop:enable Style/BlockDelimiters

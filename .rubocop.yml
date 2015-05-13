@@ -18,7 +18,8 @@ Style/StringLiterals:
   Enabled: false
 
 Style/BlockDelimiters:
-  Enabled: false
+  EnforcedStyle: semantic
+  Enabled: true
 
 Style/IndentHash:
   Enabled: false

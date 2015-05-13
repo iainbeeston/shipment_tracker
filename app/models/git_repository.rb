@@ -15,7 +15,9 @@ class GitRepository
     dir = File.join(cache_dir, "#{remote_repository.id}-#{repository_name}")
 
     repository = begin
-      Rugged::Repository.new(dir).tap { |r| r.fetch('origin') }
+      Rugged::Repository.new(dir).tap do |r|
+        r.fetch('origin')
+      end
     rescue Rugged::OSError, Rugged::RepositoryError
       Rugged::Repository.clone_at(remote_repository.uri, dir)
     end

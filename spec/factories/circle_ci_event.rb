@@ -1,3 +1,4 @@
+# rubocop:disable Style/BlockDelimiters
 FactoryGirl.define do
   factory :circle_ci_event do
     transient do
@@ -17,3 +18,4 @@ FactoryGirl.define do
     initialize_with { new(attributes) }
   end
 end
+# rubocop:enable Style/BlockDelimiters
