@@ -9,5 +9,6 @@ exit 0 unless remote_ref == 'refs/heads/master'
 require 'rake'
 load 'Rakefile'
 
-Rake::Task['spec'].invoke
-Rake::Task['cucumber'].invoke
+%w(spec cucumber rubocop).each do |task|
+  Rake::Task[task].invoke
+end
