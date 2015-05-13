@@ -8,7 +8,7 @@ FactoryGirl.define do
       display_name 'joe'
       user_email 'joe.bloggs@example.com'
       status 'To Do'
-      updated "2015-05-07T15:24:34.957+0100"
+      updated '2015-05-07T15:24:34.957+0100'
 
       default_details do
         {

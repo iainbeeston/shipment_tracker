@@ -15,16 +15,16 @@ module Support
     def initialize(dir = Dir.mktmpdir)
       @dir = dir
       @repo = Rugged::Repository.init_at(dir)
-      @repo.config['user.name'] = "Unconfigured"
-      @repo.config['user.email'] = "unconfigured@example.com"
+      @repo.config['user.name'] = 'Unconfigured'
+      @repo.config['user.email'] = 'unconfigured@example.com'
     end
 
-    def create_commit(author_name:, pretend_version: nil, message: "A new commit")
+    def create_commit(author_name:, pretend_version: nil, message: 'A new commit')
       oid = repo.write('file contents', :blob)
       index = repo.index
 
       index.read_tree(repo.head.target.tree) unless repo.empty?
-      index.add(path: "README.md", oid: oid, mode: 0100644)
+      index.add(path: 'README.md', oid: oid, mode: 0100644)
       oid = index.write_tree(repo)
 
       Rugged::Commit.create(

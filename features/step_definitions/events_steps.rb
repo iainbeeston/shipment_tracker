@@ -43,5 +43,5 @@ Given 'commit "$version" is deployed by "$name" on server "$server"' do |version
 end
 
 def post_json(url, payload)
-  post url, payload.to_json, "CONTENT_TYPE" => "application/json"
+  post url, payload.to_json, 'CONTENT_TYPE' => 'application/json'
 end

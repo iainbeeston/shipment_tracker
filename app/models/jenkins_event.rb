@@ -1,6 +1,6 @@
 class JenkinsEvent < Event
   def source
-    "Jenkins"
+    'Jenkins'
   end
 
   def status

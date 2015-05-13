@@ -1,6 +1,6 @@
 class CircleCiEvent < Event
   def source
-    "CircleCi"
+    'CircleCi'
   end
 
   def status

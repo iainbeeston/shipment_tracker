@@ -1,6 +1,6 @@
 When 'I compare commit "$ver1" with commit "$ver2" for "$application"' do |ver1, ver2, application|
-  git_commit_1 = ver1.start_with?("#") ? @repo.commit_for_pretend_version(ver1) : ver1
-  git_commit_2 = ver2.start_with?("#") ? @repo.commit_for_pretend_version(ver2) : ver2
+  git_commit_1 = ver1.start_with?('#') ? @repo.commit_for_pretend_version(ver1) : ver1
+  git_commit_2 = ver2.start_with?('#') ? @repo.commit_for_pretend_version(ver2) : ver2
 
   feature_audit_page.request(
     project_name: application,
@@ -25,8 +25,8 @@ end
 Then 'I should see the comments' do |table|
   expected_comments = table.hashes.map { |comment|
     Sections::CommentSection.new(
-      message: comment.fetch("message"),
-      name: comment.fetch("name"),
+      message: comment.fetch('message'),
+      name: comment.fetch('name'),
     )
   }
 
@@ -36,9 +36,9 @@ end
 Then 'the deploys' do |table|
   expected_deploys = table.hashes.map { |deploy|
     Sections::DeploySection.new(
-      server: deploy.fetch("server"),
-      deployed_by: deploy.fetch("deployed_by"),
-      version: @repo.commit_for_pretend_version(deploy.fetch("commit"))
+      server: deploy.fetch('server'),
+      deployed_by: deploy.fetch('deployed_by'),
+      version: @repo.commit_for_pretend_version(deploy.fetch('commit'))
     )
   }
 
@@ -48,9 +48,9 @@ end
 Then 'the builds' do |table|
   expected_builds = table.hashes.map { |build|
     Sections::BuildSection.new(
-      source: build.fetch("source"),
-      status: build.fetch("status"),
-      version: @repo.commit_for_pretend_version(build.fetch("commit")),
+      source: build.fetch('source'),
+      status: build.fetch('status'),
+      version: @repo.commit_for_pretend_version(build.fetch('commit')),
     )
   }
 
@@ -60,11 +60,11 @@ end
 Then 'the tickets' do |table|
   expected_tickets = table.hashes.map { |ticket|
     Sections::TicketSection.new(
-      key: ticket.fetch("key"),
-      summary: ticket.fetch("summary"),
-      status: ticket.fetch("status"),
-      approver_email: ticket.fetch("approver email"),
-      approved_at: ticket.fetch("approved at")
+      key: ticket.fetch('key'),
+      summary: ticket.fetch('summary'),
+      status: ticket.fetch('status'),
+      approver_email: ticket.fetch('approver email'),
+      approved_at: ticket.fetch('approved at')
     )
   }
 

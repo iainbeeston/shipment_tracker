@@ -6,7 +6,7 @@ class EventsController < ActionController::Metal
     event_type.create(details: request.request_parameters)
 
     redirect_to redirect_path if redirect_path
-    self.response_body = "ok"
+    self.response_body = 'ok'
   end
 
   private

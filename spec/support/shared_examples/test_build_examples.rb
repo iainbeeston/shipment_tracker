@@ -1,10 +1,10 @@
-shared_examples "a test build interface" do
+shared_examples 'a test build interface' do
   it { is_expected.to respond_to(:source) }
   it { is_expected.to respond_to(:version) }
   it { is_expected.to respond_to(:status) }
 end
 
-shared_examples "a test build subclass" do
+shared_examples 'a test build subclass' do
   describe '#source' do
     let(:payload) { success_payload }
     it { expect(subject.source).to eql(expected_source) }

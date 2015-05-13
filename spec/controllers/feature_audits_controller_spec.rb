@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe FeatureAuditsController do
-  describe "GET #show" do
+  describe 'GET #show' do
     let(:feature_audit_projection) do
       instance_double(
         FeatureAuditProjection,
@@ -27,7 +27,7 @@ describe FeatureAuditsController do
       allow(Event).to receive(:in_order_of_creation).and_return(events)
     end
 
-    it "shows a feature audit" do
+    it 'shows a feature audit' do
       expect(feature_audit_projection).to receive(:apply_all).with(events)
 
       get :show, id: 'app1', from: 'abc', to: 'xyz'
