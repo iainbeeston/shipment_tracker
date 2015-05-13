@@ -46,7 +46,7 @@ RSpec.describe FeatureAuditProjection do
     it 'builds the list of tickets' do
       events = [
         build(:jira_event, key: 'JIRA-1', summary: 'Start', status: 'To Do',       user_email: 'bob@foo.io'),
-        build(:jira_event, key: 'JIRA-2', summary: 'More',  status: 'In Progress', user_email: 'frank@foo.io'),
+        build(:jira_event, key: 'JIRA-2', summary: 'More',  status: 'In Progress', user_email: 'fran@foo.io'),
       ]
 
       projection.apply_all(events)

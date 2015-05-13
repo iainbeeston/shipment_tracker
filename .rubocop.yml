@@ -1,4 +1,5 @@
 AllCops:
+  RunRailsCops: true
   Exclude:
     - 'bin/**/*'
     - 'db/**/*'
@@ -12,6 +13,9 @@ Metrics/LineLength:
   Max: 110
 
 Style/Documentation:
+  Enabled: false
+
+Rails/TimeZone:
   Enabled: false
 
 Style/BlockDelimiters:
