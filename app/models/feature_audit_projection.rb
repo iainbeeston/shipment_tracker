@@ -51,7 +51,7 @@ class FeatureAuditProjection
     @commits ||= git_repository.commits_for(
       repository_name: app_name,
       from: from,
-      to: to
+      to: to,
     )
   end
 

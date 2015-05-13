@@ -11,7 +11,7 @@ FactoryGirl.define do
         'payload' => {
           'outcome' => success? ? 'success' : 'failed',
           'vcs_revision' => version,
-        }
+        },
       }
     }
 

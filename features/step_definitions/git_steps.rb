@@ -26,7 +26,7 @@ Given 'a commit "$version" by "$author" is created for ticket "$jira_key"' do |v
   @repo.create_commit(
     author_name: author,
     pretend_version: version,
-    message: "#{jira_key} work"
+    message: "#{jira_key} work",
   )
 end
 
@@ -34,6 +34,6 @@ Given 'a commit "$version" by "$name" is created with message "$message"' do |ve
   @repo.create_commit(
     author_name: name,
     pretend_version: version,
-    message: message
+    message: message,
   )
 end

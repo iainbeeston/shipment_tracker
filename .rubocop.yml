@@ -19,7 +19,9 @@ Style/BlockDelimiters:
   Enabled: true
 
 Style/TrailingComma:
-  Enabled: false
+  EnforcedStyleForSingleline: no_comma
+  EnforcedStyleForMultiline: comma
+  Enabled: true
 
 Style/AlignParameters:
   EnforcedStyle: with_fixed_indentation

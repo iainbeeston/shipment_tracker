@@ -12,8 +12,8 @@ FactoryGirl.define do
           'scm' => {
             'commit' => version,
           },
-          'status' => success? ? 'SUCCESS' : 'FAILURE'
-        }
+          'status' => success? ? 'SUCCESS' : 'FAILURE',
+        },
       }
     }
 

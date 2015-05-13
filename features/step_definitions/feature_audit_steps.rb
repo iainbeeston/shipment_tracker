@@ -5,7 +5,7 @@ When 'I compare commit "$ver1" with commit "$ver2" for "$application"' do |ver1,
   feature_audit_page.request(
     project_name: application,
     from: git_commit_1,
-    to: git_commit_2
+    to: git_commit_2,
   )
 end
 
@@ -13,7 +13,7 @@ Given 'I am on the feature audit page for the last commit' do
   feature_audit_page.request(
     project_name: @application,
     from: @repo.commits.first.version,
-    to: @repo.commits.last.version
+    to: @repo.commits.last.version,
   )
 end
 
@@ -38,7 +38,7 @@ Then 'the deploys' do |table|
     Sections::DeploySection.new(
       server: deploy.fetch('server'),
       deployed_by: deploy.fetch('deployed_by'),
-      version: @repo.commit_for_pretend_version(deploy.fetch('commit'))
+      version: @repo.commit_for_pretend_version(deploy.fetch('commit')),
     )
   }
 
@@ -64,7 +64,7 @@ Then 'the tickets' do |table|
       summary: ticket.fetch('summary'),
       status: ticket.fetch('status'),
       approver_email: ticket.fetch('approver email'),
-      approved_at: ticket.fetch('approved at')
+      approved_at: ticket.fetch('approved at'),
     )
   }
 
@@ -74,6 +74,6 @@ end
 When 'I submit a comment with message "$message" and name "$name"' do |message, name|
   feature_audit_page.comment(
     message: message,
-    name: name
+    name: name,
   )
 end

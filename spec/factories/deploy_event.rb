@@ -15,7 +15,7 @@ FactoryGirl.define do
         'version' => version,
         'app_name' => app_name,
         'deployed_at' => deployed_at,
-        'deployed_by' => deployed_by
+        'deployed_by' => deployed_by,
       }
     }
 

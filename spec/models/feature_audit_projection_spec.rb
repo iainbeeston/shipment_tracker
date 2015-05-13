@@ -9,7 +9,7 @@ RSpec.describe FeatureAuditProjection do
       app_name: 'app_name',
       from: 'a_commit',
       to: 'another_commit',
-      git_repository: git_repository
+      git_repository: git_repository,
     )
   end
 
@@ -27,14 +27,14 @@ RSpec.describe FeatureAuditProjection do
       events = [
         build(:deploy_event, server: 'pub.example.com', deployed_by: 'Alfred', version: 'a_commit'),
         build(:deploy_event, server: 'pub.example.com', deployed_by: 'Alfred', version: 'another_commit'),
-        build(:deploy_event, server: 'pub.example.com', deployed_by: 'Bob',    version: 'another_commit')
+        build(:deploy_event, server: 'pub.example.com', deployed_by: 'Bob',    version: 'another_commit'),
       ]
 
       projection.apply_all(events)
 
       expect(projection.deploys).to match_array([
         Deploy.new(server: 'pub.example.com', version: 'another_commit', deployed_by: 'Alfred'),
-        Deploy.new(server: 'pub.example.com', version: 'another_commit', deployed_by: 'Bob')
+        Deploy.new(server: 'pub.example.com', version: 'another_commit', deployed_by: 'Bob'),
       ])
     end
   end
@@ -46,14 +46,14 @@ RSpec.describe FeatureAuditProjection do
     it 'builds the list of tickets' do
       events = [
         build(:jira_event, key: 'JIRA-1', summary: 'Start', status: 'To Do',       user_email: 'bob@foo.io'),
-        build(:jira_event, key: 'JIRA-2', summary: 'More',  status: 'In Progress', user_email: 'frank@foo.io')
+        build(:jira_event, key: 'JIRA-2', summary: 'More',  status: 'In Progress', user_email: 'frank@foo.io'),
       ]
 
       projection.apply_all(events)
 
       expect(projection.tickets).to match_array([
         Ticket.new(key: 'JIRA-1', summary: 'Start', status: 'To Do',       approver_email: nil),
-        Ticket.new(key: 'JIRA-2', summary: 'More',  status: 'In Progress', approver_email: nil)
+        Ticket.new(key: 'JIRA-2', summary: 'More',  status: 'In Progress', approver_email: nil),
       ])
     end
 

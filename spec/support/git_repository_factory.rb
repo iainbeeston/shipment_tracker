@@ -29,7 +29,7 @@ module Support
 
       Rugged::Commit.create(
         repo,
-        commit_options(author_name, oid, message)
+        commit_options(author_name, oid, message),
       ).tap do |commit|
         commits.push GitCommit.new(commit, pretend_version)
       end
@@ -56,7 +56,7 @@ module Support
         commiter: author(author_name),
         message: message,
         parents: repo.empty? ? [] : [repo.head.target].compact,
-        update_ref: 'HEAD'
+        update_ref: 'HEAD',
       }
     end
 

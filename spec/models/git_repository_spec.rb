@@ -49,7 +49,7 @@ RSpec.describe GitRepository do
 
       expect(commits).to contain_exactly(
         GitCommit.new(author_name: 'b', id: commit_second, message: 'message 2'),
-        GitCommit.new(author_name: 'c', id: commit_third, message: 'message 3')
+        GitCommit.new(author_name: 'c', id: commit_third, message: 'message 3'),
       )
     end
 

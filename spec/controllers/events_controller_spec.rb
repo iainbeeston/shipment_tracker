@@ -6,7 +6,7 @@ describe EventsController do
       {
         '/my/projection?with=data' => '/my/projection?with=data',
         'http://evil.com/magic/url?with=query' => '/magic/url?with=query',
-        '/path' => '/path'
+        '/path' => '/path',
       }.each do |url, path|
         it "redirects #{url} to the #{path}" do
           post :create,

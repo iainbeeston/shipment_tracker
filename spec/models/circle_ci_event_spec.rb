@@ -14,16 +14,16 @@ RSpec.describe CircleCiEvent do
       {
         'payload' => {
           'outcome' => 'success',
-          'vcs_revision' => version
-        }
+          'vcs_revision' => version,
+        },
       }
     }
     let(:failure_payload) {
       {
         'payload' => {
           'outcome' => 'failed',
-          'vcs_revision' => version
-        }
+          'vcs_revision' => version,
+        },
       }
     }
     let(:invalid_payload) {

@@ -15,8 +15,8 @@ describe JenkinsEvent do
           'scm' => {
             'commit' => version,
           },
-          'status' => 'SUCCESS'
-        }
+          'status' => 'SUCCESS',
+        },
       }
     }
     let(:failure_payload) {
@@ -25,8 +25,8 @@ describe JenkinsEvent do
           'scm' => {
             'commit' => version,
           },
-          'status' => 'FAILURE'
-        }
+          'status' => 'FAILURE',
+        },
       }
     }
     let(:invalid_payload) {

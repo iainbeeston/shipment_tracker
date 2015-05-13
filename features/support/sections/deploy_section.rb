@@ -14,7 +14,7 @@ module Sections
       new(
         server:      values.fetch(0),
         version:     values.fetch(1),
-        deployed_by: values.fetch(2)
+        deployed_by: values.fetch(2),
       )
     end
   end

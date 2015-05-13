@@ -24,7 +24,7 @@ class FeatureAuditsController < ApplicationController
     FeatureAuditProjection.new(
       app_name: app_name,
       from: clean_params[:from],
-      to: clean_params[:to]
+      to: clean_params[:to],
     ).tap do |projection|
       projection.apply_all(events)
     end

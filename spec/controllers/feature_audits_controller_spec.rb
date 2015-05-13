@@ -11,7 +11,7 @@ describe FeatureAuditsController do
         deploys: %w(deploy1 deploy2 deploy3),
         tickets: %w(some tickets),
         valid?: true,
-        to: 'xyz'
+        to: 'xyz',
       )
     end
 
@@ -21,7 +21,7 @@ describe FeatureAuditsController do
       allow(FeatureAuditProjection).to receive(:new).with(
         app_name: 'app1',
         from: 'abc',
-        to:   'xyz'
+        to:   'xyz',
       ).and_return(feature_audit_projection)
 
       allow(Event).to receive(:in_order_of_creation).and_return(events)
