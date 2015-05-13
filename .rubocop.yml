@@ -19,7 +19,6 @@ Style/BlockDelimiters:
   Enabled: true
 
 Style/TrailingComma:
-  EnforcedStyleForSingleline: no_comma
   EnforcedStyleForMultiline: comma
   Enabled: true
 
