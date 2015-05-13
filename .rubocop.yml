@@ -18,9 +18,6 @@ Style/BlockDelimiters:
   EnforcedStyle: semantic
   Enabled: true
 
-Style/IndentHash:
-  Enabled: false
-
 Style/TrailingComma:
   Enabled: false
 

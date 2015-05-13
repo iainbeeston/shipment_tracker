@@ -12,18 +12,18 @@ FactoryGirl.define do
 
       default_details do
         {
-            'user' => {
-                'displayName' => display_name,
-                'emailAddress' => user_email,
+          'user' => {
+            'displayName' => display_name,
+            'emailAddress' => user_email,
+          },
+          'issue' => {
+            'key' => key,
+            'fields' => {
+              'summary' => summary,
+              'status' => { 'name' => status },
+              'updated' => updated,
             },
-            'issue' => {
-                'key' => key,
-                'fields' => {
-                    'summary' => summary,
-                    'status' => { 'name' => status },
-                    'updated' => updated,
-                },
-            },
+          },
         }
       end
       changelog_details({})
