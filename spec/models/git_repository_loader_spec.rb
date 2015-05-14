@@ -142,10 +142,10 @@ RSpec.describe GitRepositoryLoader do
 
           expect(username).to eq(expected_username)
 
-          expect(File.read(private_key_file)).to eq(expected_private_key)
+          expect(File.read(private_key_file)).to eq(expected_private_key + "\n")
           expect(File.stat(private_key_file)).to_not be_world_readable
 
-          expect(File.read(public_key_file)).to eq(expected_public_key)
+          expect(File.read(public_key_file)).to eq(expected_public_key + "\n")
           expect(File.stat(public_key_file)).to_not be_world_readable
         end
 
