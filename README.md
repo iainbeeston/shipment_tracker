@@ -16,6 +16,23 @@ bundle exec rake db:setup
 rake git:setup_hooks
 ```
 
+## Enabling access to repositories via SSH
+
+Ensure that `libssh2` is installed and the `rugged` gem is reinstalled. On OSX:
+
+```
+brew install libssh2
+gem pristine rugged
+```
+
+When booting server set Environment variables `SSH_USER` and `SSH_KEY`:
+
+```
+SSH_USER=git SSH_KEY='"-----BEGIN RSA PRIVATE KEY-----
+abcdefghijklmnopqrstuvwxyz
+-----END RSA PRIVATE KEY-----" rails s
+```
+
 ## License
 
 Copyright © 2015 Funding Circle Ltd.
