@@ -30,7 +30,8 @@ When booting server set Environment variables `SSH_USER` and `SSH_KEY`:
 ```
 SSH_USER=git SSH_KEY='"-----BEGIN RSA PRIVATE KEY-----
 abcdefghijklmnopqrstuvwxyz
------END RSA PRIVATE KEY-----" rails s
+-----END RSA PRIVATE KEY-----
+" rails s
 ```
 
 ## License
