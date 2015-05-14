@@ -13,7 +13,7 @@ Scenario: Viewing information between 2 versions
 
   When I compare commit "#1" with commit "#2" for "application1"
 
-  Then I should only see the authors:
+  Then I should only see the authors
     | author |
     | Billy  |
   And the tickets

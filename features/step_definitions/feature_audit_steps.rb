@@ -17,7 +17,7 @@ Given 'I am on the feature audit page for the last commit' do
   )
 end
 
-Then 'I should only see the authors:' do |authors_table|
+Then 'I should only see the authors' do |authors_table|
   authors = authors_table.hashes.map { |row| row['author'] }
   expect(feature_audit_page.authors).to match_array(authors)
 end

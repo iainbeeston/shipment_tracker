@@ -5,7 +5,7 @@ RSpec.describe FeatureAuditProjection do
   let(:git_repository) { instance_double(GitRepository) }
 
   subject(:projection) do
-    described_class.new(
+    FeatureAuditProjection.new(
       from: 'a_commit',
       to: 'another_commit',
       git_repository: git_repository,
