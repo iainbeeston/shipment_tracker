@@ -18,6 +18,15 @@ RSpec.describe FeatureAuditProjection do
       .and_return(commits)
   end
 
+  describe 'authors projection' do
+    let(:commit_authors) { %w(Alice Bob Carol) }
+    let(:commits) { commit_authors.map { |author| build(:git_commit, author_name: author) } }
+
+    it 'builds the list of authors' do
+      expect(projection.authors).to match_array(commit_authors)
+    end
+  end
+
   describe 'deploys projection' do
     let(:commits) { commit_versions.map { |version| build(:git_commit, id: version) } }
     let(:commit_versions) { %w(middle_commit another_commit) }
