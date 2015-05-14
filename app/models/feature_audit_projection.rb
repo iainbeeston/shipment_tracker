@@ -3,8 +3,7 @@ require 'git_repository'
 class FeatureAuditProjection
   attr_reader :deploys, :builds, :comments, :from, :to
 
-  def initialize(app_name:, from:, to:, git_repository: GitRepository)
-    @app_name = app_name
+  def initialize(from:, to:, git_repository:)
     @from = from
     @to = to
     @git_repository = git_repository
@@ -45,14 +44,10 @@ class FeatureAuditProjection
 
   private
 
-  attr_reader :app_name, :git_repository
+  attr_reader :git_repository
 
   def commits
-    @commits ||= git_repository.commits_for(
-      repository_name: app_name,
-      from: from,
-      to: to,
-    )
+    @commits ||= git_repository.commits_between(from, to)
   end
 
   def shas

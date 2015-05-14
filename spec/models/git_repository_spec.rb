@@ -5,35 +5,6 @@ require 'support/git_repository_factory'
 require 'rugged'
 
 RSpec.describe GitRepository do
-  describe '.load' do
-    let(:test_git_repo) { Support::GitRepositoryFactory.new }
-    let(:cache_dir) { Dir.mktmpdir }
-
-    before do
-      test_git_repo.create_commit(author_name: 'first commit')
-      RepositoryLocation.create(name: 'some_repo', uri: "file://#{test_git_repo.dir}")
-    end
-
-    it 'returns a GitRepository' do
-      expect(described_class.load('some_repo', cache_dir: cache_dir)).to be_a(GitRepository)
-    end
-
-    it 'should only clone once' do
-      expect(Rugged::Repository).to receive(:clone_at).once.and_call_original
-
-      described_class.load('some_repo', cache_dir: cache_dir)
-      described_class.load('some_repo', cache_dir: cache_dir)
-    end
-
-    it 'should always fetch when repository already cloned' do
-      described_class.load('some_repo', cache_dir: cache_dir)
-
-      expect_any_instance_of(Rugged::Repository).to receive(:fetch).once.and_call_original
-
-      described_class.load('some_repo', cache_dir: cache_dir)
-    end
-  end
-
   describe '#commits_between' do
     let(:test_git_repo) { Support::GitRepositoryFactory.new }
 

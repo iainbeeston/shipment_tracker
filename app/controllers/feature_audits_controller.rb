@@ -22,9 +22,9 @@ class FeatureAuditsController < ApplicationController
 
   def build_projection(events)
     FeatureAuditProjection.new(
-      app_name: app_name,
       from: clean_params[:from],
       to: clean_params[:to],
+      git_repository: git_repository,
     ).tap do |projection|
       projection.apply_all(events)
     end
@@ -32,6 +32,10 @@ class FeatureAuditsController < ApplicationController
 
   def app_name
     clean_params[:id]
+  end
+
+  def git_repository
+    git_repository_loader.load(app_name)
   end
 
   def clean_params

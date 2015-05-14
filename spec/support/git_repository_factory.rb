@@ -1,4 +1,5 @@
 require 'rugged'
+require 'active_support/inflector/transliterate'
 
 module Support
   class GitCommit
@@ -10,6 +11,8 @@ module Support
   end
 
   class GitRepositoryFactory
+    include ActiveSupport::Inflector
+
     attr_reader :dir
 
     def initialize(dir = Dir.mktmpdir)
@@ -61,7 +64,7 @@ module Support
     end
 
     def author(author_name)
-      { email: "#{author_name.parameterize}@example.com", name: author_name, time: Time.now }
+      { email: "#{parameterize(author_name)}@example.com", name: author_name, time: Time.now }
     end
   end
 end

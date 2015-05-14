@@ -15,11 +15,21 @@ describe FeatureAuditsController do
       )
     end
 
+    let(:git_repository_loader) do
+      instance_double(GitRepositoryLoader, :load)
+    end
+
+    let(:git_repository) do
+      instance_double(GitRepository)
+    end
+
     let(:events) { [Event.new, Event.new, Event.new] }
 
     before do
+      allow(GitRepositoryLoader).to receive(:new).and_return(git_repository_loader)
+
       allow(FeatureAuditProjection).to receive(:new).with(
-        app_name: 'app1',
+        git_repository: git_repository,
         from: 'abc',
         to:   'xyz',
       ).and_return(feature_audit_projection)
@@ -28,6 +38,7 @@ describe FeatureAuditsController do
     end
 
     it 'shows a feature audit' do
+      expect(git_repository_loader).to receive(:load).with('app1').and_return(git_repository)
       expect(feature_audit_projection).to receive(:apply_all).with(events)
 
       get :show, id: 'app1', from: 'abc', to: 'xyz'

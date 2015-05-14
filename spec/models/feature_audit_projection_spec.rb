@@ -2,11 +2,10 @@ require 'rails_helper'
 require 'feature_audit_projection'
 
 RSpec.describe FeatureAuditProjection do
-  let(:git_repository) { class_double(GitRepository) }
+  let(:git_repository) { instance_double(GitRepository) }
 
   subject(:projection) do
     described_class.new(
-      app_name: 'app_name',
       from: 'a_commit',
       to: 'another_commit',
       git_repository: git_repository,
@@ -14,8 +13,8 @@ RSpec.describe FeatureAuditProjection do
   end
 
   before do
-    allow(git_repository).to receive(:commits_for)
-      .with(repository_name: 'app_name', from: 'a_commit', to: 'another_commit')
+    allow(git_repository).to receive(:commits_between)
+      .with('a_commit', 'another_commit')
       .and_return(commits)
   end
 

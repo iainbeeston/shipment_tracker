@@ -4,27 +4,6 @@ class GitRepository
   class CommitNotFound < StandardError; end
   class CommitNotValid < StandardError; end
 
-  def self.commits_for(repository_name:, to:, from: nil)
-    return [] unless to
-    loader = load(repository_name)
-    loader.commits_between(from, to)
-  end
-
-  def self.load(repository_name, cache_dir: Dir.tmpdir)
-    remote_repository = RepositoryLocation.find_by_name(repository_name)
-    dir = File.join(cache_dir, "#{remote_repository.id}-#{repository_name}")
-
-    repository = begin
-      Rugged::Repository.new(dir).tap do |r|
-        r.fetch('origin')
-      end
-    rescue Rugged::OSError, Rugged::RepositoryError
-      Rugged::Repository.clone_at(remote_repository.uri, dir)
-    end
-
-    new(repository)
-  end
-
   def initialize(repository)
     @repository = repository
   end
@@ -48,7 +27,7 @@ class GitRepository
   end
 
   def validate_commit!(commit)
-    fail CommitNotFound, commit unless repository.exists?(commit)
+    fail CommitNotFound, commit unless commit.present? && repository.exists?(commit)
   rescue Rugged::InvalidError
     raise CommitNotValid, commit
   end

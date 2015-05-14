@@ -3,7 +3,10 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
-  def git_loader
-    @git_loader ||= Services::GitLoader.new(repositories: {}, dir: Dir.tmpdir)
+  def git_repository_loader
+    @git_repository_loader ||= GitRepositoryLoader.new(
+      ssh_key:  ENV['SSH_KEY'],
+      ssh_user: ENV['SSH_USER'],
+    )
   end
 end
