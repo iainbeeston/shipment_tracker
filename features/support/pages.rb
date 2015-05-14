@@ -6,6 +6,13 @@ module Pages
     )
   end
 
+  def issue_audit_page
+    Pages::IssueAuditPage.new(
+      page: page,
+      url_helpers: Rails.application.routes.url_helpers,
+    )
+  end
+
   def error_message
     Pages::ErrorMessage.new(
       page: page,

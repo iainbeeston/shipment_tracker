@@ -1,0 +1,10 @@
+%h1= "Issues"
+
+= form_tag(issue_audits_path, method: "get", class: 'form-horizontal') do
+  .form-group.row
+    = label_tag(:issue_name, "Issue name:", class: 'col-md-2 control-label')
+    .col-md-2
+      = text_field_tag(:issue_name, "", class: 'form-control')
+  .row
+    .col-md-4
+      = submit_tag("View issue audit", class: "btn btn-primary pull-right")

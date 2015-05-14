@@ -1,0 +1,21 @@
+%h1= "Issue Audit for #{params[:id]}"
+%h2
+  Activity for
+  %strong hello_world_rails
+
+%h3 Tickets
+%table.table.table-striped
+  %thead
+    %tr
+      %th key
+      %th summary
+      %th status
+      %th approver email
+      %th approved at
+  %tbody
+    %tr.ticket
+      %td= @ticket.key
+      %td= @ticket.summary
+      %td= @ticket.status
+      %td= @ticket.approver_email
+      %td= @ticket.approved_at.try(:utc)
