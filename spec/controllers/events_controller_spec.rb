@@ -38,7 +38,7 @@ describe EventsController do
       it 'saves an event object with correct details' do
         post :create, route_params.merge('name' => 'alice', 'message' => 'hello')
 
-        expect(CommentEvent.last.details).to eql('name' => 'alice', 'message' => 'hello')
+        expect(CommentEvent.last.details).to eq('name' => 'alice', 'message' => 'hello')
         expect(response).to have_http_status(:success)
       end
     end
@@ -51,7 +51,7 @@ describe EventsController do
       it 'saves an event object with correct details' do
         post :create, route_params.merge('deployed_by' => 'alice'), format: :json
 
-        expect(DeployEvent.last.details).to eql('deployed_by' => 'alice')
+        expect(DeployEvent.last.details).to eq('deployed_by' => 'alice')
         expect(response).to have_http_status(:success)
       end
     end
@@ -64,7 +64,7 @@ describe EventsController do
       it 'saves an event object with correct details' do
         post :create, route_params.merge('status' => 'success'), format: :json
 
-        expect(CircleCiEvent.last.details).to eql('status' => 'success')
+        expect(CircleCiEvent.last.details).to eq('status' => 'success')
         expect(response).to have_http_status(:success)
       end
     end
@@ -77,7 +77,7 @@ describe EventsController do
       it 'saves an event object with correct details' do
         post :create, route_params.merge('jenkins' => 'hudson'), format: :json
 
-        expect(JenkinsEvent.last.details).to eql('jenkins' => 'hudson')
+        expect(JenkinsEvent.last.details).to eq('jenkins' => 'hudson')
         expect(response).to have_http_status(:success)
       end
     end
@@ -90,7 +90,7 @@ describe EventsController do
       it 'saves an event object with correct details' do
         post :create, route_params.merge('issue' => { 'key' => 'JIRA-123' }), format: :json
 
-        expect(JiraEvent.last.details).to eql('issue' => { 'key' => 'JIRA-123' })
+        expect(JiraEvent.last.details).to eq('issue' => { 'key' => 'JIRA-123' })
         expect(response).to have_http_status(:success)
       end
     end

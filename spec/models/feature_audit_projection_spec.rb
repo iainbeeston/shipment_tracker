@@ -122,7 +122,7 @@ RSpec.describe FeatureAuditProjection do
         projection.apply(build(:jira_event, :done, key: 'JIRA-1'))
         expect(projection.tickets.first.status).to eq('Done')
 
-        expect(projection.tickets.size).to eql(1)
+        expect(projection.tickets.size).to eq(1)
       end
 
       it 'records the approver' do
