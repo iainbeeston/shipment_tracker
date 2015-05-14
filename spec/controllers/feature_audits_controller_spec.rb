@@ -14,24 +14,17 @@ describe FeatureAuditsController do
         to: 'xyz',
       )
     end
-
-    let(:git_repository_loader) do
-      instance_double(GitRepositoryLoader, :load)
-    end
-
-    let(:git_repository) do
-      instance_double(GitRepository)
-    end
-
+    let(:git_repository_loader) { instance_double(GitRepositoryLoader, :load) }
+    let(:git_repository) { instance_double(GitRepository) }
     let(:events) { [Event.new, Event.new, Event.new] }
 
     before do
       allow(GitRepositoryLoader).to receive(:new).and_return(git_repository_loader)
 
       allow(FeatureAuditProjection).to receive(:new).with(
-        git_repository: git_repository,
         from: 'abc',
         to:   'xyz',
+        git_repository: git_repository,
       ).and_return(feature_audit_projection)
 
       allow(Event).to receive(:in_order_of_creation).and_return(events)
