@@ -6,6 +6,15 @@
     = stylesheet_link_tag    'application', media: 'all'
     = csrf_meta_tags
   %body
+
+    .navbar.navbar-default
+      .container
+        .navbar-header
+          %a.navbar-brand{href: '/'}
+            Shipment Tracker
+        %ul.navbar-nav.nav
+          %li
+            = link_to 'Issues', '/issue_audits'
     .container
       - if flash[:error]
         .flash.error= flash[:error]
