@@ -1,3 +1,7 @@
+guard :rubocop, cli: ['--auto-correct'] do
+  watch(/.*\.rb$/)
+end
+
 guard :rspec, cmd: "bundle exec rspec" do
   require "guard/rspec/dsl"
   dsl = Guard::RSpec::Dsl.new(self)

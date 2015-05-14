@@ -14,6 +14,7 @@ group :development do
   gem 'spring'
   gem 'guard'
   gem 'guard-rspec'
+  gem 'guard-rubocop'
   gem 'guard-cucumber'
   gem 'terminal-notifier-guard'
   gem 'pry-rails'
