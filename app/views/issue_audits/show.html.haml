@@ -19,3 +19,8 @@
       %td= @ticket.status
       %td= @ticket.approver_email
       %td= @ticket.approved_at.try(:utc)
+
+%h3 Authors
+%ul
+- @authors.each do |author|
+  %li.author= author

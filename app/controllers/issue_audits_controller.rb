@@ -7,6 +7,7 @@ class IssueAuditsController < ApplicationController
     projection = build_projection(params[:id], Event.in_order_of_creation)
 
     @ticket = projection.ticket
+    @authors = projection.authors
   end
 
   private

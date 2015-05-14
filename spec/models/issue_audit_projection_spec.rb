@@ -3,6 +3,7 @@ require 'issue_audit_projection'
 
 RSpec.describe IssueAuditProjection do
   let(:git_repository) { instance_double(GitRepository) }
+  let(:commits) { [] }
 
   subject(:projection) do
     IssueAuditProjection.new(
@@ -10,6 +11,21 @@ RSpec.describe IssueAuditProjection do
       issue_name: 'JIRA-1',
       git_repository: git_repository,
     )
+  end
+
+  before do
+    allow(git_repository).to receive(:commits_matching_query)
+      .with('JIRA-1')
+      .and_return(commits)
+  end
+
+  describe 'authors projection' do
+    let(:commit_authors) { %w(Alice Bob Carol) }
+    let(:commits) { commit_authors.map { |author| build(:git_commit, author_name: author) } }
+
+    it 'builds the list of authors' do
+      expect(projection.authors).to match_array(commit_authors)
+    end
   end
 
   describe 'ticket projection' do

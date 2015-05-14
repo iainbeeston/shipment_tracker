@@ -4,6 +4,7 @@ require 'active_support/inflector/transliterate'
 module Support
   class GitCommit
     attr_reader :version, :pretend_version
+
     def initialize(version, pretend_version)
       @version = version
       @pretend_version = pretend_version
@@ -14,6 +15,8 @@ module Support
     include ActiveSupport::Inflector
 
     attr_reader :dir
+
+    delegate :create_branch, :checkout, to: :repo
 
     def initialize(dir = Dir.mktmpdir)
       @dir = dir

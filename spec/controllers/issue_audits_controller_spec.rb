@@ -14,6 +14,7 @@ RSpec.describe IssueAuditsController do
       instance_double(
         IssueAuditProjection,
         ticket: 'JIRA-123',
+        authors: %w(Alice Bob Carol),
       )
     end
     let(:git_repository_loader) { instance_double(GitRepositoryLoader) }
@@ -39,6 +40,7 @@ RSpec.describe IssueAuditsController do
       get :show, id: 'JIRA-123'
 
       expect(assigns(:ticket)).to eq(issue_audit_projection.ticket)
+      expect(assigns(:authors)).to eq(issue_audit_projection.authors)
     end
   end
 end

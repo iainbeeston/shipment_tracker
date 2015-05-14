@@ -20,6 +20,14 @@ class GitRepository
     build_commits(walker)
   end
 
+  def commits_matching_query(query)
+    rugged_commits = repository.each_id
+                     .map { |id| repository.lookup(id) }
+                     .select { |o| o.type == :commit }
+                     .select { |c| c.message.include?(query) }
+    build_commits(rugged_commits)
+  end
+
   private
 
   def build_commits(commits)

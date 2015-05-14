@@ -1,5 +1,5 @@
 class IssueAuditProjection
-  attr_reader :ticket, :authors, :builds, :deploys
+  attr_reader :ticket, :authors
 
   def initialize(app_name:, issue_name:, git_repository:)
     @app_name = app_name
@@ -20,7 +20,17 @@ class IssueAuditProjection
     end
   end
 
+  def authors
+    commits.map(&:author_name).uniq
+  end
+
   private
+
+  attr_reader :git_repository
+
+  def commits
+    @commits ||= git_repository.commits_matching_query(@issue_name)
+  end
 
   def update_ticket_from_jira_event(jira_event)
     return unless @issue_name == jira_event.key

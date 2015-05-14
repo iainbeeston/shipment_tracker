@@ -13,5 +13,10 @@ Then 'I should only see the ticket' do |ticket_table|
     )
   }
 
-  expect(feature_audit_page.tickets).to match_array(expected_tickets)
+  expect(issue_audit_page.tickets).to match_array(expected_tickets)
+end
+
+And 'the authors' do |authors_table|
+  authors = authors_table.hashes.map { |row| row['author'] }
+  expect(issue_audit_page.authors).to match_array(authors)
 end

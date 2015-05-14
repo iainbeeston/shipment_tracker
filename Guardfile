@@ -1,4 +1,4 @@
-guard :rubocop, cli: ['--auto-correct'] do
+guard :rubocop do
   watch(/.*\.rb$/)
 end
 
