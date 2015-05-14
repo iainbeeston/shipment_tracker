@@ -25,10 +25,12 @@ brew install libssh2
 gem pristine rugged
 ```
 
-When booting server set Environment variables `SSH_USER` and `SSH_KEY`:
+When booting server set Environment variables `SSH_USER`, `SSH_PUBLIC_KEY` and `SSH_PRIVATE_KEY`:
 
 ```
-SSH_USER=git SSH_KEY='"-----BEGIN RSA PRIVATE KEY-----
+SSH_USER=git \
+SSH_PUBLIC_KEY='ssh-rsa AAAXYZ' \
+SSH_PRIVATE_KEY='"-----BEGIN RSA PRIVATE KEY-----
 abcdefghijklmnopqrstuvwxyz
 -----END RSA PRIVATE KEY-----
 " rails s

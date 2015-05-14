@@ -8,7 +8,8 @@ RSpec.describe GitRepositoryLoader do
   subject(:git_repository_loader) do
     GitRepositoryLoader.new(
       cache_dir: cache_dir,
-      ssh_key: 'ssh_key',
+      ssh_private_key: 'ssh_private_key',
+      ssh_public_key: 'ssh_public_key',
       ssh_user: 'ssh_user',
     )
   end
@@ -75,21 +76,34 @@ RSpec.describe GitRepositoryLoader do
         allow_any_instance_of(Rugged::Repository).to receive(:fetch)
       end
 
-      it 'should raise an error when ssh_key missing' do
+      it 'should raise an error when ssh_private_key missing' do
         expect {
           GitRepositoryLoader.new(
             cache_dir: cache_dir,
-            ssh_key: nil,
+            ssh_public_key: 'public_key',
+            ssh_private_key: nil,
             ssh_user: 'user',
           ).load('some_repo')
-        }.to raise_error('ssh_key not set')
+        }.to raise_error('ssh_private_key not set')
+      end
+
+      it 'should raise an error when ssh_public_key missing' do
+        expect {
+          GitRepositoryLoader.new(
+            cache_dir: cache_dir,
+            ssh_public_key: nil,
+            ssh_private_key: 'private_key',
+            ssh_user: 'user',
+          ).load('some_repo')
+        }.to raise_error('ssh_public_key not set')
       end
 
       it 'should raise an error when ssh_user missing' do
         expect {
           GitRepositoryLoader.new(
             cache_dir: cache_dir,
-            ssh_key: 'key',
+            ssh_public_key: 'public_key',
+            ssh_private_key: 'key',
             ssh_user: nil,
           ).load('some_repo')
         }.to raise_error('ssh_user not set')
@@ -97,20 +111,23 @@ RSpec.describe GitRepositoryLoader do
     end
 
     context 'for an SSH URI' do
-      let(:expected_privatekey) { 'PR1V4t3' }
+      let(:expected_private_key) { 'PR1V4t3' }
+      let(:expected_public_key) { 'PU8L1C' }
       let(:expected_username) { 'fran' }
       let(:repo_uri) { 'ssh://example.com/some_repo.git' }
 
       subject(:git_repository_loader) do
         GitRepositoryLoader.new(
           cache_dir: cache_dir,
-          ssh_key: expected_privatekey,
+          ssh_private_key: expected_private_key,
+          ssh_public_key: expected_public_key,
           ssh_user: expected_username,
         )
       end
 
       it 'should use the correct credentials when using SSH' do
-        privatekey_file = nil
+        private_key_file = nil
+        public_key_file = nil
 
         expect(Rugged::Repository).to receive(:clone_at) do |uri, _directory, options|
           # This is a Rugged::Credentials object which is a C extension
@@ -118,17 +135,23 @@ RSpec.describe GitRepositoryLoader do
           # that is being passed to the clone method
           credentials = options.fetch(:credentials)
           username = credentials.instance_variable_get(:@username)
-          privatekey_file = credentials.instance_variable_get(:@privatekey)
+          private_key_file = credentials.instance_variable_get(:@privatekey)
+          public_key_file = credentials.instance_variable_get(:@publickey)
 
           expect(uri).to eq(repo_uri)
+
           expect(username).to eq(expected_username)
-          expect(File.read(privatekey_file)).to eq(expected_privatekey)
-          expect(File.stat(privatekey_file)).to_not be_world_readable
+
+          expect(File.read(private_key_file)).to eq(expected_private_key)
+          expect(File.stat(private_key_file)).to_not be_world_readable
+
+          expect(File.read(public_key_file)).to eq(expected_public_key)
+          expect(File.stat(public_key_file)).to_not be_world_readable
         end
 
         git_repository_loader.load('some_repo')
 
-        expect(File.exist?(privatekey_file)).to be(false), 'The privatekey file should be cleaned up'
+        expect(File.exist?(private_key_file)).to be(false), 'The privatekey file should be cleaned up'
       end
     end
   end

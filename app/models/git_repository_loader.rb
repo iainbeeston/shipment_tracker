@@ -3,8 +3,9 @@ require 'rugged'
 require 'git_repository'
 
 class GitRepositoryLoader
-  def initialize(ssh_key:, ssh_user:, cache_dir: Dir.tmpdir)
-    @ssh_key = ssh_key
+  def initialize(ssh_private_key:, ssh_public_key:, ssh_user:, cache_dir: Dir.tmpdir)
+    @ssh_private_key = ssh_private_key
+    @ssh_public_key = ssh_public_key
     @ssh_user = ssh_user
     @cache_dir = cache_dir
   end
@@ -22,7 +23,7 @@ class GitRepositoryLoader
 
   private
 
-  attr_reader :cache_dir, :ssh_user, :ssh_key
+  attr_reader :cache_dir, :ssh_user, :ssh_private_key, :ssh_public_key
 
   def updated_rugged_repository(uri, dir, options)
     Rugged::Repository.new(dir, options).tap do |r|
@@ -41,21 +42,30 @@ class GitRepositoryLoader
     end
   end
 
+  def create_temporary_file(key)
+    file = Tempfile.new('key', cache_dir)
+    file.write(key)
+    file.close
+    file
+  end
+
   def options_for_ssh(&block)
     fail 'ssh_user not set' unless ssh_user
-    fail 'ssh_key not set' unless ssh_key
+    fail 'ssh_public_key not set' unless ssh_public_key
+    fail 'ssh_private_key not set' unless ssh_private_key
 
-    ssh_key_file = Tempfile.new('key', cache_dir)
-    ssh_key_file.write(ssh_key)
-    ssh_key_file.close
+    ssh_public_key_file = create_temporary_file(ssh_public_key)
+    ssh_private_key_file = create_temporary_file(ssh_private_key)
 
     block.call(
       credentials: Rugged::Credentials::SshKey.new(
         username: ssh_user,
-        privatekey: ssh_key_file.path,
+        privatekey: ssh_private_key_file.path,
+        publickey: ssh_public_key_file.path,
       ),
     )
   ensure
-    ssh_key_file.unlink if ssh_key_file
+    ssh_public_key_file.unlink if ssh_public_key_file
+    ssh_private_key_file.unlink if ssh_private_key_file
   end
 end
