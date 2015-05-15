@@ -35,7 +35,7 @@ class GitRepository
   end
 
   def validate_commit!(commit)
-    fail CommitNotFound, commit unless commit.present? && repository.exists?(commit)
+    fail CommitNotFound, commit unless repository.exists?(commit)
   rescue Rugged::InvalidError
     raise CommitNotValid, commit
   end

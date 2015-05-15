@@ -7,6 +7,8 @@ module Pages
 
     def request(project_name:, from: nil, to: nil)
       page.visit url_helpers.feature_audit_path(project_name)
+      fail "Error \"#{error_message.text}\" was found on the page" if error_message.present?
+
       if to
         page.fill_in :from, with: from
         page.fill_in :to, with: to
@@ -45,5 +47,13 @@ module Pages
     private
 
     attr_reader :page, :url_helpers
+
+    def error_present?
+      error_message.present?
+    end
+
+    def error_message
+      @error_message ||= ErrorMessage.new(page: page, url_helpers: url_helpers)
+    end
   end
 end

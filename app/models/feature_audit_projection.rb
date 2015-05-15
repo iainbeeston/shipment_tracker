@@ -47,7 +47,7 @@ class FeatureAuditProjection
   attr_reader :git_repository
 
   def commits
-    @commits ||= git_repository.commits_between(from, to)
+    @commits ||= to ? git_repository.commits_between(from, to) : []
   end
 
   def shas
