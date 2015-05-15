@@ -1,7 +1,7 @@
 # Shipment Tracker
 [![Circle CI](https://circleci.com/gh/FundingCircle/shipment_tracker.svg?style=shield)](https://circleci.com/gh/FundingCircle/shipment_tracker)
 
-![](http://i.imgur.com/VkjlJmj.jpg)
+[![](http://i.imgur.com/VkjlJmj.jpg)](https://www.flickr.com/photos/britishlibrary/11237769263/)
 
 Tracks shipment of software versions for audit purposes.
 
