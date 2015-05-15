@@ -7,7 +7,7 @@ Scenario: Viewing information between 2 versions
   And a ticket "JIRA-999" with summary "New ticket" is started
   And a commit "#1" by "Alice" is created for ticket "JIRA-123"
   And a commit "#2" by "Billy" is created for ticket "JIRA-123"
-  And CircleCi passes for commit "#2"
+  And CircleCi "passes" for commit "#2"
   And ticket "JIRA-123" is approved by "eve@fundingcircle.com" at "2015-06-07T15:24:34.957+0100"
   And commit "#2" is deployed by "Frank" on server "example.com"
 

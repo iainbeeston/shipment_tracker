@@ -15,6 +15,7 @@ RSpec.describe IssueAuditsController do
         IssueAuditProjection,
         ticket: 'JIRA-123',
         authors: %w(Alice Bob Carol),
+        builds: %w(build1 build2),
       )
     end
     let(:git_repository_loader) { instance_double(GitRepositoryLoader) }

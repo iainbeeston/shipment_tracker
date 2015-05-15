@@ -90,4 +90,27 @@ RSpec.describe IssueAuditProjection do
       end
     end
   end
+
+  describe 'builds projection' do
+    let(:commit) { GitCommit.new(id: 'a_commit') }
+
+    before do
+      allow(git_repository).to receive(:last_commit_matching_query).with('JIRA-1').and_return(commit)
+    end
+
+    it 'builds the list of builds' do
+      events = [
+        build(:circle_ci_event, success?: false, version: 'a_commit'),
+        build(:jenkins_event, success?: false, version: 'another_commit'),
+        build(:circle_ci_event, success?: true, version: 'a_commit'),
+      ]
+
+      projection.apply_all(events)
+
+      expect(projection.builds).to match_array([
+        Build.new(source: 'CircleCi', status: 'failed', version: 'a_commit'),
+        Build.new(source: 'CircleCi', status: 'success', version: 'a_commit'),
+      ])
+    end
+  end
 end

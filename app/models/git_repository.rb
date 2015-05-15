@@ -28,16 +28,29 @@ class GitRepository
     build_commits(rugged_commits)
   end
 
-  private
-
-  def build_commits(commits)
-    commits.map { |c| GitCommit.new(id: c.oid, author_name: c.author[:name], message: c.message) }
+  def last_commit_matching_query(query)
+    commits_matching_query(query).max_by(&:time)
   end
 
-  def validate_commit!(commit)
-    fail CommitNotFound, commit unless repository.exists?(commit)
+  private
+
+  def build_commit(commit)
+    GitCommit.new(
+      id: commit.oid,
+      author_name: commit.author[:name],
+      message: commit.message,
+      time: commit.time,
+    )
+  end
+
+  def build_commits(commits)
+    commits.map { |c| build_commit(c) }
+  end
+
+  def validate_commit!(commit_oid)
+    fail CommitNotFound, commit_oid unless repository.exists?(commit_oid)
   rescue Rugged::InvalidError
-    raise CommitNotValid, commit
+    raise CommitNotValid, commit_oid
   end
 
   attr_reader :repository

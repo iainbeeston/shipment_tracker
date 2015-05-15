@@ -1,4 +1,4 @@
 %h1= "Issue Audit for #{params[:id]}"
 
 - @reports.each do |report|
-  = render partial: 'issue_audit', locals: {report: report}
+  = render partial: 'issue_audit', locals: { report: report }

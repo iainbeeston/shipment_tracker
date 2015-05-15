@@ -25,7 +25,7 @@ module Support
       @repo.config['user.email'] = 'unconfigured@example.com'
     end
 
-    def create_commit(author_name:, pretend_version: nil, message: 'A new commit')
+    def create_commit(author_name:, pretend_version: nil, message: 'A new commit', time: Time.now)
       oid = repo.write('file contents', :blob)
       index = repo.index
 
@@ -33,12 +33,14 @@ module Support
       index.add(path: 'README.md', oid: oid, mode: 0100644)
       oid = index.write_tree(repo)
 
-      Rugged::Commit.create(
+      commit_oid = Rugged::Commit.create(
         repo,
-        commit_options(author_name, oid, message),
+        commit_options(author_name, oid, message, time),
       ).tap do |commit|
         commits.push GitCommit.new(commit, pretend_version)
       end
+
+      repo.lookup(commit_oid)
     end
 
     def commit_for_pretend_version(pretend_version)
@@ -55,19 +57,19 @@ module Support
 
     attr_reader :repo
 
-    def commit_options(author_name, oid, message)
+    def commit_options(author_name, oid, message, time)
       {
         tree: oid,
-        author: author(author_name),
-        commiter: author(author_name),
+        author: author(author_name, time),
+        committer: author(author_name, time),
         message: message,
         parents: repo.empty? ? [] : [repo.head.target].compact,
         update_ref: 'HEAD',
       }
     end
 
-    def author(author_name)
-      { email: "#{parameterize(author_name)}@example.com", name: author_name, time: Time.now }
+    def author(author_name, time)
+      { email: "#{parameterize(author_name)}@example.com", name: author_name, time: time }
     end
   end
 end

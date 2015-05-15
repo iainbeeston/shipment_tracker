@@ -1,5 +1,5 @@
 class IssueAuditProjection
-  attr_reader :ticket, :authors
+  attr_reader :ticket, :authors, :builds
 
   def initialize(app_name:, issue_name:, git_repository:)
     @app_name = app_name
@@ -7,6 +7,7 @@ class IssueAuditProjection
     @git_repository = git_repository
 
     @ticket = Ticket.new
+    @builds = []
   end
 
   def apply_all(events)
@@ -17,6 +18,8 @@ class IssueAuditProjection
     case event
     when JiraEvent
       update_ticket_from_jira_event(event)
+    when CircleCiEvent, JenkinsEvent
+      record_build(event)
     end
   end
 
@@ -30,6 +33,10 @@ class IssueAuditProjection
 
   def commits
     @commits ||= git_repository.commits_matching_query(@issue_name)
+  end
+
+  def shas
+    commits.map(&:id)
   end
 
   def update_ticket_from_jira_event(jira_event)
@@ -47,5 +54,14 @@ class IssueAuditProjection
     end
 
     @ticket = @ticket.update_attributes(new_attributes)
+  end
+
+  def record_build(build_event)
+    last_commit = git_repository.last_commit_matching_query(@issue_name)
+    @builds << build_from_event(build_event) if last_commit.id == build_event.version
+  end
+
+  def build_from_event(build_event)
+    Build.new(source: build_event.source, status: build_event.status, version: build_event.version)
   end
 end

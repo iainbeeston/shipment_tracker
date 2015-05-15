@@ -5,7 +5,6 @@ class IssueAuditsController < ApplicationController
 
   def show
     projection = build_projection(params[:id], Event.in_order_of_creation)
-
     @reports = [projection]
   end
 

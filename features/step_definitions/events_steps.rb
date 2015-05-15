@@ -18,10 +18,10 @@ Given 'a ticket "$key" with summary "$summary" is started' do |key, summary|
   post_json '/events/jira', event.details
 end
 
-Given 'CircleCi passes for commit "$version"' do |version|
+Given 'CircleCi "$outcome" for commit "$version"' do |outcome, version|
   payload = build(
     :circle_ci_event,
-    success?: true,
+    success?: outcome == 'passes',
     version: default_repo.commit_for_pretend_version(version),
   ).details
   post_json '/events/circleci', payload

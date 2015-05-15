@@ -23,3 +23,17 @@
 %ul
 - report.authors.each do |author|
   %li.author= author
+
+%h3 Builds
+%table.table.table-striped
+  %thead
+    %tr
+      %th Source
+      %th Status
+      %th Software Version
+  %tbody
+    - report.builds.each do |build|
+      %tr.build
+        %td= build.source
+        %td= build.status
+        %td= build.version
