@@ -39,8 +39,7 @@ RSpec.describe IssueAuditsController do
 
       get :show, id: 'JIRA-123'
 
-      expect(assigns(:ticket)).to eq(issue_audit_projection.ticket)
-      expect(assigns(:authors)).to eq(issue_audit_projection.authors)
+      expect(assigns(:reports)).to eq([issue_audit_projection])
     end
   end
 end
