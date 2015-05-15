@@ -1,6 +1,6 @@
 When 'I compare commit "$ver1" with commit "$ver2" for "$application"' do |ver1, ver2, application|
-  git_commit_1 = ver1.start_with?('#') ? @repo.commit_for_pretend_version(ver1) : ver1
-  git_commit_2 = ver2.start_with?('#') ? @repo.commit_for_pretend_version(ver2) : ver2
+  git_commit_1 = ver1.start_with?('#') ? default_repo.commit_for_pretend_version(ver1) : ver1
+  git_commit_2 = ver2.start_with?('#') ? default_repo.commit_for_pretend_version(ver2) : ver2
 
   feature_audit_page.request(
     project_name: application,
@@ -11,9 +11,9 @@ end
 
 Given 'I am on the feature audit page for the last commit' do
   feature_audit_page.request(
-    project_name: @application,
-    from: @repo.commits.first.version,
-    to: @repo.commits.last.version,
+    project_name: default_application,
+    from: default_repo.commits.first.version,
+    to: default_repo.commits.last.version,
   )
 end
 
@@ -38,7 +38,7 @@ Then 'the deploys' do |table|
     Sections::DeploySection.new(
       server: deploy.fetch('server'),
       deployed_by: deploy.fetch('deployed_by'),
-      version: @repo.commit_for_pretend_version(deploy.fetch('commit')),
+      version: default_repo.commit_for_pretend_version(deploy.fetch('commit')),
     )
   }
 
@@ -50,7 +50,7 @@ Then 'the builds' do |table|
     Sections::BuildSection.new(
       source: build.fetch('source'),
       status: build.fetch('status'),
-      version: @repo.commit_for_pretend_version(build.fetch('commit')),
+      version: default_repo.commit_for_pretend_version(build.fetch('commit')),
     )
   }
 
