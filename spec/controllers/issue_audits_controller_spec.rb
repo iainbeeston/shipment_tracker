@@ -12,8 +12,10 @@ RSpec.describe IssueAuditsController do
   describe 'GET #show' do
     let(:frontend_git_repository) { instance_double(GitRepository) }
     let(:backend_git_repository) { instance_double(GitRepository) }
-    let(:valid_issue_audit_projection) { instance_double(IssueAuditProjection, valid?: true) }
-    let(:invalid_issue_audit_projection) { instance_double(IssueAuditProjection, valid?: false) }
+
+    let(:ticket) { double('ticket') }
+    let(:valid_projection) { instance_double(IssueAuditProjection, valid?: true, ticket: ticket) }
+    let(:invalid_projection) { instance_double(IssueAuditProjection, valid?: false) }
     let(:events) { double('events') }
     before do
       RepositoryLocation.create(name: 'frontend', uri: 'ssh://some.uri')
@@ -33,20 +35,32 @@ RSpec.describe IssueAuditsController do
         app_name: 'frontend',
         issue_name: 'JIRA-123',
         git_repository: frontend_git_repository,
-      ).and_return(valid_issue_audit_projection)
+      ).and_return(valid_projection)
       expect(IssueAuditProjection).to receive(:new).with(
         app_name: 'backend',
         issue_name: 'JIRA-123',
         git_repository: backend_git_repository,
-      ).and_return(invalid_issue_audit_projection)
+      ).and_return(invalid_projection)
 
-      expect(valid_issue_audit_projection).to receive(:apply_all).with(events)
-      expect(invalid_issue_audit_projection).to receive(:apply_all).with(events)
+      expect(valid_projection).to receive(:apply_all).with(events)
+      expect(invalid_projection).to receive(:apply_all).with(events)
 
       get :show, id: 'JIRA-123'
 
       expect(response).to have_http_status(:success)
-      expect(assigns(:reports)).to match_array([valid_issue_audit_projection])
+      expect(assigns(:reports)).to match_array([valid_projection])
+      expect(assigns(:ticket)).to eq(valid_projection.ticket)
+    end
+
+    context 'when no projections are valid' do
+      it 'returns a 404' do
+        allow(IssueAuditProjection).to receive(:new).and_return(invalid_projection)
+        allow(invalid_projection).to receive(:apply_all).with(events)
+
+        get :show, id: 'NO-EVENTS'
+
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 end

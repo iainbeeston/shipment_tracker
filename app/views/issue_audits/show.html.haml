@@ -1,6 +1,6 @@
 %h1= "Issue Audit for #{params[:id]}"
 
-%h3 Tickets
+%h3 Ticket
 %table.table.table-striped
   %thead
     %tr
@@ -10,12 +10,13 @@
       %th approver email
       %th approved at
   %tbody
-    %tr.ticket
-      %td= @reports.first.ticket.key
-      %td= @reports.first.ticket.summary
-      %td= @reports.first.ticket.status
-      %td= @reports.first.ticket.approver_email
-      %td= @reports.first.ticket.approved_at.try(:utc)
+    - if @ticket
+      %tr.ticket
+        %td= @ticket.key
+        %td= @ticket.summary
+        %td= @ticket.status
+        %td= @ticket.approver_email
+        %td= @ticket.approved_at.try(:utc)
 
 - @reports.each do |report|
   %div{class: report.app_name}

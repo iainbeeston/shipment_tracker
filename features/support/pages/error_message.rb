@@ -18,7 +18,7 @@ module Pages
     attr_reader :page, :url_helpers
 
     def selector
-      '.flash.error'
+      '.alert.alert-danger'
     end
   end
 end

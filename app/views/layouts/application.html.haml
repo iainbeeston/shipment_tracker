@@ -18,6 +18,12 @@
           %li
             = link_to 'Repository locations', '/repository_locations'
     .container
-      - if flash[:error]
-        .flash.error= flash[:error]
+      - if flash[:error] # the red one
+        .alert.alert-danger= flash[:error]
+      - if flash[:warning] # the yellow one
+        .alert.alert-warning= flash[:warning]
+      - if flash[:success] # the green one
+        .alert.alert-success= flash[:success]
+      - if flash[:info] # the blue one
+        .alert.alert-info= flash[:info]
       = yield

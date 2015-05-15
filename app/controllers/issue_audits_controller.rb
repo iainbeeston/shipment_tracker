@@ -9,6 +9,14 @@ class IssueAuditsController < ApplicationController
       projection = build_projection(params[:id], Event.in_order_of_creation, app_name)
       @reports << projection if projection.valid?
     end
+    @ticket = @reports.first.try(:ticket)
+
+    if @ticket
+      render status: :ok
+    else
+      flash[:error] = "No tickets found for #{params[:id]}"
+      render status: :not_found
+    end
   end
 
   private

@@ -41,6 +41,12 @@ RSpec.describe IssueAuditProjection do
         .to eq(Ticket.new(key: 'JIRA-1', summary: 'Start', status: 'To Do', approver_email: nil))
     end
 
+    context 'when no event matches the ticket key' do
+      it 'does not return a ticket' do
+        expect(projection.ticket).to eq(nil)
+      end
+    end
+
     context 'as the state of a ticket changes' do
       let(:commit_messages) { ['JIRA-1 first'] }
 
