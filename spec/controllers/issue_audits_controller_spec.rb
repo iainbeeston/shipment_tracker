@@ -10,37 +10,43 @@ RSpec.describe IssueAuditsController do
   end
 
   describe 'GET #show' do
-    let(:issue_audit_projection) do
-      instance_double(
-        IssueAuditProjection,
-        ticket: 'JIRA-123',
-        authors: %w(Alice Bob Carol),
-        builds: %w(build1 build2),
-      )
-    end
-    let(:git_repository_loader) { instance_double(GitRepositoryLoader) }
-    let(:git_repository) { instance_double(GitRepository) }
-    let(:events) { [Event.new, Event.new, Event.new] }
-
+    let(:frontend_git_repository) { instance_double(GitRepository) }
+    let(:backend_git_repository) { instance_double(GitRepository) }
+    let(:valid_issue_audit_projection) { instance_double(IssueAuditProjection, valid?: true) }
+    let(:invalid_issue_audit_projection) { instance_double(IssueAuditProjection, valid?: false) }
+    let(:events) { double('events') }
     before do
-      allow(GitRepositoryLoader).to receive(:new).and_return(git_repository_loader)
-
-      allow(IssueAuditProjection).to receive(:new).with(
-        app_name: 'hello_world_rails',
-        issue_name: 'JIRA-123',
-        git_repository: git_repository,
-      ).and_return(issue_audit_projection)
-
+      RepositoryLocation.create(name: 'frontend', uri: 'ssh://some.uri')
+      RepositoryLocation.create(name: 'backend', uri: 'ssh://another.uri')
       allow(Event).to receive(:in_order_of_creation).and_return(events)
+
+      allow_any_instance_of(GitRepositoryLoader).to receive(:load)
+        .with('frontend')
+        .and_return(frontend_git_repository)
+      allow_any_instance_of(GitRepositoryLoader).to receive(:load)
+        .with('backend')
+        .and_return(backend_git_repository)
     end
 
-    xit 'shows an issue audit' do
-      expect(git_repository_loader).to receive(:load).with('hello_world_rails').and_return(git_repository)
-      expect(issue_audit_projection).to receive(:apply_all).with(events)
+    it 'returns all valid projectsion' do
+      expect(IssueAuditProjection).to receive(:new).with(
+        app_name: 'frontend',
+        issue_name: 'JIRA-123',
+        git_repository: frontend_git_repository,
+      ).and_return(valid_issue_audit_projection)
+      expect(IssueAuditProjection).to receive(:new).with(
+        app_name: 'backend',
+        issue_name: 'JIRA-123',
+        git_repository: backend_git_repository,
+      ).and_return(invalid_issue_audit_projection)
+
+      expect(valid_issue_audit_projection).to receive(:apply_all).with(events)
+      expect(invalid_issue_audit_projection).to receive(:apply_all).with(events)
 
       get :show, id: 'JIRA-123'
 
-      expect(assigns(:reports)).to eq([issue_audit_projection])
+      expect(response).to have_http_status(:success)
+      expect(assigns(:reports)).to match_array([valid_issue_audit_projection])
     end
   end
 end
