@@ -43,10 +43,15 @@ module Support
       repo.lookup(commit_oid)
     end
 
+    def commit_for_pretend_version!(pretend_version)
+      value = commit_for_pretend_version(pretend_version)
+      fail "Commit not found for #{pretend_version}. Commits available: #{commits.inspect}" unless value
+      value
+    end
+
     def commit_for_pretend_version(pretend_version)
       commit = commits.find { |c| c.pretend_version == pretend_version }
-      fail "Commit not found for #{pretend_version}. Commits available: #{commits.inspect}" unless commit
-      commit.version
+      commit && commit.version
     end
 
     def commits

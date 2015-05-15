@@ -1,5 +1,5 @@
 class IssueAuditProjection
-  attr_reader :ticket, :authors, :builds
+  attr_reader :ticket, :builds, :app_name
 
   def initialize(app_name:, issue_name:, git_repository:)
     @app_name = app_name
@@ -25,6 +25,10 @@ class IssueAuditProjection
 
   def authors
     commits.map(&:author_name).uniq
+  end
+
+  def valid?
+    commits.any?
   end
 
   private
@@ -58,7 +62,7 @@ class IssueAuditProjection
 
   def record_build(build_event)
     last_commit = git_repository.last_commit_matching_query(@issue_name)
-    @builds << build_from_event(build_event) if last_commit.id == build_event.version
+    @builds << build_from_event(build_event) if last_commit && last_commit.id == build_event.version
   end
 
   def build_from_event(build_event)

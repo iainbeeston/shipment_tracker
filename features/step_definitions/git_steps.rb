@@ -15,6 +15,12 @@ def repo_for(application)
   @repos[application]
 end
 
+def commit_from_pretend(pretend_commit)
+  value = @repos.values.map { |r| r.commit_for_pretend_version(pretend_commit) }.compact.first
+  fail "Could not find '#{pretend_commit}'" unless value
+  value
+end
+
 def default_repo
   @repos[default_application]
 end
@@ -45,7 +51,7 @@ Given('a commit "$v" by "$a" is created for ticket "$k" for "$app"') do |version
   )
 end
 
-Given(/a commit "(.*?)" by "(.*?)" is created for ticket "([^\"]+)"/) do |version, author, jira_key|
+Given(/^a commit "(.*?)" by "(.*?)" is created for ticket "([^\"]+)"$/) do |version, author, jira_key|
   default_repo.create_commit(
     author_name: author,
     pretend_version: version,

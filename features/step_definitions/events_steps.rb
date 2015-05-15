@@ -2,7 +2,7 @@ Given 'a failing CircleCi build for "$version"' do |version|
   payload = build(
     :circle_ci_event,
     success?: false,
-    version: default_repo.commit_for_pretend_version(version),
+    version: default_repo.commit_for_pretend_version!(version),
   ).details
   post_json '/events/circleci', payload
 end
@@ -18,12 +18,13 @@ Given 'a ticket "$key" with summary "$summary" is started' do |key, summary|
   post_json '/events/jira', event.details
 end
 
-Given 'CircleCi "$outcome" for commit "$version"' do |outcome, version|
+Given 'CircleCi "$outcome" for commit "$version"' do |outcome, pretend_version|
   payload = build(
     :circle_ci_event,
     success?: outcome == 'passes',
-    version: default_repo.commit_for_pretend_version(version),
+    version: commit_from_pretend(pretend_version),
   ).details
+
   post_json '/events/circleci', payload
 end
 
@@ -37,7 +38,7 @@ Given 'commit "$version" is deployed by "$name" on server "$server"' do |version
     :deploy_event,
     server: server,
     app_name: default_application,
-    version: default_repo.commit_for_pretend_version(version),
+    version: default_repo.commit_for_pretend_version!(version),
     deployed_by: name,
   ).details
 end

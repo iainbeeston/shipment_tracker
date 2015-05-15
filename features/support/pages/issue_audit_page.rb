@@ -13,35 +13,42 @@ module Pages
       self
     end
 
-    def authors
-      page.all('.author').map(&:text)
+    def application_names
+      page.all('.application_name').map(&:text)
     end
 
-    def comment(message:, name:)
-      page.fill_in :message, with: message
-      page.fill_in :name, with: name
-      page.click_link_or_button('Comment')
-      self
+    def authors(for_app: nil)
+      verify!
+      app_container(for_app).all('.author').map(&:text)
     end
 
-    def comments
-      page.all('.comment').map { |comment_line| Sections::CommentSection.from_element(comment_line) }
-    end
-
-    def deploys
-      page.all('.deploy').map { |deploy_line| Sections::DeploySection.from_element(deploy_line) }
-    end
-
-    def builds
-      page.all('.build').map { |build_line| Sections::BuildSection.from_element(build_line) }
+    def builds(for_app: nil)
+      verify!
+      app_container(for_app).all('.build').map { |build_line|
+        Sections::BuildSection.from_element(build_line)
+      }
     end
 
     def tickets
+      verify!
       page.all('.ticket').map { |ticket_line| Sections::TicketSection.from_element(ticket_line) }
     end
 
     private
 
     attr_reader :page, :url_helpers
+
+    def verify!
+      fail "Expected to be on a Issue Audit page, but was on #{page.current_url}" unless on_page?
+    end
+
+    def on_page?
+      page.current_url =~ Regexp.new(Regexp.escape(url_helpers.issue_audit_path(id: '')))
+    end
+
+    def app_container(app_name)
+      return page unless app_name
+      page.find(".#{app_name}")
+    end
   end
 end
