@@ -15,13 +15,10 @@ RSpec.describe GitRepositoryLoader do
   end
 
   describe '#load' do
-    let(:repo_uri) { "file://#{test_git_repo.dir}" }
-
-    before do
-      RepositoryLocation.create(name: 'some_repo', uri: repo_uri)
-    end
+    let!(:repository_location) { RepositoryLocation.create(name: 'some_repo', uri: repo_uri) }
 
     context 'with a file uri' do
+      let(:repo_uri) { "file://#{test_git_repo.dir}" }
       let(:test_git_repo) { Support::GitRepositoryFactory.new }
 
       before do
@@ -53,6 +50,18 @@ RSpec.describe GitRepositoryLoader do
         end
 
         git_repository_loader.load('some_repo')
+      end
+
+      context 'when the destination directory is not empty and is not a git repo' do
+        before do
+          dir = File.join(cache_dir, "#{repository_location.id}-some_repo")
+          Dir.mkdir(dir)
+          File.open(File.join(dir, 'foo.txt'), 'w') { |f| f.write('foo') }
+        end
+
+        it 'removes the destination directory before cloning' do
+          expect { git_repository_loader.load('some_repo') }.not_to raise_error
+        end
       end
     end
 

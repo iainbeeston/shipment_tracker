@@ -5,8 +5,8 @@ class ApplicationController < ActionController::Base
 
   def git_repository_loader
     @git_repository_loader ||= GitRepositoryLoader.new(
-      ssh_private_key:  ENV['SSH_PRIVATE_KEY'],
-      ssh_public_key:  ENV['SSH_PUBLIC_KEY'],
+      ssh_private_key: ENV['SSH_PRIVATE_KEY'],
+      ssh_public_key: ENV['SSH_PUBLIC_KEY'],
       ssh_user: ENV['SSH_USER'],
     )
   end

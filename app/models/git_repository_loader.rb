@@ -29,7 +29,8 @@ class GitRepositoryLoader
     Rugged::Repository.new(dir, options).tap do |r|
       r.fetch('origin', options)
     end
-  rescue Rugged::OSError, Rugged::RepositoryError
+  rescue Rugged::OSError, Rugged::RepositoryError, Rugged::InvalidError
+    FileUtils.rmtree(dir)
     Rugged::Repository.clone_at(uri, dir, options)
   end
 
