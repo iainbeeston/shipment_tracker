@@ -3,7 +3,7 @@ Given 'I prepare a feature review for:' do |table|
 
   table.hashes.each do |row|
     prepare_feature_review_page.add(
-      app: row.fetch('app'),
+      app_name: row.fetch('app_name'),
       version: row.fetch('version'),
     )
   end

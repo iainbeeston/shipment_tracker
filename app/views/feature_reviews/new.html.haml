@@ -1,2 +1,11 @@
 %h1 Prepare feature audit for view
 
+= form_tag(feature_reviews_path, method: "get", class: 'form-horizontal') do
+  - @app_names.each do |app_name|
+    .form-group.row
+      = label_tag("apps[#{app_name}]", app_name, class: 'col-md-2 control-label')
+      .col-md-4
+        = text_field_tag("apps[#{app_name}]", "", placeholder: "Version", class: 'form-control')
+  .row
+    .col-md-6
+      = submit_tag("Submit", class: "btn btn-primary pull-right")

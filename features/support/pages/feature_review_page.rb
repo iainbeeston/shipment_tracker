@@ -6,7 +6,7 @@ module Pages
     end
 
     def app_info
-      page.find('.app_info').map { |app_info_element|
+      page.all('.app_info').map { |app_info_element|
         Sections::AppInfoSection.from_element(app_info_element)
       }
     end

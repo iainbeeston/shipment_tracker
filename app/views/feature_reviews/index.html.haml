@@ -1,2 +1,11 @@
 %h1 Feature for review
-
+%table.table.table-striped
+  %thead
+    %tr
+      %th Application
+      %th Version
+  %tbody
+    - @apps.each do |app_name, app_version|
+      %tr.app_info
+        %td= app_name
+        %td= app_version
