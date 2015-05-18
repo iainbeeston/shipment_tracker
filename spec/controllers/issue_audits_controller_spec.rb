@@ -30,7 +30,7 @@ RSpec.describe IssueAuditsController do
         .and_return(backend_git_repository)
     end
 
-    it 'returns all valid projectsion' do
+    it 'returns all valid projections' do
       expect(IssueAuditProjection).to receive(:new).with(
         app_name: 'frontend',
         issue_name: 'JIRA-123',
