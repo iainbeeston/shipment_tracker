@@ -18,3 +18,6 @@
 # Ignore Rubymine settings
 /.idea
 /.rake_tasks~
+
+# Ignore Mac OS X rubbish
+.DS_Store
