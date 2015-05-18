@@ -9,9 +9,9 @@ RSpec.describe GitRepository do
 
   subject(:repo) { GitRepository.new(Rugged::Repository.new(test_git_repo.dir)) }
 
-  describe '#commits_matching_query' do
-    it 'returns all commits where the message contains the query' do
-      first_commit = test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-1 master')
+  describe '#unmerged_commits_matching_query' do
+    it 'returns all unmerged commits where the message contains the query' do
+      test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-1 master')
 
       test_git_repo.create_branch('foo')
       test_git_repo.checkout('foo')
@@ -27,31 +27,30 @@ RSpec.describe GitRepository do
       test_git_repo.create_commit(author_name: 'Carol', message: 'ENG-2 bar')
 
       test_git_repo.checkout('master')
-      fourth_commit = test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-1 master')
+      test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-1 master')
 
-      commits = repo.commits_matching_query('ENG-1')
+      commits = repo.unmerged_commits_matching_query('ENG-1')
 
       expect(commits).to contain_exactly(
-        build_commit(first_commit),
         build_commit(second_commit),
         build_commit(third_commit),
-        build_commit(fourth_commit),
       )
     end
   end
 
-  describe '#last_commit_matching_query' do
-    it 'returns last commit where the message contains the query' do
+  describe '#last_unmerged_commit_matching_query' do
+    it 'returns last unmerged commit where the message contains the query' do
       test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-1 master', time: Time.new(2015, 4, 16))
       test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-2 master')
       test_git_repo.create_branch('foo')
       test_git_repo.create_commit(author_name: 'Bob', message: 'ENG-1 master', time: Time.new(2015, 4, 17))
       test_git_repo.checkout('foo')
-      last_commit = test_git_repo.create_commit(author_name: 'Carol', message: 'ENG-1 foo')
+      expected_commit = test_git_repo.create_commit(author_name: 'Carol', message: 'ENG-1 foo')
       test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-2 foo')
       test_git_repo.checkout('master')
+      test_git_repo.create_commit(author_name: 'Bob', message: 'ENG-1 master')
 
-      expect(repo.last_commit_matching_query('ENG-1')).to eq(build_commit(last_commit))
+      expect(repo.last_unmerged_commit_matching_query('ENG-1')).to eq(build_commit(expected_commit))
     end
   end
 

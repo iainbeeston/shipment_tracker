@@ -36,7 +36,7 @@ class IssueAuditProjection
   attr_reader :git_repository, :issue_name
 
   def commits
-    @commits ||= git_repository.commits_matching_query(issue_name)
+    @commits ||= git_repository.unmerged_commits_matching_query(issue_name)
   end
 
   def shas
@@ -62,7 +62,7 @@ class IssueAuditProjection
   end
 
   def record_build(build_event)
-    last_commit = git_repository.last_commit_matching_query(issue_name)
+    last_commit = git_repository.last_unmerged_commit_matching_query(issue_name)
     @builds << build_from_event(build_event) if last_commit && last_commit.id == build_event.version
   end
 

@@ -20,16 +20,19 @@ class GitRepository
     build_commits(walker)
   end
 
-  def commits_matching_query(query)
+  # Returns an array of GitCommits where the commit message includes the query
+  # and the commit doesn't exist on the master branch.
+  def unmerged_commits_matching_query(query)
     rugged_commits = repository.each_id
                      .map { |id| repository.lookup(id) }
                      .select { |o| o.type == :commit }
+                     .reject { |c| merged_commit_oid?(c.oid) }
                      .select { |c| c.message.include?(query) }
     build_commits(rugged_commits)
   end
 
-  def last_commit_matching_query(query)
-    commits_matching_query(query).max_by(&:time)
+  def last_unmerged_commit_matching_query(query)
+    unmerged_commits_matching_query(query).max_by(&:time)
   end
 
   private
@@ -51,6 +54,11 @@ class GitRepository
     fail CommitNotFound, commit_oid unless repository.exists?(commit_oid)
   rescue Rugged::InvalidError
     raise CommitNotValid, commit_oid
+  end
+
+  def merged_commit_oid?(commit_oid)
+    master_oid = (repository.branches['master'] || repository.branches['origin/master']).target_id
+    commit_oid == master_oid || repository.descendant_of?(master_oid, commit_oid)
   end
 
   attr_reader :repository

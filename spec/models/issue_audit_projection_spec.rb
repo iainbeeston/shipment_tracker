@@ -14,7 +14,7 @@ RSpec.describe IssueAuditProjection do
   end
 
   before do
-    allow(git_repository).to receive(:commits_matching_query)
+    allow(git_repository).to receive(:unmerged_commits_matching_query)
       .with('JIRA-1')
       .and_return(commits)
   end
@@ -101,7 +101,7 @@ RSpec.describe IssueAuditProjection do
     let(:commit) { GitCommit.new(id: 'a_commit') }
 
     before do
-      allow(git_repository).to receive(:last_commit_matching_query).with('JIRA-1').and_return(commit)
+      allow(git_repository).to receive(:last_unmerged_commit_matching_query).with('JIRA-1').and_return(commit)
     end
 
     it 'builds the list of builds' do

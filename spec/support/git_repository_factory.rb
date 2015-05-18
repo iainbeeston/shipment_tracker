@@ -16,22 +16,26 @@ module Support
 
     attr_reader :dir
 
-    delegate :create_branch, :checkout, to: :repo
+    delegate :checkout, to: :repo
 
     def initialize(dir = Dir.mktmpdir)
       @dir = dir
       @repo = Rugged::Repository.init_at(dir)
       @repo.config['user.name'] = 'Unconfigured'
       @repo.config['user.email'] = 'unconfigured@example.com'
+      @now = Time.at(0)
     end
 
-    def create_commit(author_name:, pretend_version: nil, message: 'A new commit', time: Time.now)
+    def create_commit(author_name:, pretend_version: nil, message: 'A new commit', time: nil)
       oid = repo.write('file contents', :blob)
       index = repo.index
 
       index.read_tree(repo.head.target.tree) unless repo.empty?
       index.add(path: 'README.md', oid: oid, mode: 0100644)
       oid = index.write_tree(repo)
+
+      @now += 60
+      time ||= @now
 
       commit_oid = Rugged::Commit.create(
         repo,
@@ -41,6 +45,10 @@ module Support
       end
 
       repo.lookup(commit_oid)
+    end
+
+    def create_branch(branch_name)
+      repo.create_branch(branch_name) unless repo.branches.exist?(branch_name)
     end
 
     def commit_for_pretend_version!(pretend_version)

@@ -43,7 +43,7 @@ Given 'a commit "$version" by "$name" is created' do |version, name|
   default_repo.create_commit(author_name: name, pretend_version: version)
 end
 
-Given('a commit "$v" by "$a" is created for ticket "$k" for "$app"') do |version, author, jira_key, app|
+Given 'a commit "$v" by "$a" is created for ticket "$k" for "$app"' do |version, author, jira_key, app|
   repo_for(app).create_commit(
     author_name: author,
     pretend_version: version,
@@ -58,6 +58,18 @@ Given(/^a commit "(.*?)" by "(.*?)" is created for ticket "([^\"]+)"$/) do |vers
     message: "#{jira_key} work",
   )
 end
+
+# rubocop:disable Style/LineLength
+Given 'a commit "$v" by "$a" is created on branch "$b" for ticket "$t" for "$app"' do |version, author, branch, jira_key, app|
+  repo_for(app).create_branch(branch)
+  repo_for(app).checkout(branch)
+  repo_for(app).create_commit(
+    author_name: author,
+    pretend_version: version,
+    message: "#{jira_key} work",
+  )
+end
+# rubocop:enable Style/LineLength
 
 Given 'a commit "$version" by "$name" is created with message "$message"' do |version, name, message|
   default_repo.create_commit(
