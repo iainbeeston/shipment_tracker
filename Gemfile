@@ -6,7 +6,7 @@ gem 'rails', '~> 4.2.1'
 gem 'bootstrap-sass'
 gem 'haml-rails'
 gem 'pg'
-gem 'rugged'
+gem 'rugged', '~> 0.23.0b2' # We need Rugged::Repository#descendant_of?
 gem 'sass-rails'
 gem 'virtus'
 
