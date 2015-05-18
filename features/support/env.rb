@@ -63,3 +63,7 @@ World(FactoryGirl::Syntax::Methods)
 
 require 'rack/test'
 World(Rack::Test::Methods)
+
+After do |scenario|
+  File.open('tmp/last_failure.html', 'w') { |f| f.write(page.source) } if scenario.failed?
+end
