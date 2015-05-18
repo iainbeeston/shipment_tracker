@@ -1,1 +1,1 @@
-web: bundle exec rails server --port $PORT
+web: bundle exec puma -C config/puma.rb

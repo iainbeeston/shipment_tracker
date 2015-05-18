@@ -1,7 +1,6 @@
 Feature: Developer prepares a feature review so that it can be attached to a
   ticket for a PO to use in acceptance.
 
-@wip
 Scenario: Preparing link for ticket
   Given an application called "frontend"
   And an application called "backend"
