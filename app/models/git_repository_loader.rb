@@ -3,6 +3,16 @@ require 'rugged'
 require 'git_repository'
 
 class GitRepositoryLoader
+  def self.from_rails_config
+    config = Rails.configuration
+    new(
+      ssh_private_key: config.ssh_private_key,
+      ssh_public_key: config.ssh_public_key,
+      ssh_user: config.ssh_user,
+      cache_dir: config.git_repository_cache_dir,
+    )
+  end
+
   def initialize(ssh_private_key:, ssh_public_key:, ssh_user:, cache_dir: Dir.tmpdir)
     @ssh_private_key = ssh_private_key
     @ssh_public_key = ssh_public_key

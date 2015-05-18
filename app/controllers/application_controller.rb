@@ -4,10 +4,6 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
   def git_repository_loader
-    @git_repository_loader ||= GitRepositoryLoader.new(
-      ssh_private_key: ENV['SSH_PRIVATE_KEY'],
-      ssh_public_key: ENV['SSH_PUBLIC_KEY'],
-      ssh_user: ENV['SSH_USER'],
-    )
+    @git_repository_loader ||= GitRepositoryLoader.from_rails_config
   end
 end
