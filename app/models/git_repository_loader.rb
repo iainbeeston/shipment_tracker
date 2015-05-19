@@ -1,4 +1,5 @@
 require 'rugged'
+require 'active_support/notifications'
 
 require 'git_repository'
 
@@ -37,11 +38,15 @@ class GitRepositoryLoader
 
   def updated_rugged_repository(uri, dir, options)
     Rugged::Repository.new(dir, options).tap do |r|
-      r.fetch('origin', options)
+      ActiveSupport::Notifications.instrument('fetch.git') do
+        r.fetch('origin', options)
+      end
     end
   rescue Rugged::OSError, Rugged::RepositoryError, Rugged::InvalidError
     FileUtils.rmtree(dir)
-    Rugged::Repository.clone_at(uri, dir, options)
+    ActiveSupport::Notifications.instrument('clone.git') do
+      Rugged::Repository.clone_at(uri, dir, options)
+    end
   end
 
   def options_for(uri, &block)
