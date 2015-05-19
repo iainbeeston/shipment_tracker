@@ -26,8 +26,8 @@ class GitRepository
     rugged_commits = repository.each_id
                      .map { |id| repository.lookup(id) }
                      .select { |o| o.type == :commit }
-                     .reject { |c| merged_commit_oid?(c.oid) }
                      .select { |c| c.message.include?(query) }
+                     .reject { |c| merged_commit_oid?(c.oid) }
     build_commits(rugged_commits)
   end
 
