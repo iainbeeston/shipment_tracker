@@ -38,13 +38,13 @@ class GitRepositoryLoader
 
   def updated_rugged_repository(uri, dir, options)
     Rugged::Repository.new(dir, options).tap do |r|
-      ActiveSupport::Notifications.instrument('fetch.git') do
+      instrument('fetch') do
         r.fetch('origin', options)
       end
     end
   rescue Rugged::OSError, Rugged::RepositoryError, Rugged::InvalidError
     FileUtils.rmtree(dir)
-    ActiveSupport::Notifications.instrument('clone.git') do
+    instrument('clone') do
       Rugged::Repository.clone_at(uri, dir, options)
     end
   end
@@ -83,5 +83,12 @@ class GitRepositoryLoader
   ensure
     ssh_public_key_file.unlink if ssh_public_key_file
     ssh_private_key_file.unlink if ssh_private_key_file
+  end
+
+  def instrument(name, &block)
+    ActiveSupport::Notifications.instrument(
+      "#{name}.git_repository_loader",
+      &block
+    )
   end
 end

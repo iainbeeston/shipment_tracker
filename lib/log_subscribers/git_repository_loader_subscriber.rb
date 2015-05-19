@@ -1,11 +1,11 @@
 module LogSubscribers
-  class GitSubscriber < ActiveSupport::LogSubscriber
+  class GitRepositoryLoaderSubscriber < ActiveSupport::LogSubscriber
     def self.runtime=(value)
-      Thread.current['git_runtime'] = value
+      Thread.current['git_repository_loader'] = value
     end
 
     def self.runtime
-      Thread.current['git_runtime'] ||= 0
+      Thread.current['git_repository_loader'] ||= 0
     end
 
     def self.reset_runtime

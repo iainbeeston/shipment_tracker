@@ -9,33 +9,41 @@ class GitRepository
   end
 
   def commits_between(from, to)
-    validate_commit!(from) unless from.nil?
-    validate_commit!(to)
+    instrument('commits_between') do
+      validate_commit!(from) unless from.nil?
+      validate_commit!(to)
 
-    walker = Rugged::Walker.new(repository)
-    walker.sorting(Rugged::SORT_TOPO | Rugged::SORT_REVERSE) # optional
-    walker.push(to)
-    walker.hide(from) if from
+      walker = Rugged::Walker.new(repository)
+      walker.sorting(Rugged::SORT_TOPO | Rugged::SORT_REVERSE) # optional
+      walker.push(to)
+      walker.hide(from) if from
 
-    build_commits(walker)
+      build_commits(walker)
+    end
   end
 
   # Returns an array of GitCommits where the commit message includes the query
   # and the commit doesn't exist on the master branch.
   def unmerged_commits_matching_query(query)
-    rugged_commits = repository.each_id
-                     .map { |id| repository.lookup(id) }
-                     .select { |o| o.type == :commit }
-                     .select { |c| c.message.include?(query) }
-                     .reject { |c| merged_commit_oid?(c.oid) }
-    build_commits(rugged_commits)
+    instrument('unmerged_commits_matching_query') do
+      rugged_commits = repository.each_id
+                       .map { |id| repository.lookup(id) }
+                       .select { |o| o.type == :commit }
+                       .select { |c| c.message.include?(query) }
+                       .reject { |c| merged_commit_oid?(c.oid) }
+      build_commits(rugged_commits)
+    end
   end
 
   def last_unmerged_commit_matching_query(query)
-    unmerged_commits_matching_query(query).max_by(&:time)
+    instrument('last_unmerged_commit_matching_query') do
+      unmerged_commits_matching_query(query).max_by(&:time)
+    end
   end
 
   private
+
+  attr_reader :repository
 
   def build_commit(commit)
     GitCommit.new(
@@ -61,5 +69,10 @@ class GitRepository
     commit_oid == master_oid || repository.descendant_of?(master_oid, commit_oid)
   end
 
-  attr_reader :repository
+  def instrument(name, &block)
+    ActiveSupport::Notifications.instrument(
+      "#{name}.git_repository",
+      &block
+    )
+  end
 end
