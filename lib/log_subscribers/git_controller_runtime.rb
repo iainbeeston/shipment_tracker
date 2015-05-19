@@ -25,7 +25,7 @@ module LogSubscribers
       def log_process_action(payload)
         messages = super
         git_runtime = payload[:git_runtime]
-        messages << 'Git: %.1fms'.format(git_runtime) if git_runtime
+        messages << format('Git: %.1fms', git_runtime) if git_runtime
         messages
       end
     end
