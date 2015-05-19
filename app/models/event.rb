@@ -1,6 +1,6 @@
 class Event < ActiveRecord::Base
   class BatchedRelation
-    delegate :to_a, to: :@relation
+    include Enumerable
 
     def initialize(relation)
       @relation = relation
@@ -12,6 +12,6 @@ class Event < ActiveRecord::Base
   end
 
   def self.in_order_of_creation
-    BatchedRelation.new(order(created_at: :asc))
+    BatchedRelation.new(self)
   end
 end
