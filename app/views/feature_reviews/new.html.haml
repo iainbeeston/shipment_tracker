@@ -1,11 +1,21 @@
-%h1 Prepare feature audit for view
+%h1 Prepare feature for review
 
 = form_tag(feature_reviews_path, method: "get", class: 'form-horizontal') do
+  .row
+    .col-md-6
+      %h3 Applications
   - @app_names.each do |app_name|
     .form-group.row
       = label_tag("apps[#{app_name}]", app_name, class: 'col-md-2 control-label')
       .col-md-4
         = text_field_tag("apps[#{app_name}]", "", placeholder: "Version", class: 'form-control')
+  .row
+    .col-md-6
+      %h3 User Acceptance Testing
+  .form-group.row
+    = label_tag("uat_url", "UAT environment", class: 'col-md-2 control-label')
+    .col-md-4
+      = text_field_tag("uat_url", "", placeholder: "URL", class: 'form-control')
   .row
     .col-md-6
       = submit_tag("Submit", class: "btn btn-primary pull-right")

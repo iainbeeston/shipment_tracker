@@ -11,6 +11,10 @@ module Pages
       }
     end
 
+    def uat_url
+      page.find('.uat_url').text
+    end
+
     private
 
     attr_reader :page, :url_helpers

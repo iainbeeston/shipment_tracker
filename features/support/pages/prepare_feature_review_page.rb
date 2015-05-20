@@ -9,8 +9,8 @@ module Pages
       page.visit url_helpers.new_feature_review_path
     end
 
-    def add(app_name:, version:)
-      page.fill_in(app_name, with: version)
+    def add(field_name:, content:)
+      page.fill_in(field_name, with: content)
     end
 
     def submit

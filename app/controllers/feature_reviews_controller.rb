@@ -5,6 +5,7 @@ class FeatureReviewsController < ApplicationController
 
   def index
     @apps = apps
+    @uat_url = params[:uat_url]
   end
 
   private
