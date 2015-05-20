@@ -21,3 +21,6 @@
 
 # Ignore Mac OS X rubbish
 .DS_Store
+
+# Ignore SimpleCov's coverage directory
+/coverage

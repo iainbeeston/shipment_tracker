@@ -17,6 +17,9 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+require 'simplecov'
+SimpleCov.start
+
 root = Pathname.new('..').expand_path(File.dirname(__FILE__))
 [
   root.join('app', 'models'),

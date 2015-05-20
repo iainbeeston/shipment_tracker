@@ -36,8 +36,9 @@ group :test do
   gem 'capybara'
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
-  gem 'rack-test', require: 'rack/test'
-  gem 'launchy'
   gem 'factory_girl'
+  gem 'launchy'
+  gem 'rack-test', require: 'rack/test'
   gem 'shoulda-matchers'
+  gem 'simplecov'
 end
