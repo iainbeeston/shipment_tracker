@@ -20,7 +20,9 @@ Then 'I should see the feature review page with the applications:' do |table|
 end
 
 When 'I visit a feature review for:' do |apps_table|
-  apps_hash = Hash[apps_table.hashes.map { |app| [app[:app_name], resolve_version(app[:version])] }]
+  apps_hash = apps_table.hashes.reduce({}) { |apps, app|
+    apps.merge(app[:app_name] => scenario_context.resolve_version(app[:version]))
+  }
   visit "/feature_reviews?#{{ apps: apps_hash }.to_query}"
 end
 

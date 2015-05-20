@@ -28,7 +28,7 @@ Then 'the authors for "$app_name"' do |app_name, authors_table|
 end
 
 Then 'the builds for "$app_name"' do |app_name, table|
-  repo = repo_for(app_name)
+  repo = scenario_context.repository_for(app_name)
 
   expected_builds = table.hashes.map { |build|
     commit = repo.commit_for_pretend_version!(build.fetch('commit'))
