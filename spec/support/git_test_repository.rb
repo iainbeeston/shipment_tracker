@@ -2,7 +2,7 @@ require 'rugged'
 require 'active_support/inflector/transliterate'
 
 module Support
-  class GitCommit
+  class GitTestCommit
     attr_reader :version, :pretend_version
 
     def initialize(version, pretend_version)
@@ -11,7 +11,7 @@ module Support
     end
   end
 
-  class GitRepositoryFactory
+  class GitTestRepository
     include ActiveSupport::Inflector
 
     attr_reader :dir
@@ -41,7 +41,7 @@ module Support
         repo,
         commit_options(author_name, oid, message, time),
       ).tap do |commit|
-        commits.push GitCommit.new(commit, pretend_version)
+        commits.push GitTestCommit.new(commit, pretend_version)
       end
 
       repo.lookup(commit_oid)

@@ -1,4 +1,4 @@
-require 'support/git_repository_factory'
+require 'support/git_test_repository'
 
 def setup_application(name)
   dir = Dir.mktmpdir
@@ -6,7 +6,7 @@ def setup_application(name)
   @application = name
 
   @repos ||= {}
-  @repos[name] = Support::GitRepositoryFactory.new(dir)
+  @repos[name] = Support::GitTestRepository.new(dir)
 
   RepositoryLocation.create(uri: "file://#{dir}", name: name)
 end

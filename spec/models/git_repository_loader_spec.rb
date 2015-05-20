@@ -1,6 +1,6 @@
 require 'rails_helper'
 require 'git_repository_loader'
-require 'support/git_repository_factory'
+require 'support/git_test_repository'
 
 RSpec.describe GitRepositoryLoader do
   let(:cache_dir) { Dir.mktmpdir }
@@ -19,7 +19,7 @@ RSpec.describe GitRepositoryLoader do
 
     context 'with a file uri' do
       let(:repo_uri) { "file://#{test_git_repo.dir}" }
-      let(:test_git_repo) { Support::GitRepositoryFactory.new }
+      let(:test_git_repo) { Support::GitTestRepository.new }
 
       before do
         test_git_repo.create_commit(author_name: 'first commit')

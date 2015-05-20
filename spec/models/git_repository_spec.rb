@@ -1,11 +1,11 @@
 require 'rails_helper'
 require 'git_repository'
-require 'support/git_repository_factory'
+require 'support/git_test_repository'
 
 require 'rugged'
 
 RSpec.describe GitRepository do
-  let(:test_git_repo) { Support::GitRepositoryFactory.new }
+  let(:test_git_repo) { Support::GitTestRepository.new }
 
   subject(:repo) { GitRepository.new(Rugged::Repository.new(test_git_repo.dir)) }
 
