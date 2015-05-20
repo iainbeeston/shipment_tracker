@@ -4,8 +4,59 @@ require 'feature_review_projection'
 RSpec.describe FeatureReviewProjection do
   let(:apps) { { 'frontend' => 'abc', 'backend' => 'def' } }
   let(:uat_url) { 'http://uat.fundingcircle.com' }
+  let(:projection_url) { 'http://example.com/feature_reviews?foo[bar]=baz' }
 
-  subject(:projection) { FeatureReviewProjection.new(apps: apps, uat_url: uat_url) }
+  subject(:projection) {
+    FeatureReviewProjection.new(
+      apps: apps,
+      uat_url: uat_url,
+      projection_url: projection_url,
+    )
+  }
+
+  describe 'tickets projection' do
+    let(:jira_1) { { key: 'JIRA-1', summary: 'Ticket 1' } }
+    let(:jira_4) { { key: 'JIRA-4', summary: 'Ticket 4' } }
+
+    let(:events) {
+      [
+        build(:jira_event, :to_do, jira_1),
+        build(:jira_event, :in_progress, jira_1),
+        build(:jira_event, :ready_for_review, jira_1.merge(comment_body: "Please review #{projection_url}")),
+        build(:jira_event, :done, jira_1),
+
+        build(:jira_event, :to_do, key: 'JIRA-2'),
+        build(:jira_event, :to_do, key: 'JIRA-3', comment_body: "Review #{projection_url}/extra/stuff"),
+
+        build(:jira_event, :to_do, jira_4),
+        build(:jira_event, :in_progress, jira_4),
+        build(:jira_event, :ready_for_review, jira_4.merge(comment_body: "#{projection_url} is ready!")),
+      ]
+    }
+
+    it 'projects the tickets referenced in JIRA comments' do
+      projection.apply_all(events)
+
+      expect(projection.tickets).to eq([
+        Ticket.new(key: 'JIRA-1', summary: 'Ticket 1', status: 'Done'),
+        Ticket.new(key: 'JIRA-4', summary: 'Ticket 4', status: 'Ready For Review'),
+      ])
+    end
+
+    context 'when url is percent encoded' do
+      let(:url) { 'http://example.com/feature_reviews?foo%5Bbar%5D=baz' }
+
+      let(:events) { [build(:jira_event, key: 'JIRA-1', summary: '', comment_body: "Review #{url}")] }
+
+      it 'projects the tickets referenced in JIRA comments' do
+        projection.apply_all(events)
+
+        expect(projection.tickets).to eq([
+          Ticket.new(key: 'JIRA-1', summary: '', status: 'To Do'),
+        ])
+      end
+    end
+  end
 
   describe 'builds projection' do
     let(:events) {

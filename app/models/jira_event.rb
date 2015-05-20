@@ -23,4 +23,8 @@ class JiraEvent < Event
     changelog = details.fetch('changelog', 'items' => [])
     changelog.fetch('items').any? { |item| item['field'] == 'status' }
   end
+
+  def comment
+    details.fetch('comment', {}).fetch('body', '')
+  end
 end

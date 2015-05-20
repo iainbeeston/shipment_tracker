@@ -6,6 +6,7 @@ module Pages
     end
 
     def app_info
+      verify!
       page.all('.app_info').map { |app_info_element|
         Sections::AppInfoSection.from_element(app_info_element)
       }
@@ -19,6 +20,7 @@ module Pages
     end
 
     def uat_url
+      verify!
       page.find('.uat_url').text
     end
 
@@ -27,6 +29,11 @@ module Pages
       app_container(for_app).all('.deploy').map { |deploy_line|
         Sections::FeatureReviewDeploySection.from_element(deploy_line)
       }
+    end
+
+    def tickets
+      verify!
+      page.all('.ticket').map { |ticket_line| Sections::TicketSection.from_element(ticket_line) }
     end
 
     private

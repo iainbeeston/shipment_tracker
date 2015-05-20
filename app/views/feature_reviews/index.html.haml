@@ -4,6 +4,21 @@
   UAT environment
   %strong.uat_url= @uat_url
 
+
+%h3 Associated tickets
+%table.table.table-striped
+  %thead
+    %tr
+      %th Key
+      %th Summary
+      %th Status
+  %tbody
+    - @projection.tickets.each do |ticket|
+      %tr.ticket
+        %td= ticket.key
+        %td= ticket.summary
+        %td= ticket.status
+
 %table.table.table-striped
   %thead
     %tr

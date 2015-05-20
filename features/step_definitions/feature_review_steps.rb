@@ -19,11 +19,12 @@ Then 'I should see the feature review page with the applications:' do |table|
   expect(feature_review_page.app_info).to match_array(expected_app_info)
 end
 
-When 'I visit a feature review for UAT "$uat" and apps:' do |uat_url, apps_table|
-  apps_hash = apps_table.hashes.reduce({}) { |apps, app|
-    apps.merge(app[:app_name] => scenario_context.resolve_version(app[:version]))
-  }
-  visit "/feature_reviews?#{{ apps: apps_hash, uat_url: uat_url }.to_query}"
+Given 'a developer prepares a review for UAT "$uat_url" with apps' do |uat_url, apps_table|
+  scenario_context.prepare_review(apps_table.hashes, uat_url)
+end
+
+When 'I visit the feature review' do
+  visit scenario_context.review_url
 end
 
 Then 'I should see the builds for "$app"' do |app_name, builds_table|
@@ -51,4 +52,16 @@ Then 'I should see the deploys' do |deploys_table|
   }
 
   expect(feature_review_page.deploys).to match_array(expected_deploys)
+end
+
+Then 'I should only see the ticket' do |ticket_table|
+  expected_tickets = ticket_table.hashes.map { |ticket|
+    Sections::TicketSection.new(
+      key: ticket.fetch('key'),
+      summary: ticket.fetch('summary'),
+      status: ticket.fetch('status'),
+    )
+  }
+
+  expect(feature_review_page.tickets).to match_array(expected_tickets)
 end

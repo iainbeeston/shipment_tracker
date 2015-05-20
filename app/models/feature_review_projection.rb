@@ -1,11 +1,14 @@
 class FeatureReviewProjection
   attr_reader :builds
 
-  def initialize(apps:, uat_url:)
+  def initialize(apps:, uat_url:, projection_url:)
     @apps = apps
     @uat_url = uat_url
+    @projection_url = projection_url
+
     @builds = {}
     @deploys = {}
+    @tickets = {}
   end
 
   def apply_all(events)
@@ -18,7 +21,13 @@ class FeatureReviewProjection
     @deploys.values
   end
 
+  def tickets
+    @tickets.values
+  end
+
   private
+
+  attr_reader :projection_url
 
   def apply(event)
     case event
@@ -26,6 +35,8 @@ class FeatureReviewProjection
       apply_build_event(event)
     when DeployEvent
       apply_deploy_event(event)
+    when JiraEvent
+      apply_ticket_event(event)
     end
   end
 
@@ -54,6 +65,17 @@ class FeatureReviewProjection
     @deploys[deploy_event.app_name] = deploy
   end
 
+  def apply_ticket_event(ticket_event)
+    return unless @tickets.key?(ticket_event.key) || matches_projection_url?(ticket_event.comment)
+
+    ticket = Ticket.new(
+      key: ticket_event.key,
+      summary: ticket_event.summary,
+      status: ticket_event.status,
+    )
+    @tickets[ticket_event.key] = ticket
+  end
+
   def versions
     @versions ||= @apps.invert
   end
@@ -61,5 +83,11 @@ class FeatureReviewProjection
   def version_correctness_for_event(event)
     return :ignore unless @apps.key?(event.app_name)
     event.version == @apps[event.app_name] ? :yes : :no
+  end
+
+  def matches_projection_url?(comment)
+    URI.extract(comment).any? { |comment_url|
+      Addressable::URI.parse(comment_url) == Addressable::URI.parse(projection_url)
+    }
   end
 end

@@ -20,6 +20,7 @@ Scenario: Viewing a feature review
   Given an application called "frontend"
   And an application called "backend"
   And an application called "irrelevant"
+  And a ticket "JIRA-123" with summary "Urgent ticket" is started
   And a commit "#abc" by "Alice" is created for app "frontend"
   And a commit "#old" by "Bob" is created for app "backend"
   And a commit "#def" by "Bob" is created for app "backend"
@@ -32,13 +33,19 @@ Scenario: Viewing a feature review
   And commit "#old" is deployed by "Bob" on server "http://uat.fundingcircle.com"
   And commit "#def" is deployed by "Bob" on server "http://other-uat.fundingcircle.com"
   And commit "#ghi" is deployed by "Carol" on server "http://uat.fundingcircle.com"
-
-  When I visit a feature review for UAT "http://uat.fundingcircle.com" and apps:
+  And a developer prepares a review for UAT "http://uat.fundingcircle.com" with apps
     | app_name | version |
     | frontend | #abc    |
     | backend  | #def    |
+  And adds the link to a comment for ticket "JIRA-123"
 
-  Then I should see the builds for "frontend"
+  When I visit the feature review
+
+  Then I should only see the ticket
+    | key      | summary       | status      |
+    | JIRA-123 | Urgent ticket | In Progress |
+
+  And I should see the builds for "frontend"
     | source   | status  | commit |
     | CircleCi | success | #abc   |
 

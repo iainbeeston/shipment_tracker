@@ -9,6 +9,9 @@ FactoryGirl.define do
       user_email 'joe.bloggs@example.com'
       status 'To Do'
       updated '2015-05-07T15:24:34.957+0100'
+      comment_body nil
+
+      changelog_details({})
 
       default_details do
         {
@@ -26,10 +29,13 @@ FactoryGirl.define do
           },
         }
       end
-      changelog_details({})
     end
 
-    details { default_details.merge(changelog_details) }
+    details do
+      details = default_details.merge(changelog_details)
+      details.merge!('comment' => { 'body' => comment_body }) if comment_body
+      details
+    end
 
     initialize_with { new(attributes) }
 

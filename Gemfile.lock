@@ -278,6 +278,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  addressable
   bootstrap-sass
   capybara
   cucumber-rails
