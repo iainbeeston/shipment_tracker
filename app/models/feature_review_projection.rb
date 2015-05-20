@@ -1,10 +1,9 @@
 class FeatureReviewProjection
-  attr_reader :app_name, :version, :builds
+  attr_reader :builds
 
-  def initialize(app_name:, version:)
-    @app_name = app_name
-    @version = version
-    @builds = []
+  def initialize(apps)
+    @apps = apps
+    @builds = {}
   end
 
   def apply_all(events)
@@ -18,9 +17,15 @@ class FeatureReviewProjection
   def apply(event)
     case event
     when CircleCiEvent, JenkinsEvent
-      if event.version == version
-        @builds << Build.new(source: event.source, status: event.status, version: event.version)
+      app = versions[event.version]
+      if app
+        build = Build.new(source: event.source, status: event.status, version: event.version)
+        @builds[app] = @builds.fetch(app, []).push(build)
       end
     end
+  end
+
+  def versions
+    @versions ||= @apps.invert
   end
 end

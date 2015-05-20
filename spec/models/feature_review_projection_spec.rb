@@ -2,7 +2,9 @@ require 'rails_helper'
 require 'feature_review_projection'
 
 RSpec.describe FeatureReviewProjection do
-  subject(:projection) { FeatureReviewProjection.new(app_name: 'frontend', version: 'abc') }
+  let(:apps) { { 'frontend' => 'abc', 'backend' => 'def' } }
+
+  subject(:projection) { FeatureReviewProjection.new(apps) }
 
   describe 'builds projection' do
     let(:events) {
@@ -18,10 +20,15 @@ RSpec.describe FeatureReviewProjection do
     it 'projects the last build' do
       projection.apply_all(events)
 
-      expect(projection.builds).to eq([
-        Build.new(source: 'CircleCi', status: 'failed', version: 'abc'),
-        Build.new(source: 'Jenkins', status: 'success', version: 'abc'),
-      ])
+      expect(projection.builds).to eq(
+        'frontend' => [
+          Build.new(source: 'CircleCi', status: 'failed', version: 'abc'),
+          Build.new(source: 'Jenkins', status: 'success', version: 'abc'),
+        ],
+        'backend'  => [
+          Build.new(source: 'CircleCi', status: 'success', version: 'def'),
+        ],
+      )
     end
   end
 end

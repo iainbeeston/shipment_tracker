@@ -6,18 +6,11 @@ class FeatureReviewsController < ApplicationController
   def index
     @apps = apps
     @uat_url = params[:uat_url]
-    @reports = build_reports
+    @projection = FeatureReviewProjection.new(apps)
+    @projection.apply_all(Event.in_order_of_creation)
   end
 
   private
-
-  def build_reports
-    apps.map { |app_name, version|
-      FeatureReviewProjection.new(app_name: app_name, version: version).tap do |report|
-        report.apply_all(Event.in_order_of_creation)
-      end
-    }
-  end
 
   def apps
     params.fetch(:apps, {}).select { |_name, version| version.present? }

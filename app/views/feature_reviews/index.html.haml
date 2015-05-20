@@ -2,9 +2,29 @@
 
 %h3
   UAT environment
-  %strong.uat_url
-    = @uat_url
+  %strong.uat_url= @uat_url
 
-- @reports.each do |report|
-  %div{class: report.app_name}
-    = render partial: 'feature_review', locals: { report: report }
+%table.table.table-striped
+  %thead
+    %tr
+      %th Application
+      %th Version
+  %tbody
+    - @apps.each do |name, version|
+      %tr.app_info
+        %td= name
+        %td= version
+
+- @projection.builds.each do |app_name, builds|
+  %div{class: app_name}
+    %h3= "Builds for #{app_name}"
+    %table.table.table-striped
+      %thead
+        %tr
+          %th Source
+          %th Status
+      %tbody
+        - builds.each do |build|
+          %tr.build
+            %td= build.source
+            %td= build.status
