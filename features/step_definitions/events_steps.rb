@@ -1,12 +1,3 @@
-Given 'a failing CircleCi build for "$version"' do |version|
-  payload = build(
-    :circle_ci_event,
-    success?: false,
-    version: scenario_context.resolve_version(version),
-  ).details
-  post_json '/events/circleci', payload
-end
-
 Given 'a ticket "$key" with summary "$summary" is started' do |key, summary|
   scenario_context.create_and_start_ticket(
     key:     key,

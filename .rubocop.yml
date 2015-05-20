@@ -8,7 +8,6 @@ AllCops:
     - Guardfile
     - Gemfile
     - 'hooks/**/*'
-    - 'features/step_definitions/debug_steps.rb'
 
 Metrics/LineLength:
   Max: 110

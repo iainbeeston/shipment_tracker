@@ -62,10 +62,6 @@ module Pages
       page.current_url =~ Regexp.new(Regexp.escape(url_helpers.feature_audit_path(id: '')))
     end
 
-    def error_present?
-      error_message.present?
-    end
-
     def error_message
       @error_message ||= ErrorMessage.new(page: page, url_helpers: url_helpers)
     end

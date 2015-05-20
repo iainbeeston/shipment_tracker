@@ -51,12 +51,6 @@ module Support
       repo.create_branch(branch_name) unless repo.branches.exist?(branch_name)
     end
 
-    def commit_for_pretend_version!(pretend_version)
-      value = commit_for_pretend_version(pretend_version)
-      fail "Commit not found for #{pretend_version}. Commits available: #{commits.inspect}" unless value
-      value
-    end
-
     def commit_for_pretend_version(pretend_version)
       commit = commits.find { |c| c.pretend_version == pretend_version }
       commit && commit.version

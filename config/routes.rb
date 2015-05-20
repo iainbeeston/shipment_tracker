@@ -10,7 +10,6 @@ Rails.application.routes.draw do
 
   # Projections
   resources :feature_audits, only: :show
-  resources :issue_audits, only: [:index, :show]
   resources :feature_reviews, only: [:new, :index]
 
   resources :repository_locations, only: [:index, :create]

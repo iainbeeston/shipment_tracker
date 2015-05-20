@@ -25,10 +25,6 @@ module Support
       RepositoryLocation.create(uri: "file://#{dir}", name: name)
     end
 
-    def repository_for(application)
-      @repos[application]
-    end
-
     def resolve_app(version)
       app_for_version(resolve_version(version))
     end
