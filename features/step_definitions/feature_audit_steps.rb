@@ -1,6 +1,10 @@
+def resolve_version(version)
+  version.start_with?('#') ? default_repo.commit_for_pretend_version!(version) : version
+end
+
 When 'I compare commit "$ver1" with commit "$ver2" for "$application"' do |ver1, ver2, application|
-  git_commit_1 = ver1.start_with?('#') ? default_repo.commit_for_pretend_version!(ver1) : ver1
-  git_commit_2 = ver2.start_with?('#') ? default_repo.commit_for_pretend_version!(ver2) : ver2
+  git_commit_1 = resolve_version ver1
+  git_commit_2 = resolve_version ver2
 
   feature_audit_page.request(
     project_name: application,

@@ -5,13 +5,6 @@
   %strong.uat_url
     = @uat_url
 
-%table.table.table-striped
-  %thead
-    %tr
-      %th Application
-      %th Version
-  %tbody
-    - @apps.each do |app_name, app_version|
-      %tr.app_info
-        %td= app_name
-        %td= app_version
+- @reports.each do |report|
+  %div{class: report.app_name}
+    = render partial: 'feature_review', locals: { report: report }

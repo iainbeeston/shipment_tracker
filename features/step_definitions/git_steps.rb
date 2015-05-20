@@ -21,6 +21,10 @@ def commit_from_pretend(pretend_commit)
   value
 end
 
+def resolve_version(version)
+  version.start_with?('#') ? commit_from_pretend(version) : version
+end
+
 def default_repo
   @repos[default_application]
 end

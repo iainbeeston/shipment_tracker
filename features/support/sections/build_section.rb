@@ -13,7 +13,7 @@ module Sections
       new(
         source:  values.fetch(0),
         status:  values.fetch(1),
-        version: values.fetch(2),
+        version: values.fetch(2, nil),
       )
     end
   end
