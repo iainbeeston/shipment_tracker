@@ -56,7 +56,7 @@ rails s
 You can also use Foreman to start the server and use settings from Heroku:
 
 ```
-SSH_PRIVATE_KEY=$(heroku config:get SSH_PRIVATE_KEY) SSH_PUBLIC_KEY=$(heroku config:get SSH_PUBLIC_KEY) foreman s
+SSH_USER=git SSH_PRIVATE_KEY=$(heroku config:get SSH_PRIVATE_KEY) SSH_PUBLIC_KEY=$(heroku config:get SSH_PUBLIC_KEY) foreman s
 ```
 
 ## License
