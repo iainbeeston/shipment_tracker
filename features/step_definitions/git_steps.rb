@@ -14,6 +14,10 @@ Given 'a commit "$version" by "$name" is created' do |version, name|
   scenario_context.last_repository.create_commit(author_name: name, pretend_version: version)
 end
 
+Given 'a commit "$version" by "$name" is created for app "$app"' do |version, name, app|
+  scenario_context.repository_for(app).create_commit(author_name: name, pretend_version: version)
+end
+
 Given(/^a commit "(.*?)" by "(.*?)" is created for ticket "([^\"]+)"$/) do |version, author, jira_key|
   scenario_context.last_repository.create_commit(
     author_name: author,

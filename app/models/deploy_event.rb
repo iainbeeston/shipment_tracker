@@ -1,4 +1,8 @@
 class DeployEvent < Event
+  def app_name
+    details['app_name']
+  end
+
   def server
     details['server']
   end

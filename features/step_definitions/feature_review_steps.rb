@@ -19,11 +19,11 @@ Then 'I should see the feature review page with the applications:' do |table|
   expect(feature_review_page.app_info).to match_array(expected_app_info)
 end
 
-When 'I visit a feature review for:' do |apps_table|
+When 'I visit a feature review for UAT "$uat" and apps:' do |uat_url, apps_table|
   apps_hash = apps_table.hashes.reduce({}) { |apps, app|
     apps.merge(app[:app_name] => scenario_context.resolve_version(app[:version]))
   }
-  visit "/feature_reviews?#{{ apps: apps_hash }.to_query}"
+  visit "/feature_reviews?#{{ apps: apps_hash, uat_url: uat_url }.to_query}"
 end
 
 Then 'I should see the builds for "$app"' do |app_name, builds_table|
@@ -39,4 +39,16 @@ end
 
 Then 'I can see the UAT environment "$uat"' do |uat|
   expect(feature_review_page.uat_url).to eq(uat)
+end
+
+Then 'I should see the deploys' do |deploys_table|
+  expected_deploys = deploys_table.hashes.map { |deploy|
+    Sections::FeatureReviewDeploySection.new(
+      app_name: deploy.fetch('app_name'),
+      version: scenario_context.resolve_version(deploy.fetch('version')),
+      correct: deploy.fetch('correct'),
+    )
+  }
+
+  expect(feature_review_page.deploys).to match_array(expected_deploys)
 end

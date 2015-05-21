@@ -28,3 +28,17 @@
           %tr.build
             %td= build.source
             %td= build.status
+
+%h3 Deploys
+%table.table.table-striped
+  %thead
+    %tr
+      %th App
+      %th Version
+      %th Correct
+  %tbody
+    - @projection.deploys.each do |deploy|
+      %tr.deploy
+        %td= deploy.app_name
+        %td= deploy.version
+        %td= deploy.correct == :ignore ? '' : deploy.correct

@@ -6,7 +6,8 @@ class FeatureReviewsController < ApplicationController
   def index
     @apps = apps
     @uat_url = params[:uat_url]
-    @projection = FeatureReviewProjection.new(apps)
+
+    @projection = FeatureReviewProjection.new(apps: @apps, uat_url: @uat_url)
     @projection.apply_all(Event.in_order_of_creation)
   end
 

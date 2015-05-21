@@ -22,6 +22,13 @@ module Pages
       page.find('.uat_url').text
     end
 
+    def deploys(for_app: nil)
+      verify!
+      app_container(for_app).all('.deploy').map { |deploy_line|
+        Sections::FeatureReviewDeploySection.from_element(deploy_line)
+      }
+    end
+
     private
 
     attr_reader :page, :url_helpers
