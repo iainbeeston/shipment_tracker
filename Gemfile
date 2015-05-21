@@ -3,7 +3,7 @@ ruby '2.2.2'
 
 gem 'rails', '~> 4.2.1'
 
-gem 'addressable'
+gem 'addressable', require: 'addressable/uri'
 gem 'bootstrap-sass'
 gem 'haml-rails'
 gem 'newrelic_rpm'
