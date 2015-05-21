@@ -33,6 +33,7 @@
         %tr.ticket
           %td= ticket.key
           %td= ticket.summary
+          %td= ticket.description
           %td= ticket.status
           %td= ticket.approver_email
           %td= ticket.approved_at.try(:utc)

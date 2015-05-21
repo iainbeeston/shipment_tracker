@@ -20,7 +20,7 @@ Scenario: Viewing a feature review
   Given an application called "frontend"
   And an application called "backend"
   And an application called "irrelevant"
-  And a ticket "JIRA-123" with summary "Urgent ticket" is started
+  And a ticket "JIRA-123" with summary "Urgent ticket" and description "Urgent stuff" is started
   And a commit "#abc" by "Alice" is created for app "frontend"
   And a commit "#old" by "Bob" is created for app "backend"
   And a commit "#def" by "Bob" is created for app "backend"
@@ -42,8 +42,8 @@ Scenario: Viewing a feature review
   When I visit the feature review
 
   Then I should only see the ticket
-    | key      | summary       | status      |
-    | JIRA-123 | Urgent ticket | In Progress |
+    | key      | summary       | description  | status      |
+    | JIRA-123 | Urgent ticket | Urgent stuff | In Progress |
 
   And I should see the builds for "frontend"
     | source   | status  | commit |

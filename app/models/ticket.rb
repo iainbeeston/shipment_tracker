@@ -4,6 +4,7 @@ class Ticket
   values do
     attribute :key, String
     attribute :summary, String
+    attribute :description, String
     attribute :status, String
     attribute :approver_email, String
     attribute :approved_at, Time

@@ -17,8 +17,8 @@ Scenario: Viewing information between 2 versions
     | author |
     | Billy  |
   And the tickets
-    | key      | summary       | status | approver email        | approved at             |
-    | JIRA-123 | Urgent ticket | Done   | eve@fundingcircle.com | 2015-06-07 14:24:34 UTC |
+    | key      | summary       | description | status | approver email        | approved at             |
+    | JIRA-123 | Urgent ticket |             | Done   | eve@fundingcircle.com | 2015-06-07 14:24:34 UTC |
   And the builds
     | source   | status  | commit |
     | CircleCi | success | #2     |

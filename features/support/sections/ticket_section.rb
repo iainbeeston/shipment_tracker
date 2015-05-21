@@ -5,6 +5,7 @@ module Sections
     values do
       attribute :key, String
       attribute :summary, String
+      attribute :description, String
       attribute :status, String
       attribute :approver_email, String
       attribute :approved_at, String
@@ -15,9 +16,10 @@ module Sections
       new(
         key: values.fetch(0),
         summary: values.fetch(1),
-        status: values.fetch(2),
-        approver_email: values.fetch(3, nil),
-        approved_at: values.fetch(4, nil),
+        description: values.fetch(2),
+        status: values.fetch(3),
+        approver_email: values.fetch(4, nil),
+        approved_at: values.fetch(5, nil),
       )
     end
   end
