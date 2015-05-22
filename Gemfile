@@ -35,7 +35,7 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'coveralls', require: false
+  gem 'codeclimate-test-reporter'
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
   gem 'factory_girl'

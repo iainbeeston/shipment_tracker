@@ -5,6 +5,4 @@ require File.expand_path('../config/application', __FILE__)
 
 Rails.application.load_tasks
 
-require 'coveralls/rake/task'
-Coveralls::RakeTask.new
-task default: [:spec, :cucumber, :rubocop, 'coveralls:push']
+task default: [:spec, :cucumber, :rubocop]
