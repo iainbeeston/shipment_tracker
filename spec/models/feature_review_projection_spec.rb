@@ -50,9 +50,7 @@ RSpec.describe FeatureReviewProjection do
       it 'projects the tickets referenced in JIRA comments' do
         projection.apply_all(events)
 
-        expect(projection.tickets).to eq([
-          Ticket.new(key: 'JIRA-1', summary: '', description: '', status: 'To Do'),
-        ])
+        expect(projection.tickets).to eq([Ticket.new(key: 'JIRA-1', status: 'To Do')])
       end
     end
   end

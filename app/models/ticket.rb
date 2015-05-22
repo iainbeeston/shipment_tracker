@@ -3,9 +3,9 @@ class Ticket
 
   values do
     attribute :key, String
-    attribute :summary, String
-    attribute :description, String
-    attribute :status, String
+    attribute :summary, String, default: ''
+    attribute :description, String, default: ''
+    attribute :status, String, default: 'To Do'
     attribute :approver_email, String
     attribute :approved_at, Time
   end
