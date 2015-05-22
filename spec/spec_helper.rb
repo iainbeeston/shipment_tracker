@@ -17,8 +17,8 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-require 'codeclimate-test-reporter'
-CodeClimate::TestReporter.start
+require 'coveralls'
+Coveralls.wear!('rails')
 
 root = Pathname.new('..').expand_path(File.dirname(__FILE__))
 [
