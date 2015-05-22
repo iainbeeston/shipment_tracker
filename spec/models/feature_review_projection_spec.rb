@@ -43,6 +43,40 @@ RSpec.describe FeatureReviewProjection do
       ])
     end
 
+    context 'when multiple feature reviews are referenced in the same JIRA ticket' do
+      let(:events) {
+        [
+          build(:jira_event, key: 'JIRA-1', comment_body: "Review #{url1}"),
+          build(:jira_event, key: 'JIRA-1', comment_body: "Review again #{url2}"),
+        ]
+      }
+      let(:url1) { 'http://example.com/feature_reviews?foo[bar]=one' }
+      let(:url2) { 'http://example.com/feature_reviews?foo[bar]=two' }
+
+      subject(:projection1) {
+        FeatureReviewProjection.new(
+          apps: apps,
+          uat_url: uat_url,
+          projection_url: url1,
+        )
+      }
+      subject(:projection2) {
+        FeatureReviewProjection.new(
+          apps: apps.merge('backend' => 'ghi', 'extra_app' => 'jkl'),
+          uat_url: uat_url,
+          projection_url: url2,
+        )
+      }
+
+      it 'projects the ticket referenced in the JIRA comments for each projection ' do
+        projection1.apply_all(events)
+        projection2.apply_all(events)
+
+        expect(projection1.tickets).to eq([Ticket.new(key: 'JIRA-1')])
+        expect(projection2.tickets).to eq([Ticket.new(key: 'JIRA-1')])
+      end
+    end
+
     context 'when url is percent encoded' do
       let(:url) { 'http://example.com/feature_reviews?foo%5Bbar%5D=baz' }
       let(:events) { [build(:jira_event, key: 'JIRA-1', comment_body: "Review #{url}")] }
