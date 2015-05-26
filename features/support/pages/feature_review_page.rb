@@ -7,7 +7,7 @@ module Pages
 
     def app_info
       verify!
-      page.all('.app_info').map { |app_info_element|
+      page.all('.app-info').map { |app_info_element|
         Sections::AppInfoSection.from_element(app_info_element)
       }
     end
@@ -21,7 +21,7 @@ module Pages
 
     def uat_url
       verify!
-      page.find('.uat_url').text
+      page.find('.uat-url').text
     end
 
     def deploys(for_app: nil)

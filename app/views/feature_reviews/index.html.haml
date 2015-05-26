@@ -23,7 +23,7 @@
       %th Version
   %tbody
     - @apps.each do |name, version|
-      %tr.app_info
+      %tr.app-info
         %td= name
         %td= version
 
@@ -43,7 +43,7 @@
 
 %h3
   Deploys to
-  .uat_url= @uat_url
+  .uat-url= @uat_url
 %table.table.table-striped
   %thead
     %tr
