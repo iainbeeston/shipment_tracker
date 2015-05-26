@@ -1,11 +1,13 @@
 Feature: Developer prepares a feature review so that it can be attached to a
   ticket for a PO to use in acceptance.
 
-Scenario: Preparing link for ticket
+Background:
   Given an application called "frontend"
   And an application called "backend"
   And an application called "irrelevant"
-  And I prepare a feature review for:
+
+Scenario: Preparing link for ticket
+  When I prepare a feature review for:
     | field name | content             |
     | frontend   | abc                 |
     | backend    | def                 |
@@ -17,10 +19,7 @@ Scenario: Preparing link for ticket
   And I can see the UAT environment "http://www.some.url"
 
 Scenario: Viewing a feature review
-  Given an application called "frontend"
-  And an application called "backend"
-  And an application called "irrelevant"
-  And a ticket "JIRA-123" with summary "Urgent ticket" and description "Urgent stuff" is started
+  Given a ticket "JIRA-123" with summary "Urgent ticket" and description "Urgent stuff" is started
   And a commit "#abc" by "Alice" is created for app "frontend"
   And a commit "#old" by "Bob" is created for app "backend"
   And a commit "#def" by "Bob" is created for app "backend"
