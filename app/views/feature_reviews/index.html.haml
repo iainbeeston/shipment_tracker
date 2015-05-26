@@ -1,10 +1,5 @@
 %h1 Feature for review
 
-%h3
-  UAT environment
-  %strong.uat_url= @uat_url
-
-
 %h3 Associated tickets
 %table.table.table-striped
   %thead
@@ -46,7 +41,9 @@
             %td= build.source
             %td= build.status
 
-%h3 Deploys
+%h3
+  Deploys to
+  .uat_url= @uat_url
 %table.table.table-striped
   %thead
     %tr
