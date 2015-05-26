@@ -58,3 +58,15 @@ Scenario: Viewing a feature review
     | frontend   | #abc    | yes     |
     | backend    | #old    | no      |
     | irrelevant | #ghi    |         |
+
+Scenario: QA rejects and approves feature
+  Given a developer prepares a review for UAT "http://uat.fundingcircle.com" with apps
+    | app_name | version |
+    | frontend | abc    |
+    | backend  | def    |
+  When I visit the feature review
+  And I "reject" the feature as "Alice"
+  Then I should see the feature "rejected" by "Alice"
+  When I "accept" the feature as "Alice"
+  Then I should see the feature "accepted" by "Alice"
+

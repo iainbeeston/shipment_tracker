@@ -4,6 +4,8 @@ class FeatureReviewsController < ApplicationController
   end
 
   def index
+    @return_to = request.original_fullpath
+
     @apps = apps
     @uat_url = params[:uat_url]
 

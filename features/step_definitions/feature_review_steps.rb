@@ -66,3 +66,12 @@ Then 'I should only see the ticket' do |ticket_table|
 
   expect(feature_review_page.tickets).to match_array(expected_tickets)
 end
+
+When 'I "$status" the feature as "$name"' do |status, name|
+  feature_review_page.create_qa_submission(status: status, name: name)
+end
+
+When 'I should see the feature "$status" by "$name"' do |status, name|
+  expect(feature_review_page.qa_submission).to include(status)
+  expect(feature_review_page.qa_submission).to include(name)
+end

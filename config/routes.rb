@@ -13,4 +13,6 @@ Rails.application.routes.draw do
   resources :feature_reviews, only: [:new, :index]
 
   resources :repository_locations, only: [:index, :create]
+
+  resources :qa_submissions, only: :create
 end

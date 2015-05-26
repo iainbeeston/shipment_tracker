@@ -43,7 +43,7 @@
 
 %h3
   Deploys to
-  .uat-url= @uat_url
+  %span.uat-url= @uat_url
 %table.table.table-striped
   %thead
     %tr
@@ -56,3 +56,39 @@
         %td= deploy.app_name
         %td= deploy.version
         %td= deploy.correct == :ignore ? '' : deploy.correct
+
+%h3 QA acceptance
+
+%table.table.table-striped
+  %thead
+    %tr
+      %th Name
+      %th Status
+      %th Time
+  %tbody
+    %tr.qa-submission
+      %td= @projection.qa_submission.try(:name)
+      %td= @projection.qa_submission.try(:status)
+      %td= @projection.qa_submission.try(:created_at)
+
+= form_tag(events_path(type: 'manual_test'), method: 'post', class: 'form-horizontal') do
+  = hidden_field_tag(:return_to, @return_to)
+  = hidden_field_tag('testing_environment[uat_url]', @uat_url)
+  - @apps.each do |app_name, version|
+    = hidden_field_tag('testing_environment[apps][][name]', app_name)
+    = hidden_field_tag('testing_environment[apps][][version]', version)
+  .row
+    .radio.col-md-1
+      %label
+        = radio_button_tag 'status', 'success'
+        Accept
+    .radio.col-md-1
+      %label
+        = radio_button_tag 'status', 'failed'
+        Reject
+    = label_tag('user[name]', 'Name', class: 'col-md-1 control-label')
+    .col-md-6
+      = text_field_tag('user[name]', '', placeholder: 'Firstname Surname', class: 'form-control')
+    .col-md-2
+      = submit_tag('Submit', class: 'btn btn-primary')
+

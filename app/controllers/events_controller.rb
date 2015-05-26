@@ -17,11 +17,12 @@ class EventsController < ActionController::Metal
 
   def event_type
     {
-      'deploy'   => DeployEvent,
-      'circleci' => CircleCiEvent,
-      'comments' => CommentEvent,
-      'jenkins'  => JenkinsEvent,
-      'jira'     => JiraEvent,
+      'deploy'      => DeployEvent,
+      'circleci'    => CircleCiEvent,
+      'comments'    => CommentEvent,
+      'jenkins'     => JenkinsEvent,
+      'jira'        => JiraEvent,
+      'manual_test' => ManualTestEvent,
     }.fetch(params[:type])
   end
 

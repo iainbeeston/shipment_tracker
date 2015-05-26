@@ -31,6 +31,19 @@ module Pages
       }
     end
 
+    def create_qa_submission(status:, name:)
+      verify!
+      page.fill_in('user[name]', with: name)
+      outcome = status == 'accept' ? 'success' : 'failed'
+      page.choose("status_#{outcome}")
+      page.click_link_or_button('Submit')
+    end
+
+    def qa_submission
+      verify!
+      page.find('.qa-submission').text
+    end
+
     def tickets
       verify!
       page.all('.ticket').map { |ticket_line| Sections::TicketSection.from_element(ticket_line) }

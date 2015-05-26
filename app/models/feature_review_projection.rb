@@ -1,5 +1,5 @@
 class FeatureReviewProjection
-  attr_reader :builds
+  attr_reader :builds, :qa_submission
 
   def initialize(apps:, uat_url:, projection_url:)
     @apps = apps
@@ -37,6 +37,8 @@ class FeatureReviewProjection
       apply_deploy_event(event)
     when JiraEvent
       apply_ticket_event(event)
+    when ManualTestEvent
+      apply_manual_test_event(event)
     end
   end
 
@@ -77,6 +79,16 @@ class FeatureReviewProjection
     @tickets[ticket_event.key] = ticket
   end
 
+  def apply_manual_test_event(manual_test_event)
+    return unless apps_hash(manual_test_event.apps) == @apps
+
+    @qa_submission = QaSubmission.new(
+      name: manual_test_event.user_name,
+      status: manual_test_event.status == 'success' ? 'accepted' : 'rejected',
+      created_at: manual_test_event.created_at,
+    )
+  end
+
   def versions
     @versions ||= @apps.invert
   end
@@ -90,5 +102,11 @@ class FeatureReviewProjection
     URI.extract(comment).any? { |comment_url|
       Addressable::URI.parse(comment_url) == Addressable::URI.parse(projection_url)
     }
+  end
+
+  private
+
+  def apps_hash(apps_list)
+    apps_list.map { |app| app.values_at('name', 'version') }.to_h
   end
 end

@@ -95,6 +95,19 @@ describe EventsController do
       end
     end
 
+    context '/manual_test with form-encoded params' do
+      let(:route_params) { { type: 'manual_test' } }
+
+      it { should route(:post, '/events/manual_test').to(action: :create, type: 'manual_test') }
+
+      it 'saves an event object with correct details' do
+        post :create, route_params.merge('status' => 'success'), format: :json
+
+        expect(ManualTestEvent.last.details).to eq('status' => 'success')
+        expect(response).to have_http_status(:success)
+      end
+    end
+
     context '/other with valid JSON' do
       let(:route_params) { { type: 'other' } }
 
