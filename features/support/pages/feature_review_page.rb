@@ -34,8 +34,7 @@ module Pages
     def create_qa_submission(status:, name:)
       verify!
       page.fill_in('user[name]', with: name)
-      outcome = status == 'accept' ? 'success' : 'failed'
-      page.choose("status_#{outcome}")
+      page.choose(status.capitalize)
       page.click_link_or_button('Submit')
     end
 
