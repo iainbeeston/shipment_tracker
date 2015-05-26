@@ -72,6 +72,7 @@ When 'I "$status" the feature as "$name"' do |status, name|
 end
 
 When 'I should see the feature "$status" by "$name"' do |status, name|
-  expect(feature_review_page.qa_submission).to include(status)
-  expect(feature_review_page.qa_submission).to include(name)
+  expected_qa_submission = Sections::QaSubmissionSection.new(name: name, status: status)
+
+  expect(feature_review_page.qa_submission).to eq(expected_qa_submission)
 end

@@ -40,7 +40,7 @@ module Pages
 
     def qa_submission
       verify!
-      page.find('.qa-submission').text
+      Sections::QaSubmissionSection.from_element(page.find('.qa-submission'))
     end
 
     def tickets
