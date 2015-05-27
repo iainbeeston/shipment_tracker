@@ -6,7 +6,7 @@ class ReleasesController < ApplicationController
   def show
     @app_name = params[:id]
 
-    repo = GitRepositoryLoader.from_rails_config.load(@app_name)
-    @commits = repo.recent_commits(50)
+    repository = GitRepositoryLoader.from_rails_config.load(@app_name)
+    @commits = repository.recent_commits(50)
   end
 end
