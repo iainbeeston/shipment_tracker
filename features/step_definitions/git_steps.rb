@@ -25,3 +25,11 @@ Given(/^a commit "(.*?)" by "(.*?)" is created for ticket "([^\"]+)"$/) do |vers
     message: "#{jira_key} work",
   )
 end
+
+Given 'a commit "$version" with message "$message" is created' do |version, message|
+  scenario_context.last_repository.create_commit(
+    author_name: 'Alice',
+    pretend_version: version,
+    message: message,
+  )
+end

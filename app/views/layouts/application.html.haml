@@ -17,6 +17,8 @@
             = link_to 'Prepare review', new_feature_review_path
           %li
             = link_to 'Repository locations', repository_locations_path
+          %li
+            = link_to 'Releases', releases_path
     .container
       - if flash[:error] # the red one
         .alert.alert-danger= flash[:error]

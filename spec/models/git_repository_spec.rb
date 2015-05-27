@@ -92,6 +92,23 @@ RSpec.describe GitRepository do
     end
   end
 
+  describe '#recent_commits' do
+    it 'returns specified number of recent commits' do
+      test_git_repo.create_commit(author_name: 'a', message: 'message 1')
+      commit_second = test_git_repo.create_commit(author_name: 'b', message: 'message 2')
+      commit_third  = test_git_repo.create_commit(author_name: 'c', message: 'message 3')
+      commit_fourth = test_git_repo.create_commit(author_name: 'd', message: 'message 4')
+
+      commits = repo.recent_commits(3)
+
+      expect(commits).to eq([
+        build_commit(commit_fourth),
+        build_commit(commit_third),
+        build_commit(commit_second),
+      ])
+    end
+  end
+
   def build_commit(commit)
     GitCommit.new(
       id: commit.oid,

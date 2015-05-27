@@ -1,0 +1,5 @@
+%h1 Releases
+%ul
+  - @app_names.each do |app_name|
+    %li
+      = link_to app_name, release_path(app_name)

@@ -22,6 +22,14 @@ class GitRepository
     end
   end
 
+  def recent_commits(count = 50)
+    walker = Rugged::Walker.new(repository)
+    walker.sorting(Rugged::SORT_TOPO)
+    walker.push(main_branch.target_id)
+
+    build_commits(walker.take(count))
+  end
+
   # Returns an array of GitCommits where the commit message includes the query
   # and the commit doesn't exist on the master branch.
   def unmerged_commits_matching_query(query)
@@ -74,5 +82,11 @@ class GitRepository
       "#{name}.git_repository",
       &block
     )
+  end
+
+  def main_branch
+    repository.branches['origin/production'] ||
+      repository.branches['origin/master'] ||
+      repository.branches['master']
   end
 end

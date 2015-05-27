@@ -1,0 +1,8 @@
+%h1 Releases for #{@app_name}
+
+%table.table.table-striped
+  %tr
+    %th message
+  - @commits.each do |commit|
+    %tr.release
+      %td= commit.message
