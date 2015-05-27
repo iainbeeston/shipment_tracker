@@ -73,7 +73,7 @@ class GitRepository
   end
 
   def merged_commit_oid?(commit_oid)
-    master_oid = (repository.branches['master'] || repository.branches['origin/master']).target_id
+    master_oid = main_branch.target_id
     commit_oid == master_oid || repository.descendant_of?(master_oid, commit_oid)
   end
 

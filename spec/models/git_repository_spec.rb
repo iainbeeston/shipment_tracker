@@ -6,8 +6,8 @@ require 'rugged'
 
 RSpec.describe GitRepository do
   let(:test_git_repo) { Support::GitTestRepository.new }
-
-  subject(:repo) { GitRepository.new(Rugged::Repository.new(test_git_repo.dir)) }
+  let(:rugged_repo) { Rugged::Repository.new(test_git_repo.dir) }
+  subject(:repo) { GitRepository.new(rugged_repo) }
 
   describe '#unmerged_commits_matching_query' do
     it 'returns all unmerged commits where the message contains the query' do
@@ -106,6 +106,57 @@ RSpec.describe GitRepository do
         build_commit(commit_third),
         build_commit(commit_second),
       ])
+    end
+
+    describe 'branch selection' do
+      let(:sample_commit) { test_git_repo.create_commit(author_name: 'b', message: 'message 2') }
+      let(:production_branch) {}
+      let(:master_branch) { double('branch', target_id: '123') }
+      let(:local_master_branch) { double('branch', target_id: '123') }
+
+      before do
+        allow(rugged_repo).to receive(:branches).and_return(branches)
+      end
+
+      context 'when there is a remote production branch' do
+        let(:branches) {
+          {
+            'origin/production' => double('branch', target_id: sample_commit.oid),
+            'origin/master' => double('branch'),
+            'master' => double('branch'),
+          }
+        }
+
+        it 'returns commits from origin/production' do
+          expect(repo.recent_commits(3)).to eq([build_commit(sample_commit)])
+        end
+      end
+
+      context 'when there is a remote master branch, but no remote production' do
+        let(:branches) {
+          {
+            'origin/master' => double('branch', target_id: sample_commit.oid),
+            'master' => double('branch'),
+          }
+        }
+
+        it 'returns commits from origin/master' do
+          expect(repo.recent_commits(3)).to eq([build_commit(sample_commit)])
+        end
+      end
+
+      context 'when there are no remote branches called production or master' do
+        let(:branches) {
+          {
+            'origin/other' => double('branch'),
+            'master' => double('branch', target_id: sample_commit.oid),
+          }
+        }
+
+        it 'returns commits from master' do
+          expect(repo.recent_commits(3)).to eq([build_commit(sample_commit)])
+        end
+      end
     end
   end
 
