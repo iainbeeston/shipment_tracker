@@ -7,4 +7,8 @@ class GitCommit
     attribute :message, String
     attribute :time, Time
   end
+
+  def subject_line
+    message.split("\n").first
+  end
 end
