@@ -2,7 +2,12 @@
 
 %table.table.table-striped
   %tr
+    %th id
+    %th date
     %th message
   - @commits.each do |commit|
     %tr.release
+      %td= commit.id
+      %td= commit.time
       %td= commit.subject_line
+

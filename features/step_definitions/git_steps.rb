@@ -1,4 +1,5 @@
 require 'support/git_test_repository'
+require 'time'
 
 Given 'an application called "$name"' do |name|
   scenario_context.setup_application(name)
@@ -26,10 +27,11 @@ Given(/^a commit "(.*?)" by "(.*?)" is created for ticket "([^\"]+)"$/) do |vers
   )
 end
 
-Given 'a commit "$version" with message "$message" is created' do |version, message|
+Given 'a commit "$version" with message "$message" is created at "$time"' do |version, message, time|
   scenario_context.last_repository.create_commit(
     author_name: 'Alice',
     pretend_version: version,
     message: message,
+    time: Time.parse(time),
   )
 end
