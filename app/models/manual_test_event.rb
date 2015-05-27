@@ -1,10 +1,10 @@
 class ManualTestEvent < Event
   def apps
-    details['testing_environment']['apps']
+    details.fetch('testing_environment', {}).fetch('apps', [])
   end
 
   def user_name
-    details['user']['name']
+    details.fetch('user', {}).fetch('name', nil)
   end
 
   def status
