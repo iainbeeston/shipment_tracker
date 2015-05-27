@@ -9,6 +9,11 @@ class FeatureReviewsController < ApplicationController
     @apps = apps
     @uat_url = params[:uat_url]
 
+    if @apps.empty?
+      flash[:error] = 'Please specify at least one app'
+      return redirect_to new_feature_review_path
+    end
+
     @projection = FeatureReviewProjection.new(
       apps: @apps,
       uat_url: @uat_url,
