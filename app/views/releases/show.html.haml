@@ -7,7 +7,7 @@
     %th message
   - @releases.each do |release|
     %tr.release
-      %td= release.id
-      %td= release.time
-      %td= release.subject_line
+      %td= release.commit.try(:id)
+      %td= release.commit.try(:time)
+      %td= release.commit.try(:subject_line)
 

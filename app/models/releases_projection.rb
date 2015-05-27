@@ -6,27 +6,53 @@ class ReleasesProjection
   def initialize(per_page:, git_repository:)
     @per_page = per_page
     @git_repository = git_repository
-    @commits = []
+    @releases_hash = {}
   end
 
-  def apply_all(_events)
-    # events.each { |e| apply(e) }
+  def apply_all(events)
+    events.each { |e| apply(e) }
   end
 
-  # def apply(event)
-  # case event
-  # when JiraEvent
-  #   update_ticket_from_jira_event(event)
-  # when DeployEvent
-  #   record_deploy(event)
-  # when CircleCiEvent, JenkinsEvent
-  #   record_build(event)
-  # when CommentEvent
-  #   record_comment(event)
-  # end
-  # end
+  def apply(event)
+    case event
+    when JiraEvent
+      update_release_hash_from_event(event)
+    end
+  end
+
+  def commits
+    @commits ||= @git_repository.recent_commits(@per_page)
+  end
 
   def releases
-    @git_repository.recent_commits(@per_page)
+    commits.map { |commit|
+      Release.new(
+        commit: commit,
+        feature_review_path: @releases_hash.fetch(commit.id, {}).fetch(:path, nil),
+      )
+    }
+  end
+
+  private
+
+  def update_release_hash_from_event(event)
+    URI.extract(event.comment)
+      .map { |comment_url| Addressable::URI.parse(comment_url) }
+      .select { |uri| uri.path == '/feature_reviews' }
+      .each { |uri|
+        shas = extract_shas_from_uri(uri)
+        shas.each do |sha|
+          if commits.find { |c| c.id == sha }
+            @releases_hash[sha] = { event: event, path: uri.request_uri }
+          end
+        end
+      }
+  end
+
+  def extract_shas_from_uri(uri)
+    uri.query_values
+      .select { |key, _value| key.start_with?('apps[') }
+      .values
+      .reject(&:empty?)
   end
 end
