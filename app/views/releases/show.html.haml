@@ -5,9 +5,9 @@
     %th id
     %th date
     %th message
-  - @commits.each do |commit|
+  - @releases.each do |release|
     %tr.release
-      %td= commit.id
-      %td= commit.time
-      %td= commit.subject_line
+      %td= release.id
+      %td= release.time
+      %td= release.subject_line
 

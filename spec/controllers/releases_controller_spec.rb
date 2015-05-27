@@ -19,20 +19,28 @@ RSpec.describe ReleasesController, type: :controller do
   describe 'GET #show' do
     let(:repository) { instance_double(GitRepository) }
     let(:repository_loader) { instance_double(GitRepositoryLoader) }
-    let(:commits) { double('commits') }
+    let(:releases) { double(:releases) }
+    let(:projection) { instance_double(ReleasesProjection, releases: releases) }
+    let(:events) { double(:events) }
 
     before do
       allow(GitRepositoryLoader).to receive(:from_rails_config).and_return(repository_loader)
       allow(repository_loader).to receive(:load).with('frontend').and_return(repository)
-      allow(repository).to receive(:recent_commits).with(50).and_return(commits)
+      allow(ReleasesProjection).to receive(:new).with(
+        per_page: 50,
+        git_repository: repository,
+      ).and_return(projection)
+      allow(Event).to receive(:in_order_of_creation).and_return(events)
     end
 
     it 'shows the list of commits for an app' do
+      expect(projection).to receive(:apply_all).with(events)
+
       get :show, id: 'frontend'
 
       expect(response).to have_http_status(:success)
       expect(assigns(:app_name)).to eq('frontend')
-      expect(assigns(:commits)).to eq(commits)
+      expect(assigns(:releases)).to eq(releases)
     end
   end
 end
