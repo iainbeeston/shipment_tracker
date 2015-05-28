@@ -5,9 +5,10 @@
     %th id
     %th date
     %th message
+    %th feature review
   - @releases.each do |release|
     %tr.release
       %td= release.commit.try(:id)
       %td= release.commit.try(:time)
       %td= release.commit.try(:subject_line)
-
+      %td= link_to 'view', release.feature_review_path if release.feature_review_path
