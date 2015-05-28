@@ -26,6 +26,12 @@ class ReleasesProjection
   end
 
   def releases
+    @releases_hash.keys.each do |sha|
+      @git_repository.get_dependents(sha).each do |dependent_commit|
+        @releases_hash[dependent_commit.id] = @releases_hash[sha]
+      end
+    end
+
     commits.map { |commit|
       release_hash = @releases_hash.fetch(commit.id, {})
       Release.new(

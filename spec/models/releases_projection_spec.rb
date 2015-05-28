@@ -11,6 +11,7 @@ RSpec.describe ReleasesProjection do
   let(:commits) {
     [
       GitCommit.new(id: 'abc1238'),
+      GitCommit.new(id: 'abc2345'),
       GitCommit.new(id: 'ghi9876'),
     ]
   }
@@ -33,6 +34,7 @@ RSpec.describe ReleasesProjection do
 
   before do
     allow(repository).to receive(:recent_commits).with(50).and_return(commits)
+    allow(repository).to receive(:get_dependents).with('abc1238').and_return([GitCommit.new(id: 'abc2345')])
   end
 
   describe '#releases' do
@@ -43,6 +45,11 @@ RSpec.describe ReleasesProjection do
         [
           Release.new(
             commit: GitCommit.new(id: 'abc1238'),
+            feature_review_status: 'Done',
+            feature_review_path: feature_review_path(foo: 'abc1238', zar: '123asdf'),
+          ),
+          Release.new(
+            commit: GitCommit.new(id: 'abc2345'),
             feature_review_status: 'Done',
             feature_review_path: feature_review_path(foo: 'abc1238', zar: '123asdf'),
           ),

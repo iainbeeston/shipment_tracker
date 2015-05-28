@@ -35,3 +35,12 @@ Given 'a commit "$version" with message "$message" is created at "$time"' do |ve
     time: Time.parse(time),
   )
 end
+
+Given 'the branch "$branch_name" is checked out' do |branch_name|
+  scenario_context.last_repository.create_branch(branch_name)
+  scenario_context.last_repository.checkout_branch(branch_name)
+end
+
+Given 'the branch "$branch_name" is merged' do |branch_name|
+  scenario_context.last_repository.merge_branch(branch_name)
+end

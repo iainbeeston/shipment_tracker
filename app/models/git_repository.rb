@@ -49,6 +49,19 @@ class GitRepository
     end
   end
 
+  def get_dependents(commit_oid)
+    master_oid = main_branch.target_id
+
+    common_ancestor_oid = nil
+    loop do
+      common_ancestor_oid = repository.merge_base(master_oid, commit_oid)
+      break unless common_ancestor_oid == commit_oid
+      master_oid = repository.lookup(master_oid).parents.first.oid
+    end
+
+    commits_between(common_ancestor_oid, commit_oid)[0...-1]
+  end
+
   private
 
   attr_reader :repository
