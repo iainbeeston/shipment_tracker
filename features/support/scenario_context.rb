@@ -85,6 +85,10 @@ module Support
       @review_url
     end
 
+    def review_path
+      URI.parse(review_url).request_uri
+    end
+
     private
 
     attr_reader :app

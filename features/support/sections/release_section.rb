@@ -6,15 +6,21 @@ module Sections
       attribute :id, String
       attribute :date, Time
       attribute :message, String
+      attribute :feature_review_path, String
     end
 
     def self.from_element(release_element)
-      values = release_element.all('td').map(&:text).to_a
+      values = release_element.all('td').to_a
       new(
-        id:      values.fetch(0),
-        date:    values.fetch(1),
-        message: values.fetch(2),
+        id:      values.fetch(0).text,
+        date:    values.fetch(1).text,
+        message: values.fetch(2).text,
+        feature_review_path: extract_href_if_exists(values.fetch(3)),
       )
+    end
+
+    def self.extract_href_if_exists(element)
+      element.find('a')['href'] if element.has_css?('a')
     end
   end
 end
