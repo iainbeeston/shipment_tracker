@@ -15,7 +15,7 @@ Scenario: Viewing releases for an app
   And ticket "JIRA-123" is approved by "alice@fundingcircle.com" at "2015-06-07T15:24:34.957+0100"
   And the branch "master" is checked out
   And a commit "#master2" with message "recent commit" is created at "2015-05-27 13:31:17 UTC"
-  And the branch "feature-one" is merged
+  And the branch "feature-one" is merged at "2015-05-27 16:04:19 UTC"
 
   When I view the releases for "frontend"
 

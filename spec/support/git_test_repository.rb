@@ -55,19 +55,22 @@ module Support
       repo.checkout(branch_name)
     end
 
-    def merge_branch(branch_name)
-      commits = [repo.branches['master'].target_id, repo.branches[branch_name].target_id]
-      merge_index = repo.merge_commits(*commits)
-      time = Time.parse('2015-05-27 16:04:19 UTC')
+    def merge_branch(branch_name:, author_name:, time:)
+      master_tip_oid = repo.branches['master'].target_id
+      branch_tip_oid = repo.branches[branch_name].target_id
+      merge_index = repo.merge_commits(master_tip_oid, branch_tip_oid)
+
       fail 'Conflict detected!' if merge_index.conflicts?
-      Rugged::Commit.create(repo,
-        parents: commits,
+
+      Rugged::Commit.create(
+        repo,
+        parents: [master_tip_oid, branch_tip_oid],
         tree: merge_index.write_tree(repo),
         message: "Merged `#{branch_name}` into `master`",
-        author:    { name: 'User', email: 'example@test.com', time: time },
-        committer: { name: 'User', email: 'example@test.com', time: time },
+        author: author(author_name, time),
+        committer: author(author_name, time),
         update_ref: 'HEAD',
-                           )
+      )
     end
 
     def commit_for_pretend_version(pretend_version)

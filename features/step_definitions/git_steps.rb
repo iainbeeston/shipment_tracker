@@ -41,6 +41,10 @@ Given 'the branch "$branch_name" is checked out' do |branch_name|
   scenario_context.last_repository.checkout_branch(branch_name)
 end
 
-Given 'the branch "$branch_name" is merged' do |branch_name|
-  scenario_context.last_repository.merge_branch(branch_name)
+Given 'the branch "$branch_name" is merged at "$time' do |branch_name, time|
+  scenario_context.last_repository.merge_branch(
+    branch_name: branch_name,
+    author_name: 'Alice',
+    time: Time.parse(time),
+  )
 end
