@@ -171,6 +171,7 @@ RSpec.describe GitRepository do
       test_git_repo.create_commit(author_name: 'Alice', message: 'branch 4')
       test_git_repo.checkout_branch('master')
       test_git_repo.create_commit(author_name: 'Alice', message: 'master 2')
+      test_git_repo.merge_branch(branch_name: 'branch', author_name: 'Alice', time: Time.now)
 
       expect(repo.get_dependents(branch_3.oid)).to contain_exactly(
         build_commit(branch_2),
