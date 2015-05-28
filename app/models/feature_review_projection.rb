@@ -100,7 +100,7 @@ class FeatureReviewProjection
 
   def matches_projection_url?(comment)
     URI.extract(comment).any? { |comment_url|
-      Addressable::URI.parse(comment_url) == Addressable::URI.parse(projection_url)
+      extract_path(comment_url) == extract_path(projection_url)
     }
   end
 
@@ -108,5 +108,9 @@ class FeatureReviewProjection
 
   def apps_hash(apps_list)
     apps_list.map { |app| app.values_at('name', 'version') }.to_h
+  end
+
+  def extract_path(url_string)
+    Addressable::URI.parse(url_string).normalize.request_uri
   end
 end
