@@ -7,6 +7,7 @@ class ReleasesProjection
     @per_page = per_page
     @git_repository = git_repository
     @releases_hash = {}
+    @tickets_hash = {}
   end
 
   def apply_all(events)
@@ -16,7 +17,7 @@ class ReleasesProjection
   def apply(event)
     case event
     when JiraEvent
-      update_release_hash_from_event(event)
+      apply_jira_event(event)
     end
   end
 
@@ -26,16 +27,22 @@ class ReleasesProjection
 
   def releases
     commits.map { |commit|
+      release_hash = @releases_hash.fetch(commit.id, {})
       Release.new(
         commit: commit,
-        feature_review_path: @releases_hash.fetch(commit.id, {}).fetch(:path, nil),
+        feature_review_status: @tickets_hash.fetch(release_hash.fetch(:issue_id, nil), nil),
+        feature_review_path: release_hash.fetch(:path, nil),
       )
     }
   end
 
   private
 
-  def update_release_hash_from_event(event)
+  def apply_jira_event(event)
+    if @tickets_hash.key?(event.issue_id)
+      @tickets_hash[event.issue_id] = event.status
+    end
+
     URI.extract(event.comment)
       .map { |comment_url| Addressable::URI.parse(comment_url) }
       .select { |uri| uri.path == '/feature_reviews' }
@@ -43,7 +50,8 @@ class ReleasesProjection
         shas = extract_shas_from_uri(uri)
         shas.each do |sha|
           if commits.find { |c| c.id == sha }
-            @releases_hash[sha] = { event: event, path: uri.request_uri }
+            @releases_hash[sha] = { issue_id: event.issue_id, path: uri.request_uri }
+            @tickets_hash[event.issue_id] = event.status
           end
         end
       }

@@ -3,6 +3,10 @@ class JiraEvent < Event
     details.fetch('issue').fetch('key')
   end
 
+  def issue_id
+    details.fetch('issue').fetch('id')
+  end
+
   def summary
     details.fetch('issue').fetch('fields').fetch('summary')
   end

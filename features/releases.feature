@@ -10,10 +10,11 @@ Scenario: Viewing releases for an app
     | app_name | version |
     | frontend | #2      |
   And adds the link to a comment for ticket "JIRA-123"
+  And ticket "JIRA-123" is approved by "alice@fundingcircle.com" at "2015-06-07T15:24:34.957+0100"
 
   When I view the releases for "frontend"
 
   Then I should see the releases
     | id | date                    | message       | issue audit |
-    | #2 | 2015-05-27 15:04:19 UTC | second commit | view        |
+    | #2 | 2015-05-27 15:04:19 UTC | second commit | Done        |
     | #1 | 2015-05-27 14:01:17 UTC | first commit  |             |

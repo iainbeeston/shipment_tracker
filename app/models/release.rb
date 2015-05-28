@@ -3,6 +3,7 @@ class Release
 
   values do
     attribute :commit, GitCommit
+    attribute :feature_review_status, String
     attribute :feature_review_path, String
   end
 end

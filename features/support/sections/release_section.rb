@@ -6,6 +6,7 @@ module Sections
       attribute :id, String
       attribute :date, Time
       attribute :message, String
+      attribute :feature_review_status, String
       attribute :feature_review_path, String
     end
 
@@ -15,6 +16,7 @@ module Sections
         id:      values.fetch(0).text,
         date:    values.fetch(1).text,
         message: values.fetch(2).text,
+        feature_review_status: values.fetch(3).text,
         feature_review_path: extract_href_if_exists(values.fetch(3)),
       )
     end

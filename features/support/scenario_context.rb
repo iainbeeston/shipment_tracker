@@ -52,7 +52,7 @@ module Support
         event = build(:jira_event, ticket_details)
         post_json '/events/jira', event.details
 
-        @tickets[key] = ticket_details
+        @tickets[key] = ticket_details.merge(issue_id: event.issue_id)
       end
     end
 

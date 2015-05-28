@@ -21,12 +21,13 @@ RSpec.describe ReleasesProjection do
         comment_body: "please review\n#{feature_review_url(foo: 'abc1238')}",
            ),
       build(:jira_event,
+        issue_id: 12_345,
         comment_body: "please review\n#{ feature_review_url(foo: 'abc1238', zar: '123asdf') }",
            ),
       build(:jira_event,
         comment_body: "please review\n#{feature_review_url(foo: 'sss1238')}",
            ),
-      build(:jira_event, :done),
+      build(:jira_event, :done, issue_id: 12_345),
     ]
   }
 
@@ -42,6 +43,7 @@ RSpec.describe ReleasesProjection do
         [
           Release.new(
             commit: GitCommit.new(id: 'abc1238'),
+            feature_review_status: 'Done',
             feature_review_path: feature_review_path(foo: 'abc1238', zar: '123asdf'),
           ),
           Release.new(

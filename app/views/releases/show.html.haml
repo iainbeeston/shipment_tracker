@@ -11,4 +11,4 @@
       %td= release.commit.try(:id)
       %td= release.commit.try(:time)
       %td= release.commit.try(:subject_line)
-      %td= link_to 'view', release.feature_review_path if release.feature_review_path
+      %td= link_to release.feature_review_status, release.feature_review_path if release.feature_review_path

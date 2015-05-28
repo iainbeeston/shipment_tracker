@@ -2,6 +2,7 @@
 FactoryGirl.define do
   factory :jira_event do
     transient do
+      sequence(:issue_id)
       sequence(:key) { |n| "JIRA-#{n}" }
 
       summary ''
@@ -21,6 +22,7 @@ FactoryGirl.define do
             'emailAddress' => user_email,
           },
           'issue' => {
+            'id' => issue_id,
             'key' => key,
             'fields' => {
               'summary' => summary,

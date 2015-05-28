@@ -8,7 +8,8 @@ Then 'I should see the releases' do |releases_table|
       date: release.fetch('date'),
       id: scenario_context.resolve_version(release.fetch('id')),
       message: release.fetch('message'),
-      feature_review_path: (scenario_context.review_path if release.fetch('issue audit') == 'view'),
+      feature_review_status: release.fetch('issue audit'),
+      feature_review_path: (scenario_context.review_path if release.fetch('issue audit').present?),
     )
   }
 
