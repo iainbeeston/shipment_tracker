@@ -178,6 +178,24 @@ RSpec.describe GitRepository do
         build_commit(branch_1),
       )
     end
+
+    context 'when the commit is the parent of a merge commit' do
+      it 'includes the merge commit in the result' do
+        test_git_repo.create_commit(author_name: 'Alice', message: 'master 1')
+        test_git_repo.create_branch('branch')
+        test_git_repo.checkout_branch('branch')
+        branch_1 = test_git_repo.create_commit(author_name: 'Alice', message: 'branch 1')
+        branch_2 = test_git_repo.create_commit(author_name: 'Alice', message: 'branch 2')
+        test_git_repo.checkout_branch('master')
+        test_git_repo.create_commit(author_name: 'Alice', message: 'master 2')
+        merge = test_git_repo.merge_branch(branch_name: 'branch', author_name: 'Alice', time: Time.now)
+
+        expect(repo.get_dependent_commits(branch_2.oid)).to contain_exactly(
+          build_commit(branch_1),
+          build_commit(merge),
+        )
+      end
+    end
   end
 
   def build_commit(commit)

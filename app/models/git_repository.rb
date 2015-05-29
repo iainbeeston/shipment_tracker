@@ -50,16 +50,18 @@ class GitRepository
   end
 
   def get_dependent_commits(commit_oid)
-    master_oid = main_branch.target_id
+    master = main_branch.target
 
+    dependent_commits = []
     common_ancestor_oid = nil
     loop do
-      common_ancestor_oid = repository.merge_base(master_oid, commit_oid)
+      common_ancestor_oid = repository.merge_base(master.oid, commit_oid)
       break unless common_ancestor_oid == commit_oid
-      master_oid = repository.lookup(master_oid).parents.first.oid
+      dependent_commits << build_commit(master) if master.parent_ids.second == commit_oid
+      master = master.parents.first
     end
 
-    commits_between(common_ancestor_oid, commit_oid)[0...-1]
+    dependent_commits + commits_between(common_ancestor_oid, commit_oid)[0...-1]
   end
 
   private

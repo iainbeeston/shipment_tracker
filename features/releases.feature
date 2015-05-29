@@ -21,7 +21,7 @@ Scenario: Viewing releases for an app
 
   Then I should see the releases
     | id       | date                    | message                            | issue audit |
-    |          | 2015-05-27 16:04:19 UTC | Merged `feature-one` into `master` |             |
+    |          | 2015-05-27 16:04:19 UTC | Merged `feature-one` into `master` | Done        |
     | #branch2 | 2015-05-27 15:04:19 UTC | second commit                      | Done        |
     | #branch1 | 2015-05-27 14:01:17 UTC | first commit                       | Done        |
     | #master2 | 2015-05-27 13:31:17 UTC | recent commit                      |             |

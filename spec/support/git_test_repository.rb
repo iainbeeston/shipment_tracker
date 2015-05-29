@@ -62,7 +62,7 @@ module Support
 
       fail 'Conflict detected!' if merge_index.conflicts?
 
-      Rugged::Commit.create(
+      merge_commit_oid = Rugged::Commit.create(
         repo,
         parents: [master_tip_oid, branch_tip_oid],
         tree: merge_index.write_tree(repo),
@@ -71,6 +71,8 @@ module Support
         committer: author(author_name, time),
         update_ref: 'HEAD',
       )
+
+      repo.lookup(merge_commit_oid)
     end
 
     def commit_for_pretend_version(pretend_version)
