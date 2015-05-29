@@ -55,7 +55,7 @@ module Support
       repo.checkout(branch_name)
     end
 
-    def merge_branch(branch_name:, author_name:, time:)
+    def merge_branch(branch_name:, author_name:, time:, pretend_version: nil)
       master_tip_oid = repo.branches['master'].target_id
       branch_tip_oid = repo.branches[branch_name].target_id
       merge_index = repo.merge_commits(master_tip_oid, branch_tip_oid)
@@ -68,7 +68,9 @@ module Support
         author_name: author_name,
         time: time,
         parents: [master_tip_oid, branch_tip_oid],
-      )
+      ).tap do |commit|
+        commits.push GitTestCommit.new(commit.oid, pretend_version)
+      end
     end
 
     def commit_for_pretend_version(pretend_version)

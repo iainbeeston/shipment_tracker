@@ -30,9 +30,9 @@ end
 Given 'a commit "$version" with message "$message" is created at "$time"' do |version, message, time|
   scenario_context.last_repository.create_commit(
     author_name: 'Alice',
-    pretend_version: version,
     message: message,
     time: Time.parse(time),
+    pretend_version: version,
   )
 end
 
@@ -41,9 +41,10 @@ Given 'the branch "$branch_name" is checked out' do |branch_name|
   scenario_context.last_repository.checkout_branch(branch_name)
 end
 
-Given 'the branch "$branch_name" is merged at "$time' do |branch_name, time|
+Given 'the branch "$branch" is merged with merge commit "$version" at "$time' do |branch, version, time|
   scenario_context.last_repository.merge_branch(
-    branch_name: branch_name,
+    branch_name: branch,
+    pretend_version: version,
     author_name: 'Alice',
     time: Time.parse(time),
   )

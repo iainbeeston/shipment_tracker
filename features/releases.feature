@@ -15,13 +15,13 @@ Scenario: Viewing releases for an app
   And ticket "JIRA-123" is approved by "alice@fundingcircle.com" at "2015-06-07T15:24:34.957+0100"
   And the branch "master" is checked out
   And a commit "#master2" with message "recent commit" is created at "2015-05-27 13:31:17 UTC"
-  And the branch "feature-one" is merged at "2015-05-27 16:04:19 UTC"
+  And the branch "feature-one" is merged with merge commit "#merge" at "2015-05-27 16:04:19 UTC"
 
   When I view the releases for "frontend"
 
   Then I should see the releases
     | id       | date                    | message                            | issue audit |
-    |          | 2015-05-27 16:04:19 UTC | Merged `feature-one` into `master` | Done        |
+    | #merge   | 2015-05-27 16:04:19 UTC | Merged `feature-one` into `master` | Done        |
     | #branch2 | 2015-05-27 15:04:19 UTC | second commit                      | Done        |
     | #branch1 | 2015-05-27 14:01:17 UTC | first commit                       | Done        |
     | #master2 | 2015-05-27 13:31:17 UTC | recent commit                      |             |

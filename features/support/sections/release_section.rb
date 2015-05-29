@@ -3,7 +3,7 @@ module Sections
     include Virtus.value_object
 
     values do
-      # attribute :id, String
+      attribute :id, String
       attribute :date, Time
       attribute :message, String
       attribute :feature_review_status, String
@@ -13,7 +13,7 @@ module Sections
     def self.from_element(release_element)
       values = release_element.all('td').to_a
       new(
-        # id:      values.fetch(0).text,
+        id:      values.fetch(0).text,
         date:    values.fetch(1).text,
         message: values.fetch(2).text,
         feature_review_status: values.fetch(3).text,
