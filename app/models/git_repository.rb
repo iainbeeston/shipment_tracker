@@ -49,6 +49,16 @@ class GitRepository
     end
   end
 
+  # Returns "dependent commits" given a commit sha from a topic branch.
+  #
+  # Dependent commits are the merge commit plus any commits between the given
+  # commit and the "fork commit" on master (i.e. commit the branch is based
+  # off of).
+  #
+  # We can use Rugged::Repository#merge_base to find the fork commit, but we
+  # need to loop until the master commit is not a descendant of the given
+  # commit, otherwise the merge base will be the given commit and not the fork
+  # commit.
   def get_dependent_commits(commit_oid)
     master = main_branch.target
 
@@ -56,8 +66,8 @@ class GitRepository
     common_ancestor_oid = nil
     loop do
       common_ancestor_oid = repository.merge_base(master.oid, commit_oid)
-      break unless common_ancestor_oid == commit_oid
-      dependent_commits << build_commit(master) if master.parent_ids.second == commit_oid
+      break if common_ancestor_oid != commit_oid
+      dependent_commits << build_commit(master) if merge_commit_for?(master, commit_oid)
       master = master.parents.first
     end
 
@@ -67,6 +77,10 @@ class GitRepository
   private
 
   attr_reader :repository
+
+  def merge_commit_for?(merge_commit, commit_oid)
+    merge_commit.parent_ids.second == commit_oid
+  end
 
   def build_commit(commit)
     GitCommit.new(
