@@ -37,14 +37,14 @@ module Support
       @now += 60
       time ||= @now
 
-      commit_oid = Rugged::Commit.create(
-        repo,
-        commit_options(author_name, oid, message, time),
+      create_rugged_commit(
+        tree_oid: oid,
+        message: message,
+        author_name: author_name,
+        time: time,
       ).tap do |commit|
-        commits.push GitTestCommit.new(commit, pretend_version)
+        commits.push GitTestCommit.new(commit.oid, pretend_version)
       end
-
-      repo.lookup(commit_oid)
     end
 
     def create_branch(branch_name)
@@ -62,17 +62,13 @@ module Support
 
       fail 'Conflict detected!' if merge_index.conflicts?
 
-      merge_commit_oid = Rugged::Commit.create(
-        repo,
-        parents: [master_tip_oid, branch_tip_oid],
-        tree: merge_index.write_tree(repo),
+      create_rugged_commit(
+        tree_oid: merge_index.write_tree(repo),
         message: "Merged `#{branch_name}` into `master`",
-        author: author(author_name, time),
-        committer: author(author_name, time),
-        update_ref: 'HEAD',
+        author_name: author_name,
+        time: time,
+        parents: [master_tip_oid, branch_tip_oid],
       )
-
-      repo.lookup(merge_commit_oid)
     end
 
     def commit_for_pretend_version(pretend_version)
@@ -88,15 +84,20 @@ module Support
 
     attr_reader :repo
 
-    def commit_options(author_name, oid, message, time)
-      {
-        tree: oid,
+    def create_rugged_commit(tree_oid:, message:, author_name:, time:, parents: nil)
+      parents ||= repo.empty? ? [] : [repo.head.target].compact
+
+      commit_oid = Rugged::Commit.create(
+        repo,
+        tree: tree_oid,
+        message: message,
         author: author(author_name, time),
         committer: author(author_name, time),
-        message: message,
-        parents: repo.empty? ? [] : [repo.head.target].compact,
+        parents: parents,
         update_ref: 'HEAD',
-      }
+      )
+
+      repo.lookup(commit_oid)
     end
 
     def author(author_name, time)
