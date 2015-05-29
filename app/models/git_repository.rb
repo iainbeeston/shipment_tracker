@@ -49,7 +49,7 @@ class GitRepository
     end
   end
 
-  def get_dependents(commit_oid)
+  def get_dependent_commits(commit_oid)
     master_oid = main_branch.target_id
 
     common_ancestor_oid = nil

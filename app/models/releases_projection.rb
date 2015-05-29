@@ -32,7 +32,7 @@ class ReleasesProjection
 
   def associate_dependent_releases_with_feature_review
     @releases_hash.keys.each do |sha|
-      @git_repository.get_dependents(sha).each do |dependent_commit|
+      @git_repository.get_dependent_commits(sha).each do |dependent_commit|
         @releases_hash[dependent_commit.id] = @releases_hash[sha]
       end
     end

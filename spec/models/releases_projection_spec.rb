@@ -29,7 +29,7 @@ RSpec.describe ReleasesProjection do
 
   before do
     allow(repository).to receive(:recent_commits).with(50).and_return(commits)
-    allow(repository).to receive(:get_dependents).with('abc').and_return([GitCommit.new(id: 'def')])
+    allow(repository).to receive(:get_dependent_commits).with('abc').and_return([GitCommit.new(id: 'def')])
   end
 
   describe '#releases' do

@@ -160,7 +160,7 @@ RSpec.describe GitRepository do
     end
   end
 
-  describe '#get_dependents' do
+  describe '#get_dependent_commits' do
     it 'returns the ancestors of a commit up to the merge base' do
       test_git_repo.create_commit(author_name: 'Alice', message: 'master 1')
       test_git_repo.create_branch('branch')
@@ -173,7 +173,7 @@ RSpec.describe GitRepository do
       test_git_repo.create_commit(author_name: 'Alice', message: 'master 2')
       test_git_repo.merge_branch(branch_name: 'branch', author_name: 'Alice', time: Time.now)
 
-      expect(repo.get_dependents(branch_3.oid)).to contain_exactly(
+      expect(repo.get_dependent_commits(branch_3.oid)).to contain_exactly(
         build_commit(branch_2),
         build_commit(branch_1),
       )
