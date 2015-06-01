@@ -26,6 +26,10 @@ class TicketsProjection
     @tickets_table.values
   end
 
+  def ticket_for(jira_key)
+    @tickets_table[jira_key]
+  end
+
   private
 
   def update_ticket(key, &block)
