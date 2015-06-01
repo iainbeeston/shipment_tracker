@@ -7,7 +7,7 @@ class FeatureAuditProjection
     @from = from
     @to = to
     @git_repository = git_repository
-    @tickets_table = {}
+    @tickets_projection = TicketsProjection.new
     @deploys = []
     @builds = []
     @comments = []
@@ -20,7 +20,7 @@ class FeatureAuditProjection
   def apply(event)
     case event
     when JiraEvent
-      update_ticket_from_jira_event(event)
+      tickets_projection.apply(event) if expected_ticket_keys.include?(event.key)
     when DeployEvent
       record_deploy(event)
     when CircleCiEvent, JenkinsEvent
@@ -34,9 +34,7 @@ class FeatureAuditProjection
     commits.map(&:author_name).uniq
   end
 
-  def tickets
-    @tickets_table.values
-  end
+  delegate :tickets, to: :tickets_projection
 
   def valid?
     commits.any?
@@ -44,7 +42,7 @@ class FeatureAuditProjection
 
   private
 
-  attr_reader :git_repository
+  attr_reader :git_repository, :tickets_projection
 
   def commits
     @commits ||= to ? git_repository.commits_between(from, to) : []
@@ -60,30 +58,6 @@ class FeatureAuditProjection
 
   def extract_ticket_keys(message)
     message.scan(/(?<=\b)[A-Z]{2,}-\d+(?=\b)/)
-  end
-
-  def update_ticket_from_jira_event(jira_event)
-    return unless expected_ticket_keys.include?(jira_event.key)
-
-    new_attributes = { key: jira_event.key, summary: jira_event.summary, status: jira_event.status }
-
-    if jira_event.status_changed?
-      approver_attributes = if jira_event.status == 'Done'
-                              { approver_email: jira_event.user_email, approved_at: jira_event.updated }
-                            else
-                              { approver_email: nil, approved_at: nil }
-                            end
-      new_attributes.merge!(approver_attributes)
-    end
-
-    update_ticket(jira_event.key) do |ticket|
-      ticket.update_attributes(new_attributes)
-    end
-  end
-
-  def update_ticket(key, &block)
-    ticket = @tickets_table.fetch(key, Ticket.new)
-    @tickets_table[key] = block.call(ticket)
   end
 
   def deploy_from_event(deploy_event)
