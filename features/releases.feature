@@ -1,5 +1,6 @@
 Feature: Viewing Releases
-  As a deployer and an auditor I want to view all releases for a given application
+  As a deployer I want to view all releases for a given application so that I know which versions are safe
+  to deploy
 
 Scenario: Viewing releases for an app
   Given an application called "frontend"
@@ -20,9 +21,9 @@ Scenario: Viewing releases for an app
   When I view the releases for "frontend"
 
   Then I should see the releases
-    | id       | date     | message                            | issue audit |
-    | #merge   | 16:04:19 | Merged `feature-one` into `master` | Done        |
-    | #branch2 | 15:04:19 | second commit                      | Done        |
-    | #branch1 | 14:01:17 | first commit                       | Done        |
-    | #master2 | 13:31:17 | recent commit                      |             |
-    | #master1 | 13:01:17 | historic commit                    |             |
+    | id       | date     | message                            | issue audit | approved |
+    | #merge   | 16:04:19 | Merged `feature-one` into `master` | Done        | yes      |
+    | #branch2 | 15:04:19 | second commit                      | Done        | yes      |
+    | #branch1 | 14:01:17 | first commit                       | Done        | yes      |
+    | #master2 | 13:31:17 | recent commit                      |             | no       |
+    | #master1 | 13:01:17 | historic commit                    |             | no       |

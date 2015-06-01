@@ -7,5 +7,6 @@ class Release
     attribute :subject, String
     attribute :feature_review_status, String
     attribute :feature_review_path, String
+    attribute :approved, Boolean
   end
 end

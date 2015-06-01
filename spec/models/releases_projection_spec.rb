@@ -14,9 +14,9 @@ RSpec.describe ReleasesProjection do
 
   let(:commits) {
     [
-      GitCommit.new(id: 'abc', message: 'abc done', time: time),
-      GitCommit.new(id: 'def', message: 'def done', time: time),
-      GitCommit.new(id: 'ghi', message: 'ghi done', time: time),
+      GitCommit.new(id: 'abc', message: "abc done\nbody", time: time),
+      GitCommit.new(id: 'def', message: "def done\n\nbody", time: time),
+      GitCommit.new(id: 'ghi', message: "ghi done\n\nbody", time: time),
     ]
   }
 
@@ -46,6 +46,7 @@ RSpec.describe ReleasesProjection do
             time: time,
             feature_review_status: 'Done',
             feature_review_path: feature_review_path(foo: 'abc', bar: 'jkl'),
+            approved: true,
           ),
           Release.new(
             version: 'def',
@@ -53,12 +54,14 @@ RSpec.describe ReleasesProjection do
             time: time,
             feature_review_status: 'Done',
             feature_review_path: feature_review_path(foo: 'abc', bar: 'jkl'),
+            approved: true,
           ),
           Release.new(
             version: 'ghi',
             subject: 'ghi done',
             time: time,
             feature_review_path: nil,
+            approved: false,
           ),
         ],
       )

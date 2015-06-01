@@ -5,6 +5,7 @@ class ReleasesProjection
 
   def initialize(per_page:, git_repository:)
     @per_page = per_page
+    @tickets_projection = TicketsProjection.new
     @git_repository = git_repository
     @feature_reviews = {}
     @tickets_hash = {}
@@ -20,7 +21,7 @@ class ReleasesProjection
     case event
     when JiraEvent
       associate_releases_with_feature_review(event)
-      add_ticket(event.key, event.status) if ticket?(event.key)
+      tickets_projection.apply(event)
     end
   end
 
@@ -33,18 +34,21 @@ class ReleasesProjection
 
     commits.map { |commit|
       feature_review = feature_review_for_commit(commit.id)
+      ticket = get_ticket(feature_review.fetch(:key))
       Release.new(
         version: commit.id,
         time: commit.time,
         subject: commit.subject_line,
-        feature_review_status: get_ticket(feature_review.fetch(:key)),
+        feature_review_status: ticket.status,
         feature_review_path: feature_review.fetch(:path),
-        approved: true,
+        approved: ticket.approved?,
       )
     }
   end
 
   private
+
+  attr_reader :tickets_projection
 
   def associate_dependent_releases_with_feature_review
     feature_review_commit_versions.each do |sha|
@@ -66,16 +70,8 @@ class ReleasesProjection
     @feature_reviews[commit_oid] = feature_review
   end
 
-  def add_ticket(key, status)
-    @tickets_hash[key] = status
-  end
-
   def get_ticket(key)
-    @tickets_hash.fetch(key, nil)
-  end
-
-  def ticket?(key)
-    @tickets_hash.key?(key)
+    tickets_projection.ticket_for(key) || Ticket.new(status: nil)
   end
 
   def associate_releases_with_feature_review(jira_event)
@@ -83,8 +79,6 @@ class ReleasesProjection
       commit_oids = extract_relevant_commit_from_location(location)
       commit_oids.each do |commit_oid|
         associate_feature_review(commit_oid, key: jira_event.key, path: location.path)
-
-        add_ticket(jira_event.key, jira_event.status)
       end
     end
   end

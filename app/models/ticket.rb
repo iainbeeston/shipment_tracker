@@ -10,6 +10,10 @@ class Ticket
     attribute :approved_at, Time
   end
 
+  def approved?
+    approver_email.present? && approved_at.present?
+  end
+
   def update_attributes(new_attributes)
     Ticket.new(attributes.merge(new_attributes))
   end

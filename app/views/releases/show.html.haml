@@ -7,7 +7,7 @@
     %th message
     %th feature review
   - @releases.each do |release|
-    %tr.release
+    %tr.release{class: ('danger' unless release.approved)}
       %td= release.version
       %td= release.time
       %td= release.subject
