@@ -40,6 +40,12 @@ Scenario: Viewing a feature review
 
   When I visit the feature review
 
+  Then I should see a summary with heading "danger" and content
+    | status | title           |
+    | failed | Tests           |
+    | failed | UAT environment |
+    | n/a    | QA (manual)     |
+
   Then I should only see the ticket
     | key      | summary       | description  | status      |
     | JIRA-123 | Urgent ticket | Urgent stuff | In Progress |

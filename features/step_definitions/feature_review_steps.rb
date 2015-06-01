@@ -67,6 +67,15 @@ Then 'I should only see the ticket' do |ticket_table|
   expect(feature_review_page.tickets).to match_array(expected_tickets)
 end
 
+Then 'I should see a summary with heading "$status" and content' do |status, summary_table|
+  expected_summary = summary_table.hashes.map { |summary_item|
+    Sections::SummarySection.from_hash(summary_item)
+  }
+
+  expect(feature_review_page.summary_status).to eq(status)  # danger or success
+  expect(feature_review_page.summary_contents).to match_array(expected_summary)
+end
+
 When 'I "$status" the feature as "$name"' do |status, name|
   feature_review_page.create_qa_submission(status: status, name: name)
 end

@@ -1,4 +1,25 @@
-%h1 Feature for review
+%h1 Feature Review
+
+.row
+  .col-lg-6
+    .panel.summary{class: panel_class(@projection.success?)}
+      .panel-heading
+        %h2
+          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@projection.success?)}
+          Summary
+      %ul.list-group
+        %li.list-group-item
+          %strong
+            %span.status.glyphicon{"aria-hidden" => "true", class: summary_item_classes(@projection.build_status)}
+            %span.title Tests
+        %li.list-group-item
+          %strong
+            %span.status.glyphicon{"aria-hidden" => "true", class: summary_item_classes(@projection.deploy_status)}
+            %span.title UAT environment
+        %li.list-group-item
+          %strong
+            %span.status.glyphicon{"aria-hidden" => "true", class: summary_item_classes(@projection.qa_status)}
+            %span.title QA (manual)
 
 %h3 Associated tickets
 %table.table.table-striped

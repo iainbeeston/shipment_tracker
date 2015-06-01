@@ -48,6 +48,16 @@ module Pages
       page.all('.ticket').map { |ticket_line| Sections::TicketSection.from_element(ticket_line) }
     end
 
+    def summary_status
+      verify!
+      page.find('.panel.summary')[:class].match(/panel-(?<status>\w+)/)[:status]
+    end
+
+    def summary_contents
+      verify!
+      page.all('.summary li').map { |summary_line| Sections::SummarySection.from_element(summary_line) }
+    end
+
     private
 
     attr_reader :page, :url_helpers
