@@ -23,9 +23,9 @@ RSpec.describe ReleasesProjection do
   let(:events) {
     [
       build(:jira_event, comment_body: feature_review_comment(foo: 'abc')),
-      build(:jira_event, issue_id: 123, comment_body: feature_review_comment(foo: 'abc', bar: 'jkl')),
+      build(:jira_event, key: 'JIRA-123', comment_body: feature_review_comment(foo: 'abc', bar: 'jkl')),
       build(:jira_event, comment_body: feature_review_comment(foo: 'xyz')),
-      build(:jira_event, :done, issue_id: 123),
+      build(:jira_event, :done, key: 'JIRA-123'),
     ]
   }
 
