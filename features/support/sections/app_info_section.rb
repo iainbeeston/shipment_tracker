@@ -8,10 +8,9 @@ module Sections
     end
 
     def self.from_element(app_info_element)
-      values = app_info_element.all('td').map(&:text).to_a
       new(
-        app_name:  values.fetch(0),
-        version:  values.fetch(1),
+        app_name: app_info_element.find('.name').text,
+        version: app_info_element.find('.version').text,
       )
     end
   end

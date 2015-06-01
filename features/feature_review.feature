@@ -9,13 +9,13 @@ Background:
 Scenario: Preparing link for ticket
   When I prepare a feature review for:
     | field name | content             |
-    | frontend   | abc                 |
-    | backend    | def                 |
+    | frontend   | abc123456789        |
+    | backend    | def123456789        |
     | uat_url    | http://www.some.url |
   Then I should see the feature review page with the applications:
     | app_name | version |
-    | frontend | abc     |
-    | backend  | def     |
+    | frontend | abc1234 |
+    | backend  | def1234 |
   And I can see the UAT environment "http://www.some.url"
 
 Scenario: Viewing a feature review
@@ -46,7 +46,7 @@ Scenario: Viewing a feature review
     | failed | UAT environment |
     | n/a    | QA (manual)     |
 
-  Then I should only see the ticket
+  And I should only see the ticket
     | key      | summary       | description  | status      |
     | JIRA-123 | Urgent ticket | Urgent stuff | In Progress |
 

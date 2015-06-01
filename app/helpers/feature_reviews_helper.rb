@@ -16,4 +16,12 @@ module FeatureReviewsHelper
       'text-warning glyphicon-alert'
     end
   end
+
+  def short_sha(full_sha)
+    full_sha[0...7]
+  end
+
+  def to_link(url, options = {})
+    link_to url, Addressable::URI.heuristic_parse(url).to_s, options
+  end
 end

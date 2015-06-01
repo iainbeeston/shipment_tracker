@@ -21,6 +21,20 @@
             %span.status.glyphicon{"aria-hidden" => "true", class: summary_item_classes(@projection.qa_status)}
             %span.title QA (manual)
 
+  .col-lg-6
+    .panel.panel-info.app-info
+      .panel-heading
+        %h2
+          Apps under review
+      %ul.list-group
+        - @apps.each do |name, version|
+          %li.list-group-item.app
+            %strong.name= name
+            %span.version= short_sha(version)
+        %li.list-group-item
+          Deployed to UAT
+          %strong.uat-url= to_link(@uat_url, target: '_blank')
+
 %h3 Associated tickets
 %table.table.table-striped
   %thead
@@ -37,16 +51,6 @@
         %td= ticket.description
         %td= ticket.status
 
-%table.table.table-striped
-  %thead
-    %tr
-      %th Application
-      %th Version
-  %tbody
-    - @apps.each do |name, version|
-      %tr.app-info
-        %td= name
-        %td= version
 
 - @projection.builds.each do |app_name, builds|
   %div{class: app_name}
@@ -63,8 +67,7 @@
             %td= build.status
 
 %h3
-  Deploys to
-  %span.uat-url= @uat_url
+  Apps on UAT
 %table.table.table-striped
   %thead
     %tr

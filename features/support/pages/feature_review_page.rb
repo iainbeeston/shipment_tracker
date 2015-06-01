@@ -7,7 +7,7 @@ module Pages
 
     def app_info
       verify!
-      page.all('.app-info').map { |app_info_element|
+      page.all('.app-info li.app').map { |app_info_element|
         Sections::AppInfoSection.from_element(app_info_element)
       }
     end
