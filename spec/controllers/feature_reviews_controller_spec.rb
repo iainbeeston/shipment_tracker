@@ -2,6 +2,22 @@ require 'rails_helper'
 
 RSpec.describe FeatureReviewsController do
   describe 'GET #index' do
+    context 'our routing' do
+      it 'matches the feature_review_location' do
+        actual_url = @routes.url_for host: 'www.example.com',
+                                     controller: 'feature_reviews',
+                                     action: 'index',
+                                     apps: { a: '123', b: '456' },
+                                     uat_url: 'http://foo.com'
+
+        puts actual_url
+
+        feature_review_location = FeatureReviewLocation.new(actual_url)
+        expect(feature_review_location.app_versions).to eq(a: '123', b: '456')
+        expect(feature_review_location.uat_url).to eq('http://foo.com')
+      end
+    end
+
     context 'when apps are submitted' do
       let(:projection) { instance_double(FeatureReviewProjection) }
       let(:events) { [Event.new, Event.new, Event.new] }
