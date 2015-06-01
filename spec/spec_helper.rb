@@ -20,11 +20,12 @@
 require 'codeclimate-test-reporter'
 CodeClimate::TestReporter.start
 
+require 'pathname'
 root = Pathname.new('..').expand_path(File.dirname(__FILE__))
 [
   root.join('app', 'models'),
 ].each do |path|
-  $LOAD_PATH.unshift path
+  $LOAD_PATH.unshift path.to_s
 end
 
 RSpec.configure do |config|
