@@ -42,7 +42,9 @@ class ReleasesProjection
     commits.map { |commit|
       release_hash = @releases_hash.fetch(commit.id, {})
       Release.new(
-        commit: commit,
+        version: commit.id,
+        time: commit.time,
+        subject: commit.subject_line,
         feature_review_status: @tickets_hash.fetch(release_hash.fetch(:issue_id, nil), nil),
         feature_review_path: release_hash.fetch(:path, nil),
       )

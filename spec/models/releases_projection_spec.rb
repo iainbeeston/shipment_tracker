@@ -10,11 +10,13 @@ RSpec.describe ReleasesProjection do
 
   let(:repository) { instance_double(GitRepository) }
 
+  let(:time) { Time.now }
+
   let(:commits) {
     [
-      GitCommit.new(id: 'abc'),
-      GitCommit.new(id: 'def'),
-      GitCommit.new(id: 'ghi'),
+      GitCommit.new(id: 'abc', message: 'abc done', time: time),
+      GitCommit.new(id: 'def', message: 'def done', time: time),
+      GitCommit.new(id: 'ghi', message: 'ghi done', time: time),
     ]
   }
 
@@ -39,17 +41,23 @@ RSpec.describe ReleasesProjection do
       expect(projection.releases).to eq(
         [
           Release.new(
-            commit: GitCommit.new(id: 'abc'),
+            version: 'abc',
+            subject: 'abc done',
+            time: time,
             feature_review_status: 'Done',
             feature_review_path: feature_review_path(foo: 'abc', bar: 'jkl'),
           ),
           Release.new(
-            commit: GitCommit.new(id: 'def'),
+            version: 'def',
+            subject: 'def done',
+            time: time,
             feature_review_status: 'Done',
             feature_review_path: feature_review_path(foo: 'abc', bar: 'jkl'),
           ),
           Release.new(
-            commit: GitCommit.new(id: 'ghi'),
+            version: 'ghi',
+            subject: 'ghi done',
+            time: time,
             feature_review_path: nil,
           ),
         ],
