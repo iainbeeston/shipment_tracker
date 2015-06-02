@@ -9,11 +9,8 @@ Rails.application.routes.draw do
   post 'deploys', to: 'events#create', defaults: { type: 'deploy' } # Legacy while we transition
 
   # Projections
-  resources :feature_audits, only: :show
   resources :feature_reviews, only: [:new, :index]
   resources :releases, only: [:index, :show]
 
   resources :repository_locations, only: [:index, :create]
-
-  resources :qa_submissions, only: :create
 end
