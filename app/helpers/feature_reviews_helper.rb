@@ -34,7 +34,7 @@ module FeatureReviewsHelper
     when :no
       'text-danger glyphicon-remove'
     when :ignore
-      'text-warning glyphicon-alert'
+      ''
     end
   end
 

@@ -18,13 +18,12 @@ module Sections
       correct_classes = {
         'text-success' => 'yes',
         'text-danger'  => 'no',
-        'text-warning' => '',
       }
 
       values = deploy_element.all('td').to_a
       correct_class = values.fetch(0).find('.status')[:class].split.last
       new(
-        correct:  correct_classes.fetch(correct_class),
+        correct:  correct_classes.fetch(correct_class, ''),
         app_name: values.fetch(1).text,
         version:  values.fetch(2).text,
       )
