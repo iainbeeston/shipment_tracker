@@ -5,7 +5,9 @@ require File.expand_path('../config/application', __FILE__)
 
 Rails.application.load_tasks
 
-task default: [:spec, :cucumber, :rubocop] do
+task default: [:spec, :cucumber, :rubocop]
+
+task :codeclimate do
   require 'simplecov'
   require 'codeclimate-test-reporter'
   CodeClimate::TestReporter::Formatter.new.format(SimpleCov.result)
