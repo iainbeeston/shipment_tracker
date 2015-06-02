@@ -42,7 +42,7 @@ Then 'I can see the UAT environment "$uat"' do |uat|
   expect(feature_review_page.uat_url).to eq(uat)
 end
 
-Then 'I should see the deploys' do |deploys_table|
+Then 'I should see the deploys to UAT with heading "$status" and content' do |status, deploys_table|
   expected_deploys = deploys_table.hashes.map { |deploy|
     Sections::FeatureReviewDeploySection.new(
       app_name: deploy.fetch('app_name'),
@@ -51,6 +51,7 @@ Then 'I should see the deploys' do |deploys_table|
     )
   }
 
+  expect(feature_review_page.panel_heading_status('deploys')).to eq(status)
   expect(feature_review_page.deploys).to match_array(expected_deploys)
 end
 
@@ -69,10 +70,13 @@ end
 
 Then 'I should see a summary with heading "$status" and content' do |status, summary_table|
   expected_summary = summary_table.hashes.map { |summary_item|
-    Sections::SummarySection.from_hash(summary_item)
+    Sections::SummarySection.new(
+      status: summary_item.fetch('status'),
+      title: summary_item.fetch('title'),
+    )
   }
 
-  expect(feature_review_page.summary_status).to eq(status)  # danger or success
+  expect(feature_review_page.panel_heading_status('summary')).to eq(status)
   expect(feature_review_page.summary_contents).to match_array(expected_summary)
 end
 

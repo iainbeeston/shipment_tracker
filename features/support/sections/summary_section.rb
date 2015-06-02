@@ -8,22 +8,16 @@ module Sections
     end
 
     def self.from_element(build_element)
-      new(
-        title:  build_element.find('.title').text,
-        status: build_element.find('.status')[:class].split.last,
-      )
-    end
-
-    def self.from_hash(summary_item)
       status_classes = {
-        'success' => 'text-success',
-        'failed' => 'text-danger',
-        'n/a' => 'text-warning',
+        'text-success' => 'success',
+        'text-danger'  => 'failed',
+        'text-warning' => 'n/a',
       }
 
+      status_class = build_element.find('.status')[:class].split.last
       new(
-        status: status_classes.fetch(summary_item.fetch('status')),
-        title: summary_item.fetch('title'),
+        title:  build_element.find('.title').text,
+        status: status_classes.fetch(status_class),
       )
     end
   end

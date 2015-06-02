@@ -59,7 +59,7 @@ Scenario: Viewing a feature review
     | CircleCi | failed  | #def   |
     | CircleCi | success | #def   |
 
-  And I should see the deploys
+  And I should see the deploys to UAT with heading "danger" and content
     | app_name   | version | correct |
     | frontend   | #abc    | yes     |
     | backend    | #old    | no      |

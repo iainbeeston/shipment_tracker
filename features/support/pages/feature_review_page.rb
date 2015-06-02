@@ -24,6 +24,11 @@ module Pages
       page.find('.uat-url').text
     end
 
+    def panel_heading_status(panel_class)
+      verify!
+      page.find(".panel.#{panel_class}")[:class].match(/panel-(?<status>\w+)/)[:status]
+    end
+
     def deploys(for_app: nil)
       verify!
       app_container(for_app).all('.deploy').map { |deploy_line|
@@ -46,11 +51,6 @@ module Pages
     def tickets
       verify!
       page.all('.ticket').map { |ticket_line| Sections::TicketSection.from_element(ticket_line) }
-    end
-
-    def summary_status
-      verify!
-      page.find('.panel.summary')[:class].match(/panel-(?<status>\w+)/)[:status]
     end
 
     def summary_contents
