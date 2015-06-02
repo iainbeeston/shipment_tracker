@@ -14,16 +14,23 @@ task :codeclimate do
 end
 
 namespace :heroku do
-  desc 'Replace local database with Herokus one'
+  desc 'Replaces local development database with Heroku database'
   task pull: :environment do
     fail "Halting to prevent dropping '#{Rails.env}'" unless Rails.env.development?
 
-    config   = Rails.configuration.database_configuration.fetch(Rails.env)
-    database = config['database']
+    STDOUT.print 'This will overwrite your development DB with the Heroku DB. Are you sure? (Y/n) '
+    input = STDIN.gets.strip
+    case input
+    when 'Y', 'y', ''
+      config   = Rails.configuration.database_configuration.fetch(Rails.env)
+      database = config['database']
 
-    ENV['RAILS_ENV'] = 'development'
-    Rake::Task['db:drop'].invoke
+      ENV['RAILS_ENV'] = 'development'
+      Rake::Task['db:drop'].invoke
 
-    sh "heroku pg:pull DATABASE_URL #{database}"
+      sh "heroku pg:pull DATABASE_URL #{database}"
+    else
+      STDOUT.puts 'Did not overwrite development DB.'
+    end
   end
 end
