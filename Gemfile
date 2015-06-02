@@ -35,11 +35,12 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'codeclimate-test-reporter'
+  gem 'codeclimate-test-reporter', require: false
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
   gem 'factory_girl'
   gem 'launchy'
   gem 'rack-test', require: 'rack/test'
   gem 'shoulda-matchers'
+  gem 'simplecov'
 end

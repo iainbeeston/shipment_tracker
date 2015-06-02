@@ -5,7 +5,11 @@ require File.expand_path('../config/application', __FILE__)
 
 Rails.application.load_tasks
 
-task default: [:spec, :cucumber, :rubocop]
+task default: [:spec, :cucumber, :rubocop] do
+  require 'simplecov'
+  require 'codeclimate-test-reporter'
+  CodeClimate::TestReporter::Formatter.new.format(SimpleCov.result)
+end
 
 namespace :heroku do
   desc 'Replace local database with Herokus one'

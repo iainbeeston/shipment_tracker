@@ -306,6 +306,7 @@ DEPENDENCIES
   rugged (~> 0.23.0b2)
   sass-rails
   shoulda-matchers
+  simplecov
   spring
   terminal-notifier-guard
   virtus
