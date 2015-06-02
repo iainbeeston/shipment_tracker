@@ -1,7 +1,7 @@
 # Shipment Tracker
 [![Circle CI](https://img.shields.io/circleci/project/FundingCircle/shipment_tracker.svg)](https://circleci.com/gh/FundingCircle/shipment_tracker)
-[![Code Climate]( https://img.shields.io/codeclimate/github/FundingCircle/shipment_tracker.svg)](https://codeclimate.com/github/FundingCircle/shipment_tracker)
-[![Test Coverage](https://codeclimate.com/repos/555f377ae30ba015ef000212/badges/bdd13928fcb9ca50986d/coverage.svg)](https://codeclimate.com/repos/555f377ae30ba015ef000212/coverage)
+[![Code Climate](https://img.shields.io/codeclimate/github/FundingCircle/shipment_tracker.svg)](https://codeclimate.com/github/FundingCircle/shipment_tracker)
+[![Test Coverage](https://img.shields.io/codeclimate/coverage/github/FundingCircle/shipment_tracker.svg)](https://codeclimate.com/github/FundingCircle/shipment_tracker)
 
 [![](http://i.imgur.com/VkjlJmj.jpg)](https://www.flickr.com/photos/britishlibrary/11237769263/)
 
