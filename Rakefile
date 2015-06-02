@@ -21,6 +21,7 @@ namespace :heroku do
     config   = Rails.configuration.database_configuration.fetch(Rails.env)
     database = config['database']
 
+    ENV['RAILS_ENV'] = 'development'
     Rake::Task['db:drop'].invoke
 
     sh "heroku pg:pull DATABASE_URL #{database}"
