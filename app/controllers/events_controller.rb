@@ -19,7 +19,6 @@ class EventsController < ActionController::Metal
     {
       'deploy'      => DeployEvent,
       'circleci'    => CircleCiEvent,
-      'comments'    => CommentEvent,
       'jenkins'     => JenkinsEvent,
       'jira'        => JiraEvent,
       'manual_test' => ManualTestEvent,
