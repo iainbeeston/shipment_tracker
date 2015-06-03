@@ -31,28 +31,34 @@
             %strong.name= name
             %span.version= short_sha(version)
         %li.list-group-item
-          Deployed to UAT
-          %strong.uat-url= to_link(@uat_url, target: '_blank')
+          - if @uat_url.present?
+            Deployed to UAT
+            %strong.uat-url= to_link(@uat_url, target: '_blank')
+          - else
+            No UAT specified
 
 .row
   .col-lg-12
     .panel.panel-info.tickets
       .panel-heading
         %h2 Associated Tickets
-      %table.table.table-striped
-        %thead
-          %tr
-            %th Key
-            %th Summary
-            %th Description
-            %th Status
-        %tbody
-          - @projection.tickets.each do |ticket|
-            %tr.ticket
-              %td= ticket.key
-              %td= ticket.summary
-              %td= ticket.description
-              %td= ticket.status
+      - if @projection.tickets.empty?
+        .panel-body No tickets found
+      - else
+        %table.table.table-striped
+          %thead
+            %tr
+              %th Key
+              %th Summary
+              %th Description
+              %th Status
+          %tbody
+            - @projection.tickets.each do |ticket|
+              %tr.ticket
+                %td= ticket.key
+                %td= ticket.summary
+                %td= ticket.description
+                %td= ticket.status
 
 .row
   .col-lg-6
@@ -61,39 +67,45 @@
         %h2
           %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@projection.deploy_status)}
           UAT Environment
-      %table.table.table-striped
-        %thead
-          %tr
-            %th Correct
-            %th App
-            %th Version
-        %tbody
-          - @projection.deploys.each do |deploy|
-            %tr.deploy
-              %td
-                %span.status.glyphicon{"aria-hidden" => "true", class: deploy_status_icon_class(deploy.correct)}
-              %td= deploy.app_name
-              %td= short_sha(deploy.version)
+      - if @projection.deploys.empty?
+        .panel-body No deploys found
+      - else
+        %table.table.table-striped
+          %thead
+            %tr
+              %th Correct
+              %th App
+              %th Version
+          %tbody
+            - @projection.deploys.each do |deploy|
+              %tr.deploy
+                %td
+                  %span.status.glyphicon{"aria-hidden" => "true", class: deploy_status_icon_class(deploy.correct)}
+                %td= deploy.app_name
+                %td= short_sha(deploy.version)
   .col-lg-6
     .panel.builds{class: panel_class(@projection.build_status)}
       .panel-heading
         %h2
           %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@projection.build_status)}
           Builds
-      %table.table.table-striped
-        %thead
-          %tr
-            %th Status
-            %th App
-            %th Source
-        %tbody
-          - @projection.builds.each do |app_name, builds|
-            - builds.each do |build|
-              %tr.build
-                %td
-                  %span.status.glyphicon{"aria-hidden" => "true", class: build_status_icon_class(build.status)}
-                %td= app_name
-                %td= build.source
+      - if @projection.builds.empty?
+        .panel-body No builds found
+      - else
+        %table.table.table-striped
+          %thead
+            %tr
+              %th Status
+              %th App
+              %th Source
+          %tbody
+            - @projection.builds.each do |app_name, builds|
+              - builds.each do |build|
+                %tr.build
+                  %td
+                    %span.status.glyphicon{"aria-hidden" => "true", class: build_status_icon_class(build.status)}
+                  %td= app_name
+                  %td= build.source
 
 .row
   .col-lg-6
@@ -102,12 +114,14 @@
         %h2
           %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@projection.qa_status)}
           QA Acceptance
-      - if @projection.qa_submission
-        .panel-body
+      .panel-body
+        - if @projection.qa_submission
           %span.qa-name
             %strong= @projection.qa_submission.name
           at
           %span.qa-time= @projection.qa_submission.created_at
+        - else
+          Not reviewed by QA
       .panel-footer
         = form_tag(events_path(type: 'manual_test'), method: 'post', class: 'form-inline') do
           = hidden_field_tag(:return_to, @return_to)
