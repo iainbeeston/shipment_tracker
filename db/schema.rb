@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 20150507103704) do
   enable_extension "plpgsql"
 
   create_table "events", force: :cascade do |t|
-    t.jsonb    "details"
+    t.json     "details"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string   "type"
