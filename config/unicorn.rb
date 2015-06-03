@@ -13,11 +13,7 @@ paths = {
 stderr_path paths.fetch(:stderr)
 stdout_path paths.fetch(:stdout)
 pid paths.fetch(:pid)
-
-if Dir.exist?(File.dirname(paths.fetch(:socket)))
-  Rails.logger.warn "Socket directory detected so listening on: #{paths.fetch(:socket)}"
-  listen paths.fetch(:socket), backlog: 64
-end
+listen paths.fetch(:socket), backlog: 64 unless ENV.key?('PORT')
 
 before_fork do |_server, _worker|
   Signal.trap 'TERM' do
