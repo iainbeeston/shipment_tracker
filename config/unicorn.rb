@@ -2,13 +2,22 @@ worker_processes Integer(ENV['WEB_CONCURRENCY'] || 1)
 timeout 15
 preload_app true
 
-root = File.expand_path('../..', __FILE__)
+root = File.expand_path('..', __dir__)
+paths = {
+  stderr: File.join(root, 'log/unicorn.log'),
+  stdout: File.join(root, 'log/unicorn.log'),
+  pid:    File.join(root, 'tmp/pids/unicorn.pid'),
+  socket: File.join(root, 'tmp/sockets/unicorn.sock'),
+}
 
-stderr_path File.join(root, 'log/unicorn.log')
-stdout_path File.join(root, 'log/unicorn.log')
+stderr_path paths.fetch(:stderr)
+stdout_path paths.fetch(:stdout)
+pid paths.fetch(:pid)
 
-pid File.join(root, 'tmp/pids/unicorn.pid')
-listen File.join(root, 'tmp/sockets/unicorn.sock'), backlog: 64
+if Dir.exist?(File.dirname(paths.fetch(:socket)))
+  Rails.logger.warn "Socket directory detected so listening on: #{paths.fetch(:socket)}"
+  listen paths.fetch(:socket), backlog: 64
+end
 
 before_fork do |_server, _worker|
   Signal.trap 'TERM' do
