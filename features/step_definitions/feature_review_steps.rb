@@ -27,15 +27,17 @@ When 'I visit the feature review' do
   visit scenario_context.review_url
 end
 
-Then 'I should see the builds for "$app"' do |app_name, builds_table|
+Then 'I should see the builds with heading "$status" and content' do |status, builds_table|
   expected_builds = builds_table.hashes.map { |build|
     Sections::BuildSection.new(
+      app: build.fetch('app'),
       source: build.fetch('source'),
       status: build.fetch('status'),
     )
   }
 
-  expect(feature_review_page.builds(for_app: app_name)).to match_array(expected_builds)
+  expect(feature_review_page.panel_heading_status('builds')).to eq(status)
+  expect(feature_review_page.builds).to match_array(expected_builds)
 end
 
 Then 'I can see the UAT environment "$uat"' do |uat|

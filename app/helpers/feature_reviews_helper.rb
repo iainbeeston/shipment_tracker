@@ -38,6 +38,14 @@ module FeatureReviewsHelper
     end
   end
 
+  def build_status_icon_class(status)
+    if status == 'success'
+      'text-success glyphicon-ok'
+    elsif status == 'failed'
+      'text-danger glyphicon-remove'
+    end
+  end
+
   def summary_item_classes(status)
     if status == 'success'
       'text-success glyphicon-ok'

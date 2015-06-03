@@ -74,21 +74,26 @@
                 %span.status.glyphicon{"aria-hidden" => "true", class: deploy_status_icon_class(deploy.correct)}
               %td= deploy.app_name
               %td= short_sha(deploy.version)
-
-- @projection.builds.each do |app_name, builds|
-  %div{class: app_name}
-    %h3= "Builds for #{app_name}"
-    %table.table.table-striped
-      %thead
-        %tr
-          %th Source
-          %th Status
-      %tbody
-        - builds.each do |build|
-          %tr.build
-            %td= build.source
-            %td= build.status
-
+  .col-lg-6
+    .panel.builds{class: panel_class(@projection.build_status)}
+      .panel-heading
+        %h2
+          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@projection.build_status)}
+          Builds
+      %table.table.table-striped
+        %thead
+          %tr
+            %th Status
+            %th App
+            %th Source
+        %tbody
+          - @projection.builds.each do |app_name, builds|
+            - builds.each do |build|
+              %tr.build
+                %td
+                  %span.status.glyphicon{"aria-hidden" => "true", class: build_status_icon_class(build.status)}
+                %td= app_name
+                %td= build.source
 
 %h3 QA acceptance
 

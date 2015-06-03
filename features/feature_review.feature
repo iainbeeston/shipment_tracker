@@ -50,14 +50,11 @@ Scenario: Viewing a feature review
     | key      | summary       | description  | status      |
     | JIRA-123 | Urgent ticket | Urgent stuff | In Progress |
 
-  And I should see the builds for "frontend"
-    | source   | status  | commit |
-    | CircleCi | success | #abc   |
-
-  And I should see the builds for "backend"
-    | source   | status  | commit |
-    | CircleCi | failed  | #def   |
-    | CircleCi | success | #def   |
+  And I should see the builds with heading "danger" and content
+    | status  | app      | source   |
+    | success | frontend | CircleCi |
+    | failed  | backend  | CircleCi |
+    | success | backend  | CircleCi |
 
   And I should see the deploys to UAT with heading "danger" and content
     | app_name   | version | correct |
@@ -68,8 +65,8 @@ Scenario: Viewing a feature review
 Scenario: QA rejects and approves feature
   Given a developer prepares a review for UAT "http://uat.fundingcircle.com" with apps
     | app_name | version |
-    | frontend | abc    |
-    | backend  | def    |
+    | frontend | abc     |
+    | backend  | def     |
   When I visit the feature review
   And I "reject" the feature as "Alice"
   Then I should see the feature "rejected" by "Alice"

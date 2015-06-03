@@ -3,17 +3,23 @@ module Sections
     include Virtus.value_object
 
     values do
-      attribute :source, String
       attribute :status, String
-      attribute :version, String
+      attribute :app,    String
+      attribute :source, String
     end
 
     def self.from_element(build_element)
-      values = build_element.all('td').map(&:text).to_a
+      status_classes = {
+        'text-success' => 'success',
+        'text-danger'  => 'failed',
+      }
+
+      values = build_element.all('td').to_a
+      status_class = values.fetch(0).find('.status')[:class].split.last
       new(
-        source:  values.fetch(0),
-        status:  values.fetch(1),
-        version: values.fetch(2, nil),
+        status:  status_classes.fetch(status_class),
+        app:     values.fetch(1).text,
+        source:  values.fetch(2).text,
       )
     end
   end
