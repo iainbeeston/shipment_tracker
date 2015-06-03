@@ -130,7 +130,7 @@ RSpec.describe FeatureReviewProjection do
           }
         end
 
-        it 'returns success' do
+        it 'returns "success"' do
           expect(projection.build_status).to eq('success')
         end
       end
@@ -148,7 +148,7 @@ RSpec.describe FeatureReviewProjection do
           }
         end
 
-        it 'returns failed' do
+        it 'returns "failed"' do
           expect(projection.build_status).to eq('failed')
         end
       end
@@ -247,7 +247,7 @@ RSpec.describe FeatureReviewProjection do
           ]
         end
 
-        it 'returns success' do
+        it 'returns "success"' do
           expect(projection.deploy_status).to eq('success')
         end
       end
@@ -279,7 +279,7 @@ RSpec.describe FeatureReviewProjection do
           ]
         end
 
-        it 'returns failed' do
+        it 'returns "failed"' do
           expect(projection.deploy_status).to eq('failed')
         end
       end
@@ -364,7 +364,7 @@ RSpec.describe FeatureReviewProjection do
       context 'when QA submission is accepted' do
         let(:qa_submission) { QaSubmission.new(status: 'accepted', name: 'Alice') }
 
-        it 'it returns success' do
+        it 'returns "success"' do
           expect(projection.qa_status).to eq('success')
         end
       end
@@ -372,7 +372,7 @@ RSpec.describe FeatureReviewProjection do
       context 'when QA submission is rejected' do
         let(:qa_submission) { QaSubmission.new(status: 'rejected', name: 'Alice') }
 
-        it 'it returns failure' do
+        it 'returns "failed"' do
           expect(projection.qa_status).to eq('failed')
         end
       end
@@ -380,14 +380,14 @@ RSpec.describe FeatureReviewProjection do
       context 'when QA submission is missing' do
         let(:qa_submission) { nil }
 
-        it 'it returns nil' do
+        it 'returns nil' do
           expect(projection.qa_status).to be nil
         end
       end
     end
   end
 
-  describe '#success?' do
+  describe '#summary_status' do
     context 'when status of deploys, builds, and QA submission are success' do
       before do
         allow(projection).to receive(:deploy_status).and_return('success')
@@ -395,20 +395,32 @@ RSpec.describe FeatureReviewProjection do
         allow(projection).to receive(:qa_status).and_return('success')
       end
 
-      it 'returns true' do
-        expect(projection.success?).to be true
+      it 'returns "success"' do
+        expect(projection.summary_status).to eq('success')
       end
     end
 
-    context 'when any status of deploys, builds, or QA submission is not success' do
+    context 'when any status of deploys, builds, or QA submission is failed' do
       before do
         allow(projection).to receive(:deploy_status).and_return('success')
         allow(projection).to receive(:build_status).and_return('failed')
         allow(projection).to receive(:qa_status).and_return(nil)
       end
 
-      it 'returns false' do
-        expect(projection.success?).to be false
+      it 'returns "failed"' do
+        expect(projection.summary_status).to eq('failed')
+      end
+    end
+
+    context 'when no status is a failure but at least one is a warning' do
+      before do
+        allow(projection).to receive(:deploy_status).and_return('success')
+        allow(projection).to receive(:build_status).and_return('success')
+        allow(projection).to receive(:qa_status).and_return(nil)
+      end
+
+      it 'returns nil' do
+        expect(projection.summary_status).to be(nil)
       end
     end
   end

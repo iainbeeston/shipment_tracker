@@ -1,12 +1,4 @@
 module FeatureReviewsHelper
-  def summary_panel_class(success_state)
-    success_state ? 'panel-success' : 'panel-danger'
-  end
-
-  def summary_panel_icon_class(success_state)
-    success_state ? 'glyphicon-ok' : 'glyphicon-alert'
-  end
-
   def panel_class(status)
     if status == 'success'
       'panel-success'

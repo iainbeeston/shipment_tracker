@@ -8,7 +8,7 @@ module Sections
 
     def self.from_element(qa_submission_element)
       new(
-        name:   qa_submission_element.find('.qa-name').text,
+        name: qa_submission_element.find('.qa-name').text,
       )
     end
   end

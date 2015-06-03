@@ -25,8 +25,10 @@ class FeatureReviewProjection
     @tickets.values
   end
 
-  def success?
-    deploy_status == 'success' && qa_status == 'success' && build_status == 'success'
+  def summary_status
+    return 'success' if [deploy_status, qa_status, build_status].all? { |status| status == 'success' }
+    return 'failed' if [deploy_status, qa_status, build_status].any? { |status| status == 'failed' }
+    nil
   end
 
   def deploy_status

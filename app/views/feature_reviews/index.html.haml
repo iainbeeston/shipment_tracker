@@ -2,10 +2,10 @@
 
 .row
   .col-lg-6
-    .panel.summary{class: summary_panel_class(@projection.success?)}
+    .panel.summary{class: panel_class(@projection.summary_status)}
       .panel-heading
         %h2
-          %span.glyphicon{"aria-hidden" => "true", class: summary_panel_icon_class(@projection.success?)}
+          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@projection.summary_status)}
           Summary
       %ul.list-group
         %li.list-group-item
