@@ -2,23 +2,23 @@
 
 .row
   .col-lg-6
-    .panel.summary{class: panel_class(@projection.summary_status)}
+    .panel.summary{class: panel_class(@presenter.summary_status)}
       .panel-heading
         %h2
-          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@projection.summary_status)}
+          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@presenter.summary_status)}
           Summary
       %ul.list-group
         %li.list-group-item
           %strong
-            %span.status.glyphicon{"aria-hidden" => "true", class: summary_item_classes(@projection.build_status)}
+            %span.status.glyphicon{"aria-hidden" => "true", class: summary_item_classes(@presenter.build_status)}
             %span.title Builds
         %li.list-group-item
           %strong
-            %span.status.glyphicon{"aria-hidden" => "true", class: summary_item_classes(@projection.deploy_status)}
+            %span.status.glyphicon{"aria-hidden" => "true", class: summary_item_classes(@presenter.deploy_status)}
             %span.title UAT Environment
         %li.list-group-item
           %strong
-            %span.status.glyphicon{"aria-hidden" => "true", class: summary_item_classes(@projection.qa_status)}
+            %span.status.glyphicon{"aria-hidden" => "true", class: summary_item_classes(@presenter.qa_status)}
             %span.title QA Acceptance
 
   .col-lg-6
@@ -42,7 +42,7 @@
     .panel.panel-info.tickets
       .panel-heading
         %h2 Associated Tickets
-      - if @projection.tickets.empty?
+      - if @presenter.tickets.empty?
         .panel-body No tickets found
       - else
         %table.table.table-striped
@@ -53,7 +53,7 @@
               %th Description
               %th Status
           %tbody
-            - @projection.tickets.each do |ticket|
+            - @presenter.tickets.each do |ticket|
               %tr.ticket
                 %td= ticket.key
                 %td= ticket.summary
@@ -62,12 +62,12 @@
 
 .row
   .col-lg-6
-    .panel.deploys{class: panel_class(@projection.deploy_status)}
+    .panel.deploys{class: panel_class(@presenter.deploy_status)}
       .panel-heading
         %h2
-          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@projection.deploy_status)}
+          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@presenter.deploy_status)}
           UAT Environment
-      - if @projection.deploys.empty?
+      - if @presenter.deploys.empty?
         .panel-body No deploys found
       - else
         %table.table.table-striped
@@ -77,19 +77,19 @@
               %th App
               %th Version
           %tbody
-            - @projection.deploys.each do |deploy|
+            - @presenter.deploys.each do |deploy|
               %tr.deploy
                 %td
                   %span.status.glyphicon{"aria-hidden" => "true", class: deploy_status_icon_class(deploy.correct)}
                 %td= deploy.app_name
                 %td= short_sha(deploy.version)
   .col-lg-6
-    .panel.builds{class: panel_class(@projection.build_status)}
+    .panel.builds{class: panel_class(@presenter.build_status)}
       .panel-heading
         %h2
-          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@projection.build_status)}
+          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@presenter.build_status)}
           Builds
-      - if @projection.builds.empty?
+      - if @presenter.builds.empty?
         .panel-body No builds found
       - else
         %table.table.table-striped
@@ -99,7 +99,7 @@
               %th App
               %th Source
           %tbody
-            - @projection.builds.each do |app_name, builds|
+            - @presenter.builds.each do |app_name, builds|
               - builds.each do |build|
                 %tr.build
                   %td
@@ -109,17 +109,17 @@
 
 .row
   .col-lg-6
-    .panel.qa-submission{class: panel_class(@projection.qa_status)}
+    .panel.qa-submission{class: panel_class(@presenter.qa_status)}
       .panel-heading
         %h2
-          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@projection.qa_status)}
+          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@presenter.qa_status)}
           QA Acceptance
       .panel-body
-        - if @projection.qa_submission
+        - if @presenter.qa_submission
           %span.qa-name
-            %strong= @projection.qa_submission.name
+            %strong= @presenter.qa_submission.name
           at
-          %span.qa-time= @projection.qa_submission.created_at
+          %span.qa-time= @presenter.qa_submission.created_at
         - else
           Not reviewed by QA
       .panel-footer

@@ -25,41 +25,6 @@ class FeatureReviewProjection
     @tickets.values
   end
 
-  def summary_status
-    return 'success' if [deploy_status, qa_status, build_status].all? { |status| status == 'success' }
-    return 'failed' if [deploy_status, qa_status, build_status].any? { |status| status == 'failed' }
-    nil
-  end
-
-  def deploy_status
-    return nil if deploys.empty?
-
-    deploys.each do |deploy|
-      return 'failed' if deploy.correct == :no
-    end
-
-    'success'
-  end
-
-  def qa_status
-    case qa_submission.try(:status)
-    when 'accepted'
-      'success'
-    when 'rejected'
-      'failed'
-    end
-  end
-
-  def build_status
-    return nil if builds.empty?
-
-    builds.each_value do |app|
-      app.each { |build| return 'failed' if build.status == 'failed' }
-    end
-
-    'success'
-  end
-
   private
 
   attr_reader :projection_url

@@ -113,53 +113,6 @@ RSpec.describe FeatureReviewProjection do
         ],
       )
     end
-
-    describe '#build_status' do
-      before do allow(projection).to receive(:builds).and_return(builds) end
-
-      context 'when all builds pass' do
-        let(:builds) do
-          {
-            'frontend' => [
-              Build.new(source: 'CircleCi', status: 'success', version: 'abc'),
-              Build.new(source: 'Jenkins', status: 'success', version: 'abc'),
-            ],
-            'backend'  => [
-              Build.new(source: 'CircleCi', status: 'success', version: 'def'),
-            ],
-          }
-        end
-
-        it 'returns "success"' do
-          expect(projection.build_status).to eq('success')
-        end
-      end
-
-      context 'when any of the builds fail' do
-        let(:builds) do
-          {
-            'frontend' => [
-              Build.new(source: 'CircleCi', status: 'failed', version: 'abc'),
-              Build.new(source: 'Jenkins', status: 'success', version: 'abc'),
-            ],
-            'backend'  => [
-              Build.new(source: 'CircleCi', status: 'success', version: 'def'),
-            ],
-          }
-        end
-
-        it 'returns "failed"' do
-          expect(projection.build_status).to eq('failed')
-        end
-      end
-
-      context 'when there are no builds' do
-        let(:builds) { {} }
-        it 'returns nil' do
-          expect(projection.build_status).to be nil
-        end
-      end
-    end
   end
 
   describe 'deploys projection' do
@@ -215,81 +168,6 @@ RSpec.describe FeatureReviewProjection do
           correct: :ignore,
         ),
       ])
-    end
-
-    describe '#deploy_status' do
-      before do allow(projection).to receive(:deploys).and_return(deploys) end
-
-      context 'when all deploys are correct or ignored' do
-        let(:deploys) do
-          [
-            Deploy.new(
-              app_name: 'frontend',
-              server: uat_url,
-              version: 'abc',
-              deployed_by: 'Bob',
-              correct: :yes,
-            ),
-            Deploy.new(
-              app_name: 'backend',
-              server: uat_url,
-              version: 'def',
-              deployed_by: 'Carol',
-              correct: :yes,
-            ),
-            Deploy.new(
-              app_name: 'irrelevant',
-              server: uat_url,
-              version: 'any_version',
-              deployed_by: 'Eve',
-              correct: :ignore,
-            ),
-          ]
-        end
-
-        it 'returns "success"' do
-          expect(projection.deploy_status).to eq('success')
-        end
-      end
-
-      context 'when any deploy is not correct' do
-        let(:deploys) do
-          [
-            Deploy.new(
-              app_name: 'frontend',
-              server: uat_url,
-              version: 'abc',
-              deployed_by: 'Bob',
-              correct: :yes,
-            ),
-            Deploy.new(
-              app_name: 'backend',
-              server: uat_url,
-              version: 'wrong_version',
-              deployed_by: 'Carol',
-              correct: :no,
-            ),
-            Deploy.new(
-              app_name: 'irrelevant',
-              server: uat_url,
-              version: 'any_version',
-              deployed_by: 'Eve',
-              correct: :ignore,
-            ),
-          ]
-        end
-
-        it 'returns "failed"' do
-          expect(projection.deploy_status).to eq('failed')
-        end
-      end
-
-      context 'when there are no deploys' do
-        let(:deploys) { [] }
-        it 'returns nil' do
-          expect(projection.deploy_status).to be nil
-        end
-      end
     end
   end
 
@@ -355,72 +233,6 @@ RSpec.describe FeatureReviewProjection do
             name: 'Alice',
           ),
         )
-      end
-    end
-
-    describe '#qa_status' do
-      before do allow(projection).to receive(:qa_submission).and_return(qa_submission) end
-
-      context 'when QA submission is accepted' do
-        let(:qa_submission) { QaSubmission.new(status: 'accepted', name: 'Alice') }
-
-        it 'returns "success"' do
-          expect(projection.qa_status).to eq('success')
-        end
-      end
-
-      context 'when QA submission is rejected' do
-        let(:qa_submission) { QaSubmission.new(status: 'rejected', name: 'Alice') }
-
-        it 'returns "failed"' do
-          expect(projection.qa_status).to eq('failed')
-        end
-      end
-
-      context 'when QA submission is missing' do
-        let(:qa_submission) { nil }
-
-        it 'returns nil' do
-          expect(projection.qa_status).to be nil
-        end
-      end
-    end
-  end
-
-  describe '#summary_status' do
-    context 'when status of deploys, builds, and QA submission are success' do
-      before do
-        allow(projection).to receive(:deploy_status).and_return('success')
-        allow(projection).to receive(:build_status).and_return('success')
-        allow(projection).to receive(:qa_status).and_return('success')
-      end
-
-      it 'returns "success"' do
-        expect(projection.summary_status).to eq('success')
-      end
-    end
-
-    context 'when any status of deploys, builds, or QA submission is failed' do
-      before do
-        allow(projection).to receive(:deploy_status).and_return('success')
-        allow(projection).to receive(:build_status).and_return('failed')
-        allow(projection).to receive(:qa_status).and_return(nil)
-      end
-
-      it 'returns "failed"' do
-        expect(projection.summary_status).to eq('failed')
-      end
-    end
-
-    context 'when no status is a failure but at least one is a warning' do
-      before do
-        allow(projection).to receive(:deploy_status).and_return('success')
-        allow(projection).to receive(:build_status).and_return('success')
-        allow(projection).to receive(:qa_status).and_return(nil)
-      end
-
-      it 'returns nil' do
-        expect(projection.summary_status).to be(nil)
       end
     end
   end

@@ -20,6 +20,7 @@ RSpec.describe FeatureReviewsController do
 
     context 'when apps are submitted' do
       let(:projection) { instance_double(FeatureReviewProjection) }
+      let(:presenter) { instance_double(FeatureReviewPresenter) }
       let(:events) { [Event.new, Event.new, Event.new] }
       let(:uat_url) { 'http://uat.fundingcircle.com' }
       let(:apps_with_versions) { { 'frontend' => 'abc', 'backend' => 'def' } }
@@ -44,6 +45,8 @@ RSpec.describe FeatureReviewsController do
         ).and_return(projection)
 
         allow(Event).to receive(:in_order_of_creation).and_return(events)
+
+        allow(FeatureReviewPresenter).to receive(:new).with(projection).and_return(presenter)
       end
 
       it 'shows a report for each application' do
@@ -51,7 +54,7 @@ RSpec.describe FeatureReviewsController do
 
         get :index, apps: all_apps, uat_url: uat_url
 
-        expect(assigns(:projection)).to eq(projection)
+        expect(assigns(:presenter)).to eq(presenter)
       end
     end
 
