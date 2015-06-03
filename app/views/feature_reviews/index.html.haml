@@ -95,38 +95,35 @@
                 %td= app_name
                 %td= build.source
 
-%h3 QA acceptance
-
-%table.table.table-striped
-  %thead
-    %tr
-      %th Name
-      %th Status
-      %th Time
-  %tbody
-    %tr.qa-submission
-      %td= @projection.qa_submission.try(:name)
-      %td= @projection.qa_submission.try(:status)
-      %td= @projection.qa_submission.try(:created_at)
-
-= form_tag(events_path(type: 'manual_test'), method: 'post', class: 'form-horizontal') do
-  = hidden_field_tag(:return_to, @return_to)
-  = hidden_field_tag('testing_environment[uat_url]', @uat_url)
-  - @apps.each do |app_name, version|
-    = hidden_field_tag('testing_environment[apps][][name]', app_name)
-    = hidden_field_tag('testing_environment[apps][][version]', version)
-  .row
-    .radio.col-md-1
-      %label
-        = radio_button_tag 'status', 'success', required: true
-        Accept
-    .radio.col-md-1
-      %label
-        = radio_button_tag 'status', 'failed', required: true
-        Reject
-    = label_tag('user[name]', 'Name', class: 'col-md-1 control-label')
-    .col-md-6
-      = text_field_tag('user[name]', '', placeholder: 'Firstname Surname', class: 'form-control', required: true)
-    .col-md-2
-      = submit_tag('Submit', class: 'btn btn-primary')
+.row
+  .col-lg-6
+    .panel.qa-submission{class: panel_class(@projection.qa_status)}
+      .panel-heading
+        %h2
+          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@projection.qa_status)}
+          QA Acceptance
+      - if @projection.qa_submission
+        .panel-body
+          %span.qa-name
+            %strong= @projection.qa_submission.name
+          at
+          %span.qa-time= @projection.qa_submission.created_at
+      .panel-footer
+        = form_tag(events_path(type: 'manual_test'), method: 'post', class: 'form-inline') do
+          = hidden_field_tag(:return_to, @return_to)
+          = hidden_field_tag('testing_environment[uat_url]', @uat_url)
+          - @apps.each do |app_name, version|
+            = hidden_field_tag('testing_environment[apps][][name]', app_name)
+            = hidden_field_tag('testing_environment[apps][][version]', version)
+          .radio.qa-accept
+            %label
+              = radio_button_tag 'status', 'success', required: true
+              Accept
+          .radio.qa-reject
+            %label
+              = radio_button_tag 'status', 'failed', required: true
+              Reject
+          = label_tag('user[name]', 'Name', class: 'control-label sr-only')
+          = text_field_tag('user[name]', '', placeholder: 'Firstname Surname', class: 'form-control qa-name-field', required: true)
+          = submit_tag('Submit', class: 'btn btn-primary')
 

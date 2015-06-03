@@ -68,8 +68,10 @@ Scenario: QA rejects and approves feature
     | frontend | abc     |
     | backend  | def     |
   When I visit the feature review
-  And I "reject" the feature as "Alice"
-  Then I should see the feature "rejected" by "Alice"
-  When I "accept" the feature as "Alice"
-  Then I should see the feature "accepted" by "Alice"
+  Then I should see the QA acceptance with heading "warning"
 
+  When I "reject" the feature as "Alice"
+  Then I should see the QA acceptance with heading "danger" and name "Alice"
+
+  When I "accept" the feature as "Bob"
+  Then I should see the QA acceptance with heading "success" and name "Bob"

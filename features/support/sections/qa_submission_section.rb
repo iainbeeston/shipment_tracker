@@ -4,14 +4,11 @@ module Sections
 
     values do
       attribute :name, String
-      attribute :status, String
     end
 
     def self.from_element(qa_submission_element)
-      values = qa_submission_element.all('td').map(&:text).to_a
       new(
-        name:   values.fetch(0),
-        status: values.fetch(1),
+        name:   qa_submission_element.find('.qa-name').text,
       )
     end
   end

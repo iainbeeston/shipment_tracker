@@ -86,8 +86,13 @@ When 'I "$status" the feature as "$name"' do |status, name|
   feature_review_page.create_qa_submission(status: status, name: name)
 end
 
-When 'I should see the feature "$status" by "$name"' do |status, name|
-  expected_qa_submission = Sections::QaSubmissionSection.new(name: name, status: status)
+Then(/^I should see the QA acceptance with heading "([^\"]*)"$/) do |status|
+  expect(feature_review_page.panel_heading_status('qa-submission')).to eq(status)
+end
 
+Then 'I should see the QA acceptance with heading "$status" and name "$name"' do |status, name|
+  expected_qa_submission = Sections::QaSubmissionSection.new(name: name)
+
+  expect(feature_review_page.panel_heading_status('qa-submission')).to eq(status)
   expect(feature_review_page.qa_submission).to eq(expected_qa_submission)
 end
