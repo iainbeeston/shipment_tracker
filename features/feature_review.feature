@@ -42,7 +42,7 @@ Scenario: Viewing a feature review
 
   Then I should see a summary with heading "danger" and content
     | status | title           |
-    | failed | Builds          |
+    | failed | Test Results    |
     | failed | UAT Environment |
     | n/a    | QA Acceptance   |
 
