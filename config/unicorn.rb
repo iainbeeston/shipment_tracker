@@ -6,12 +6,10 @@ root = File.expand_path('..', __dir__)
 paths = {
   stderr: File.join(root, 'log/unicorn.log'),
   stdout: File.join(root, 'log/unicorn.log'),
-  pid:    File.join(root, 'tmp/pids/unicorn.pid'),
 }
 
 stderr_path paths.fetch(:stderr)
 stdout_path paths.fetch(:stdout)
-pid paths.fetch(:pid)
 
 before_fork do |_server, _worker|
   Signal.trap 'TERM' do
