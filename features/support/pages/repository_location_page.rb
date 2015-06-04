@@ -11,7 +11,7 @@ module Pages
 
     def fill_in(name:, uri:)
       page.fill_in 'Name', with: name
-      page.fill_in 'Uri', with: uri
+      page.fill_in 'URI', with: uri
       page.click_link_or_button('Create Repository location')
       self
     end
