@@ -39,8 +39,8 @@ RSpec.describe FeatureReviewPresenter do
         }
       end
 
-      it 'returns "success"' do
-        expect(presenter.build_status).to eq('success')
+      it 'returns :success' do
+        expect(presenter.build_status).to eq(:success)
       end
     end
 
@@ -57,8 +57,8 @@ RSpec.describe FeatureReviewPresenter do
         }
       end
 
-      it 'returns "failed"' do
-        expect(presenter.build_status).to eq('failed')
+      it 'returns :failure' do
+        expect(presenter.build_status).to eq(:failure)
       end
     end
 
@@ -78,8 +78,8 @@ RSpec.describe FeatureReviewPresenter do
         ]
       end
 
-      it 'returns "success"' do
-        expect(presenter.deploy_status).to eq('success')
+      it 'returns :success' do
+        expect(presenter.deploy_status).to eq(:success)
       end
     end
 
@@ -92,8 +92,8 @@ RSpec.describe FeatureReviewPresenter do
         ]
       end
 
-      it 'returns "failed"' do
-        expect(presenter.deploy_status).to eq('failed')
+      it 'returns :failure' do
+        expect(presenter.deploy_status).to eq(:failure)
       end
     end
 
@@ -120,16 +120,16 @@ RSpec.describe FeatureReviewPresenter do
     context 'when QA submission is accepted' do
       let(:qa_submission) { QaSubmission.new(status: 'accepted') }
 
-      it 'returns "success"' do
-        expect(presenter.qa_status).to eq('success')
+      it 'returns :success' do
+        expect(presenter.qa_status).to eq(:success)
       end
     end
 
     context 'when QA submission is rejected' do
       let(:qa_submission) { QaSubmission.new(status: 'rejected') }
 
-      it 'returns "failed"' do
-        expect(presenter.qa_status).to eq('failed')
+      it 'returns :failure' do
+        expect(presenter.qa_status).to eq(:failure)
       end
     end
 
@@ -146,8 +146,8 @@ RSpec.describe FeatureReviewPresenter do
       let(:deploys) { [Deploy.new(correct: :yes)] }
       let(:qa_submission) { QaSubmission.new(status: 'accepted') }
 
-      it 'returns "success"' do
-        expect(presenter.summary_status).to eq('success')
+      it 'returns :success' do
+        expect(presenter.summary_status).to eq(:success)
       end
     end
 
@@ -156,8 +156,8 @@ RSpec.describe FeatureReviewPresenter do
       let(:deploys) { [Deploy.new(correct: :ignore)] }
       let(:qa_submission) { QaSubmission.new(status: 'rejected') }
 
-      it 'returns "failed"' do
-        expect(presenter.summary_status).to eq('failed')
+      it 'returns :failure' do
+        expect(presenter.summary_status).to eq(:failure)
       end
     end
 

@@ -1,8 +1,9 @@
 module FeatureReviewsHelper
   def panel_class(status)
-    if status == 'success'
+    case status
+    when :success
       'panel-success'
-    elsif status == 'failed'
+    when :failure
       'panel-danger'
     else
       'panel-warning'
@@ -10,9 +11,10 @@ module FeatureReviewsHelper
   end
 
   def panel_icon_class(status)
-    if status == 'success'
+    case status
+    when :success
       'glyphicon-ok'
-    elsif status == 'failed'
+    when :failure
       'glyphicon-remove'
     else
       'glyphicon-alert'
@@ -31,17 +33,19 @@ module FeatureReviewsHelper
   end
 
   def build_status_icon_class(status)
-    if status == 'success'
+    case status
+    when 'success'
       'text-success glyphicon-ok'
-    elsif status == 'failed'
+    when 'failed'
       'text-danger glyphicon-remove'
     end
   end
 
   def summary_item_classes(status)
-    if status == 'success'
+    case status
+    when :success
       'text-success glyphicon-ok'
-    elsif status == 'failed'
+    when :failure
       'text-danger glyphicon-remove'
     else
       'text-warning glyphicon-alert'

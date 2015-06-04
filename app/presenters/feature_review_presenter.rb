@@ -15,9 +15,9 @@ class FeatureReviewPresenter
     return nil if builds.empty?
 
     if builds.all? { |b| b.status == 'success' }
-      'success'
+      :success
     else
-      'failed'
+      :failure
     end
   end
 
@@ -27,9 +27,9 @@ class FeatureReviewPresenter
     return nil if relevant_deploys.empty?
 
     if relevant_deploys.all? { |d| d.correct == :yes }
-      'success'
+      :success
     else
-      'failed'
+      :failure
     end
   end
 
@@ -37,17 +37,17 @@ class FeatureReviewPresenter
     return nil unless @projection.qa_submission
 
     if @projection.qa_submission.status == 'accepted'
-      'success'
+      :success
     else
-      'failed'
+      :failure
     end
   end
 
   def summary_status
-    if statuses.all? { |status| status == 'success' }
-      'success'
-    elsif statuses.any? { |status| status == 'failed' }
-      'failed'
+    if statuses.all? { |status| status == :success }
+      :success
+    elsif statuses.any? { |status| status == :failure }
+      :failure
     end
   end
 
