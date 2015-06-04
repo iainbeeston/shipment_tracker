@@ -7,13 +7,11 @@ paths = {
   stderr: File.join(root, 'log/unicorn.log'),
   stdout: File.join(root, 'log/unicorn.log'),
   pid:    File.join(root, 'tmp/pids/unicorn.pid'),
-  socket: File.join(root, 'tmp/sockets/unicorn.sock'),
 }
 
 stderr_path paths.fetch(:stderr)
 stdout_path paths.fetch(:stdout)
 pid paths.fetch(:pid)
-listen paths.fetch(:socket), backlog: 64 unless ENV.key?('PORT')
 
 before_fork do |_server, _worker|
   Signal.trap 'TERM' do
