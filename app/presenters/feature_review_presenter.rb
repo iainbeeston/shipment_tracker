@@ -10,7 +10,7 @@ class FeatureReviewPresenter
   end
 
   def build_status
-    builds = @projection.builds.values.flatten
+    builds = @projection.builds.values
 
     return nil if builds.empty?
 

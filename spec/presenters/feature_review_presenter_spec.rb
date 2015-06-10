@@ -29,13 +29,8 @@ RSpec.describe FeatureReviewPresenter do
     context 'when all builds pass' do
       let(:builds) do
         {
-          'frontend' => [
-            Build.new(status: 'success'),
-            Build.new(status: 'success'),
-          ],
-          'backend'  => [
-            Build.new(status: 'success'),
-          ],
+          'frontend' => Build.new(status: 'success'),
+          'backend'  => Build.new(status: 'success'),
         }
       end
 
@@ -44,16 +39,11 @@ RSpec.describe FeatureReviewPresenter do
       end
     end
 
-    context 'when any of the builds fail' do
+    context 'when any of the builds fails' do
       let(:builds) do
         {
-          'frontend' => [
-            Build.new(status: 'failed'),
-            Build.new(status: 'success'),
-          ],
-          'backend'  => [
-            Build.new(status: 'success'),
-          ],
+          'frontend' => Build.new(status: 'failed'),
+          'backend'  => Build.new(status: 'success'),
         }
       end
 
@@ -142,7 +132,7 @@ RSpec.describe FeatureReviewPresenter do
 
   describe '#summary_status' do
     context 'when status of deploys, builds, and QA submission are success' do
-      let(:builds) { { 'frontend' => [Build.new(status: 'success')] } }
+      let(:builds) { { 'frontend' => Build.new(status: 'success') } }
       let(:deploys) { [Deploy.new(correct: :yes)] }
       let(:qa_submission) { QaSubmission.new(status: 'accepted') }
 
@@ -152,7 +142,7 @@ RSpec.describe FeatureReviewPresenter do
     end
 
     context 'when any status of deploys, builds, or QA submission is failed' do
-      let(:builds) { { 'frontend' => [Build.new(status: 'success')] } }
+      let(:builds) { { 'frontend' => Build.new(status: 'success') } }
       let(:deploys) { [Deploy.new(correct: :ignore)] }
       let(:qa_submission) { QaSubmission.new(status: 'rejected') }
 
@@ -162,7 +152,7 @@ RSpec.describe FeatureReviewPresenter do
     end
 
     context 'when no status is a failure but at least one is a warning' do
-      let(:builds) { { 'frontend' => [Build.new(status: 'success')] } }
+      let(:builds) { { 'frontend' => Build.new(status: 'success') } }
       let(:deploys) { [Deploy.new(correct: :ignore)] }
       let(:qa_submission) { QaSubmission.new(status: 'accepted') }
 
