@@ -50,14 +50,12 @@
             %tr
               %th Key
               %th Summary
-              %th Description
               %th Status
           %tbody
             - @presenter.tickets.each do |ticket|
               %tr.ticket
                 %td= ticket.key
                 %td= ticket.summary
-                %td= ticket.description
                 %td= ticket.status
 
 .row

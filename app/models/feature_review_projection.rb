@@ -73,7 +73,6 @@ class FeatureReviewProjection
     ticket = Ticket.new(
       key: ticket_event.key,
       summary: ticket_event.summary,
-      description: ticket_event.description,
       status: ticket_event.status,
     )
     @tickets[ticket_event.key] = ticket

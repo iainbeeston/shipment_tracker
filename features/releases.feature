@@ -4,7 +4,7 @@ Feature: Viewing Releases
 
 Scenario: Viewing releases for an app
   Given an application called "frontend"
-  And a ticket "JIRA-123" with summary "Urgent ticket" and description "Urgent stuff" is started
+  And a ticket "JIRA-123" with summary "Urgent ticket" is started
   And a commit "#master1" with message "historic commit" is created at "13:01:17"
   And the branch "feature-one" is checked out
   And a commit "#branch1" with message "first commit" is created at "14:01:17"

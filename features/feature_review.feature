@@ -19,7 +19,7 @@ Scenario: Preparing link for ticket
   And I can see the UAT environment "http://www.some.url"
 
 Scenario: Viewing a feature review
-  Given a ticket "JIRA-123" with summary "Urgent ticket" and description "Urgent stuff" is started
+  Given a ticket "JIRA-123" with summary "Urgent ticket" is started
   And a commit "#abc" by "Alice" is created for app "frontend"
   And a commit "#old" by "Bob" is created for app "backend"
   And a commit "#def" by "Bob" is created for app "backend"
@@ -47,8 +47,8 @@ Scenario: Viewing a feature review
     | n/a     | QA Acceptance   |
 
   And I should only see the ticket
-    | key      | summary       | description  | status      |
-    | JIRA-123 | Urgent ticket | Urgent stuff | In Progress |
+    | key      | summary       | status      |
+    | JIRA-123 | Urgent ticket | In Progress |
 
   And I should see the builds with heading "success" and content
     | status  | app      | source   |

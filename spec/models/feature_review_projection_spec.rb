@@ -15,8 +15,8 @@ RSpec.describe FeatureReviewProjection do
   }
 
   describe 'tickets projection' do
-    let(:jira_1) { { key: 'JIRA-1', summary: 'Ticket 1', description: 'Desc 1' } }
-    let(:jira_4) { { key: 'JIRA-4', summary: 'Ticket 4', description: 'Desc 4' } }
+    let(:jira_1) { { key: 'JIRA-1', summary: 'Ticket 1' } }
+    let(:jira_4) { { key: 'JIRA-4', summary: 'Ticket 4' } }
 
     let(:events) {
       [
@@ -38,8 +38,8 @@ RSpec.describe FeatureReviewProjection do
       projection.apply_all(events)
 
       expect(projection.tickets).to eq([
-        Ticket.new(key: 'JIRA-1', summary: 'Ticket 1', description: 'Desc 1', status: 'Done'),
-        Ticket.new(key: 'JIRA-4', summary: 'Ticket 4', description: 'Desc 4', status: 'Ready For Review'),
+        Ticket.new(key: 'JIRA-1', summary: 'Ticket 1', status: 'Done'),
+        Ticket.new(key: 'JIRA-4', summary: 'Ticket 4', status: 'Ready For Review'),
       ])
     end
 

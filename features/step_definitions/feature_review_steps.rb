@@ -62,7 +62,6 @@ Then 'I should only see the ticket' do |ticket_table|
     Sections::TicketSection.new(
       key: ticket.fetch('key'),
       summary: ticket.fetch('summary'),
-      description: ticket.fetch('description'),
       status: ticket.fetch('status'),
     )
   }
