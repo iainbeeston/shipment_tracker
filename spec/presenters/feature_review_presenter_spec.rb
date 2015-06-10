@@ -73,11 +73,10 @@ RSpec.describe FeatureReviewPresenter do
   end
 
   describe '#deploy_status' do
-    context 'when all deploys are correct or ignored' do
+    context 'when all deploys are correct' do
       let(:deploys) do
         [
           Deploy.new(correct: :yes),
-          Deploy.new(correct: :ignore),
         ]
       end
 
@@ -91,7 +90,6 @@ RSpec.describe FeatureReviewPresenter do
         [
           Deploy.new(correct: :yes),
           Deploy.new(correct: :no),
-          Deploy.new(correct: :ignore),
         ]
       end
 
@@ -101,18 +99,6 @@ RSpec.describe FeatureReviewPresenter do
     end
 
     context 'when there are no deploys' do
-      it 'returns nil' do
-        expect(presenter.deploy_status).to be nil
-      end
-    end
-
-    context 'when all deploys are ignored' do
-      let(:deploys) {
-        [
-          Deploy.new(correct: :ignore),
-        ]
-      }
-
       it 'returns nil' do
         expect(presenter.deploy_status).to be nil
       end
@@ -156,7 +142,7 @@ RSpec.describe FeatureReviewPresenter do
 
     context 'when any status of deploys, builds, or QA submission is failed' do
       let(:builds) { { 'frontend' => Build.new(status: 'success') } }
-      let(:deploys) { [Deploy.new(correct: :ignore)] }
+      let(:deploys) { [Deploy.new(correct: :yes)] }
       let(:qa_submission) { QaSubmission.new(status: 'rejected') }
 
       it 'returns :failure' do
@@ -165,8 +151,8 @@ RSpec.describe FeatureReviewPresenter do
     end
 
     context 'when no status is a failure but at least one is a warning' do
-      let(:builds) { { 'frontend' => Build.new(status: 'success') } }
-      let(:deploys) { [Deploy.new(correct: :ignore)] }
+      let(:builds) { { 'frontend' => Build.new } }
+      let(:deploys) { [Deploy.new(correct: :yes)] }
       let(:qa_submission) { QaSubmission.new(status: 'accepted') }
 
       it 'returns nil' do

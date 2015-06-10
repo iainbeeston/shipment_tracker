@@ -22,11 +22,9 @@ class FeatureReviewPresenter
   end
 
   def deploy_status
-    relevant_deploys = @projection.deploys.reject { |d| d.correct == :ignore }
+    return nil if @projection.deploys.empty?
 
-    return nil if relevant_deploys.empty?
-
-    if relevant_deploys.all? { |d| d.correct == :yes }
+    if @projection.deploys.all? { |d| d.correct == :yes }
       :success
     else
       :failure

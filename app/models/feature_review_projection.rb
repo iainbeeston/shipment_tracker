@@ -93,7 +93,6 @@ class FeatureReviewProjection
   end
 
   def version_correctness_for_event(event)
-    return :ignore unless @apps.key?(event.app_name)
     event.version == @apps[event.app_name] ? :yes : :no
   end
 

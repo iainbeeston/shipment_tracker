@@ -27,8 +27,6 @@ module FeatureReviewsHelper
       'text-success glyphicon-ok'
     when :no
       'text-danger glyphicon-remove'
-    when :ignore
-      ''
     end
   end
 
