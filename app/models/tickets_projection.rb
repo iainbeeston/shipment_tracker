@@ -17,9 +17,7 @@ class TicketsProjection
       new_attributes.merge!(approver_attributes)
     end
 
-    update_ticket(event.key) do |ticket|
-      ticket.update_attributes(new_attributes)
-    end
+    update_ticket(event.key, new_attributes)
   end
 
   def tickets
@@ -32,8 +30,8 @@ class TicketsProjection
 
   private
 
-  def update_ticket(key, &block)
+  def update_ticket(key, attributes)
     ticket = @tickets_table.fetch(key, Ticket.new)
-    @tickets_table[key] = block.call(ticket)
+    @tickets_table[key] = ticket.update_attributes(attributes)
   end
 end
