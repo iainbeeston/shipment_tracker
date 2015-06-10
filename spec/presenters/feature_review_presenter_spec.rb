@@ -37,6 +37,19 @@ RSpec.describe FeatureReviewPresenter do
       it 'returns :success' do
         expect(presenter.build_status).to eq(:success)
       end
+
+      context 'but some builds are missing' do
+        let(:builds) do
+          {
+            'frontend' => Build.new(status: 'success'),
+            'backend'  => Build.new,
+          }
+        end
+
+        it 'returns nil' do
+          expect(presenter.build_status).to eq(nil)
+        end
+      end
     end
 
     context 'when any of the builds fails' do

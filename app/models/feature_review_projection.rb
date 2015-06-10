@@ -6,7 +6,7 @@ class FeatureReviewProjection
     @uat_url = uat_url
     @projection_url = projection_url
 
-    @builds = {}
+    @builds = apps_hash_with_value(apps, Build.new)
     @deploys = {}
     @tickets = {}
   end
@@ -103,13 +103,15 @@ class FeatureReviewProjection
     }
   end
 
-  private
-
   def apps_hash(apps_list)
     apps_list.map { |app| app.values_at('name', 'version') }.to_h
   end
 
   def extract_path(url_string)
     Addressable::URI.parse(url_string).normalize.request_uri
+  end
+
+  def apps_hash_with_value(apps, value)
+    apps.map { |key, _| [key, value] }.to_h
   end
 end

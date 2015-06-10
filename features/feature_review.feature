@@ -4,6 +4,7 @@ Feature: Developer prepares a feature review so that it can be attached to a
 Background:
   Given an application called "frontend"
   And an application called "backend"
+  And an application called "mobile"
   And an application called "irrelevant"
 
 Scenario: Preparing link for ticket
@@ -23,7 +24,8 @@ Scenario: Viewing a feature review
   And a commit "#abc" by "Alice" is created for app "frontend"
   And a commit "#old" by "Bob" is created for app "backend"
   And a commit "#def" by "Bob" is created for app "backend"
-  And a commit "#ghi" by "Carol" is created for app "irrelevant"
+  And a commit "#ghi" by "Carol" is created for app "mobile"
+  And a commit "#xyz" by "Wendy" is created for app "irrelevant"
   And CircleCi "passes" for commit "#abc"
   And CircleCi "fails" for commit "#def"
   # Flaky tests, build retriggered.
@@ -31,18 +33,19 @@ Scenario: Viewing a feature review
   And commit "#abc" is deployed by "Alice" on server "http://uat.fundingcircle.com"
   And commit "#old" is deployed by "Bob" on server "http://uat.fundingcircle.com"
   And commit "#def" is deployed by "Bob" on server "http://other-uat.fundingcircle.com"
-  And commit "#ghi" is deployed by "Carol" on server "http://uat.fundingcircle.com"
+  And commit "#xyz" is deployed by "Wendy" on server "http://uat.fundingcircle.com"
   And a developer prepares a review for UAT "http://uat.fundingcircle.com" with apps
     | app_name | version |
     | frontend | #abc    |
     | backend  | #def    |
+    | mobile   | #ghi    |
   And adds the link to a comment for ticket "JIRA-123"
 
   When I visit the feature review
 
   Then I should see a summary with heading "danger" and content
     | status  | title           |
-    | success | Test Results    |
+    | n/a     | Test Results    |
     | failed  | UAT Environment |
     | n/a     | QA Acceptance   |
 
@@ -50,10 +53,11 @@ Scenario: Viewing a feature review
     | key      | summary       | status      |
     | JIRA-123 | Urgent ticket | In Progress |
 
-  And I should see the builds with heading "success" and content
+  And I should see the builds with heading "warning" and content
     | status  | app      | source   |
     | success | frontend | CircleCi |
     | success | backend  | CircleCi |
+    | n/a     | mobile   |          |
 
   And I should see the deploys to UAT with heading "danger" and content
     | app_name   | version | correct |

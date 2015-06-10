@@ -16,7 +16,7 @@ class FeatureReviewPresenter
 
     if builds.all? { |b| b.status == 'success' }
       :success
-    else
+    elsif builds.any? { |b| b.status == 'failed' }
       :failure
     end
   end

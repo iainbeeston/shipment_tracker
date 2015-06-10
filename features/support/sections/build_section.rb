@@ -12,6 +12,7 @@ module Sections
       status_classes = {
         'text-success' => 'success',
         'text-danger'  => 'failed',
+        'text-warning' => 'n/a',
       }
 
       values = build_element.all('td').to_a

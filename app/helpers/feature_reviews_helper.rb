@@ -38,6 +38,8 @@ module FeatureReviewsHelper
       'text-success glyphicon-ok'
     when 'failed'
       'text-danger glyphicon-remove'
+    else
+      'text-warning glyphicon-alert'
     end
   end
 

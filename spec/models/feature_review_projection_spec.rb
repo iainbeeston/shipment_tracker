@@ -90,6 +90,7 @@ RSpec.describe FeatureReviewProjection do
   end
 
   describe 'builds projection' do
+    let(:apps) { { 'frontend' => 'abc', 'backend' => 'def', 'other' => 'xyz' } }
     let(:events) {
       [
         build(:jenkins_event, success?: false, version: 'abc'),
@@ -106,6 +107,7 @@ RSpec.describe FeatureReviewProjection do
       expect(projection.builds).to eq(
         'frontend' => Build.new(source: 'Jenkins', status: 'success', version: 'abc'),
         'backend'  => Build.new(source: 'CircleCi', status: 'success', version: 'def'),
+        'other'    => Build.new,
       )
     end
   end
