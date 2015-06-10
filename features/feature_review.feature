@@ -41,19 +41,18 @@ Scenario: Viewing a feature review
   When I visit the feature review
 
   Then I should see a summary with heading "danger" and content
-    | status | title           |
-    | failed | Test Results    |
-    | failed | UAT Environment |
-    | n/a    | QA Acceptance   |
+    | status  | title           |
+    | success | Test Results    |
+    | failed  | UAT Environment |
+    | n/a     | QA Acceptance   |
 
   And I should only see the ticket
     | key      | summary       | description  | status      |
     | JIRA-123 | Urgent ticket | Urgent stuff | In Progress |
 
-  And I should see the builds with heading "danger" and content
+  And I should see the builds with heading "success" and content
     | status  | app      | source   |
     | success | frontend | CircleCi |
-    | failed  | backend  | CircleCi |
     | success | backend  | CircleCi |
 
   And I should see the deploys to UAT with heading "danger" and content

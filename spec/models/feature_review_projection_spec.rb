@@ -92,7 +92,7 @@ RSpec.describe FeatureReviewProjection do
   describe 'builds projection' do
     let(:events) {
       [
-        build(:circle_ci_event, success?: false, version: 'abc'),
+        build(:jenkins_event, success?: false, version: 'abc'),
         build(:jenkins_event, success?: true, version: 'abc'), # Build retriggered.
         build(:circle_ci_event, success?: true, version: 'def'),
         build(:jenkins_event, success?: true, version: 'ghi'),
@@ -104,13 +104,8 @@ RSpec.describe FeatureReviewProjection do
       projection.apply_all(events)
 
       expect(projection.builds).to eq(
-        'frontend' => [
-          Build.new(source: 'CircleCi', status: 'failed', version: 'abc'),
-          Build.new(source: 'Jenkins', status: 'success', version: 'abc'),
-        ],
-        'backend'  => [
-          Build.new(source: 'CircleCi', status: 'success', version: 'def'),
-        ],
+        'frontend' => Build.new(source: 'Jenkins', status: 'success', version: 'abc'),
+        'backend'  => Build.new(source: 'CircleCi', status: 'success', version: 'def'),
       )
     end
   end

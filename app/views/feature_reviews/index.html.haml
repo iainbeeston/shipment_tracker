@@ -99,13 +99,12 @@
               %th App
               %th Source
           %tbody
-            - @presenter.builds.each do |app_name, builds|
-              - builds.each do |build|
-                %tr.build
-                  %td
-                    %span.status.glyphicon{"aria-hidden" => "true", class: build_status_icon_class(build.status)}
-                  %td= app_name
-                  %td= build.source
+            - @presenter.builds.each do |app_name, build|
+              %tr.build
+                %td
+                  %span.status.glyphicon{"aria-hidden" => "true", class: build_status_icon_class(build.status)}
+                %td= app_name
+                %td= build.source
 
 .row
   .col-lg-6

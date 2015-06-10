@@ -51,7 +51,7 @@ class FeatureReviewProjection
       status: build_event.status,
       version: build_event.version,
     )
-    @builds[app] = @builds.fetch(app, []).push(build)
+    @builds[app] = build
   end
 
   def apply_deploy_event(deploy_event)
