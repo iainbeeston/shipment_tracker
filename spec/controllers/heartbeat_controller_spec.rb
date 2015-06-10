@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe HeartbeatController do
+describe HomeController do
   describe 'GET #index' do
     it 'returns http success' do
       get :index

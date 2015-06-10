@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
-  root 'heartbeat#index'
+  root 'home#index'
 
   # Status
-  get 'heartbeat', to: 'heartbeat#index'
+  # get 'heartbeat', to: 'heartbeat#index'
 
   # Events
   post 'events/:type', to: 'events#create', as: 'events'
