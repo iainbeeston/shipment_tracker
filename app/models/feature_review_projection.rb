@@ -55,7 +55,7 @@ class FeatureReviewProjection
   end
 
   def apply_deploy_event(deploy_event)
-    return unless deploy_event.server == @uat_url
+    return unless deploy_event.server == @uat_url && @apps.key?(deploy_event.app_name)
 
     deploy = Deploy.new(
       app_name: deploy_event.app_name,

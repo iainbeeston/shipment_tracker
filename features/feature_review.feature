@@ -60,7 +60,6 @@ Scenario: Viewing a feature review
     | app_name   | version | correct |
     | frontend   | #abc    | yes     |
     | backend    | #old    | no      |
-    | irrelevant | #ghi    |         |
 
 Scenario: QA rejects and approves feature
   Given a developer prepares a review for UAT "http://uat.fundingcircle.com" with apps

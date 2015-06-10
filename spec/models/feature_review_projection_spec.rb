@@ -160,13 +160,6 @@ RSpec.describe FeatureReviewProjection do
           deployed_by: 'Carol',
           correct: :no,
         ),
-        Deploy.new(
-          app_name: 'irrelevant',
-          server: uat_url,
-          version: 'any_version',
-          deployed_by: 'Eve',
-          correct: :ignore,
-        ),
       ])
     end
   end
