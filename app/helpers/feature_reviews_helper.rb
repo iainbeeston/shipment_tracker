@@ -1,4 +1,18 @@
 module FeatureReviewsHelper
+  def panel(heading:, status: nil, klass: nil, &block)
+    haml_tag('.panel', class: [klass, panel_class(status)]) do
+      haml_tag('.panel-heading') do
+        haml_tag('h2') do
+          haml_tag('span.glyphicon', class: panel_icon_class(status), 'aria-hidden' => true)
+          haml_concat heading
+        end
+      end
+      haml_tag('ul.list-group') do
+        block.call
+      end
+    end
+  end
+
   def panel_class(status)
     case status
     when :success

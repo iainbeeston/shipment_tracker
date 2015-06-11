@@ -2,11 +2,7 @@
 
 .row
   .col-lg-6
-    .panel.summary{class: panel_class(@presenter.summary_status)}
-      .panel-heading
-        %h2
-          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@presenter.summary_status)}
-          Summary
+    - panel(heading: 'Summary', status: @presenter.summary_status, klass: 'summary') do
       %ul.list-group
         %li.list-group-item
           %strong
@@ -60,11 +56,7 @@
 
 .row
   .col-lg-6
-    .panel.deploys{class: panel_class(@presenter.deploy_status)}
-      .panel-heading
-        %h2
-          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@presenter.deploy_status)}
-          UAT Environment
+    - panel(heading: 'UAT Environment', klass: 'deploys', status: @presenter.deploy_status) do
       - if @presenter.deploys.empty?
         .panel-body No deploys found
       - else
@@ -82,11 +74,7 @@
                 %td= deploy.app_name
                 %td= short_sha(deploy.version)
   .col-lg-6
-    .panel.builds{class: panel_class(@presenter.build_status)}
-      .panel-heading
-        %h2
-          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@presenter.build_status)}
-          Test Results
+    - panel(heading: 'Test Results', klass: 'builds', status: @presenter.build_status) do
       - if @presenter.builds.empty?
         .panel-body No builds found
       - else
@@ -106,11 +94,7 @@
 
 .row
   .col-lg-6
-    .panel.qa-submission{class: panel_class(@presenter.qa_status)}
-      .panel-heading
-        %h2
-          %span.glyphicon{"aria-hidden" => "true", class: panel_icon_class(@presenter.qa_status)}
-          QA Acceptance
+    - panel(heading: 'QA Acceptance', klass: 'qa-submission', status: @presenter.qa_status) do
       .panel-body
         - if @presenter.qa_submission
           %span.qa-name
