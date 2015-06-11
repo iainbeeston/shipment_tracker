@@ -1,5 +1,5 @@
 module FeatureReviewsHelper
-  def panel(heading:, status: nil, klass: nil, &block)
+  def panel(heading:, status: :undefined, klass: nil, &block)
     haml_tag('.panel', class: [klass, panel_class(status)]) do
       haml_tag('.panel-heading') do
         haml_tag('h2') do
@@ -23,6 +23,8 @@ module FeatureReviewsHelper
       'panel-success'
     when :failure
       'panel-danger'
+    when :undefined
+      'panel-info'
     else
       'panel-warning'
     end
@@ -34,6 +36,8 @@ module FeatureReviewsHelper
       'glyphicon-ok'
     when :failure
       'glyphicon-remove'
+    when :undefined
+      nil
     else
       'glyphicon-alert'
     end
