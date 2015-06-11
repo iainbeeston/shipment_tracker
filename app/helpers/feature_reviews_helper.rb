@@ -13,6 +13,10 @@ module FeatureReviewsHelper
     end
   end
 
+  def icon(status)
+    haml_tag('span.status.glyphicon', '', class: status, 'aria-hidden' => true)
+  end
+
   def panel_class(status)
     case status
     when :success

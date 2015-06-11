@@ -6,15 +6,15 @@
       %ul.list-group
         %li.list-group-item
           %strong
-            %span.status.glyphicon{"aria-hidden" => "true", class: summary_item_classes(@presenter.build_status)}
+            - icon summary_item_classes(@presenter.build_status)
             %span.title Test Results
         %li.list-group-item
           %strong
-            %span.status.glyphicon{"aria-hidden" => "true", class: summary_item_classes(@presenter.deploy_status)}
+            - icon summary_item_classes(@presenter.deploy_status)
             %span.title UAT Environment
         %li.list-group-item
           %strong
-            %span.status.glyphicon{"aria-hidden" => "true", class: summary_item_classes(@presenter.qa_status)}
+            - icon summary_item_classes(@presenter.qa_status)
             %span.title QA Acceptance
 
   .col-lg-6
@@ -70,7 +70,7 @@
             - @presenter.deploys.each do |deploy|
               %tr.deploy
                 %td
-                  %span.status.glyphicon{"aria-hidden" => "true", class: deploy_status_icon_class(deploy.correct)}
+                  - icon deploy_status_icon_class(deploy.correct)
                 %td= deploy.app_name
                 %td= short_sha(deploy.version)
   .col-lg-6
@@ -88,7 +88,7 @@
             - @presenter.builds.each do |app_name, build|
               %tr.build
                 %td
-                  %span.status.glyphicon{"aria-hidden" => "true", class: build_status_icon_class(build.status)}
+                  - icon build_status_icon_class(build.status)
                 %td= app_name
                 %td= build.source
 
