@@ -7,9 +7,7 @@ module FeatureReviewsHelper
           haml_concat heading
         end
       end
-      haml_tag('ul.list-group') do
-        block.call
-      end
+      block.call
     end
   end
 
