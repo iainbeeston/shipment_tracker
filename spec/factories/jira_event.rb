@@ -16,6 +16,7 @@ FactoryGirl.define do
 
       default_details do
         {
+          'webhookEvent' => 'jira:issue_updated',
           'user' => {
             'displayName' => display_name,
             'emailAddress' => user_email,
@@ -75,6 +76,22 @@ FactoryGirl.define do
         },
       )
       status 'Done'
+    end
+  end
+
+  factory :jira_event_user_created, class: JiraEvent do
+    details do
+      {
+        'timestamp' => 1_434_031_799_536,
+        'webhookEvent' => 'user_created',
+        'user' => {
+          'self' => 'https://jira.example.com/rest/api/2/user?key=john.doe%40example.com',
+          'name' => 'john.doe@example.com',
+          'key' => 'john.doe@example.com',
+          'emailAddress' => 'john.doe@example.com',
+          'displayName' => 'John Doe',
+        },
+      }
     end
   end
 end

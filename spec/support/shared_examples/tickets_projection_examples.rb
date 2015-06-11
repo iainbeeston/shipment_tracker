@@ -52,5 +52,9 @@ shared_examples 'a tickets projection' do
 
       expect(projection.tickets).to be_empty
     end
+
+    it 'ignores non jira issue events' do
+      expect { projection.apply(build(:jira_event_user_created)) }.to_not raise_error
+    end
   end
 end

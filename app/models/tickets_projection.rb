@@ -4,7 +4,7 @@ class TicketsProjection
   end
 
   def apply(event)
-    return unless event.is_a?(JiraEvent)
+    return unless event.is_a?(JiraEvent) && event.issue?
 
     new_attributes = { key: event.key, summary: event.summary, status: event.status }
 

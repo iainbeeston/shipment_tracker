@@ -3,6 +3,10 @@ class JiraEvent < Event
     details.fetch('issue').fetch('key')
   end
 
+  def issue?
+    details.fetch('webhookEvent', '').start_with?('jira:issue_')
+  end
+
   def issue_id
     details.fetch('issue').fetch('id')
   end
