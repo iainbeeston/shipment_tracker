@@ -68,6 +68,7 @@ class FeatureReviewProjection
   end
 
   def apply_ticket_event(ticket_event)
+    return unless ticket_event.issue?
     return unless @tickets.key?(ticket_event.key) || matches_projection_url?(ticket_event.comment)
 
     ticket = Ticket.new(

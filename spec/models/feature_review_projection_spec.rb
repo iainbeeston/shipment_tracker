@@ -43,6 +43,12 @@ RSpec.describe FeatureReviewProjection do
       ])
     end
 
+    it 'ignores non JIRA issue events' do
+      event = build(:jira_event_user_created)
+
+      expect { projection.apply_all([event]) }.to_not raise_error
+    end
+
     context 'when multiple feature reviews are referenced in the same JIRA ticket' do
       let(:events) {
         [
