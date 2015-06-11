@@ -43,6 +43,19 @@ module FeatureReviewsHelper
     end
   end
 
+  def table(headers: [], &block)
+    haml_tag('table.table.table-striped') do
+      haml_tag('thead') do
+        haml_tag('tr') do
+          headers.each do |header|
+            haml_tag('th', header)
+          end
+        end
+      end
+      haml_tag('tbody', &block)
+    end
+  end
+
   def deploy_status_icon_class(status)
     case status
     when :yes

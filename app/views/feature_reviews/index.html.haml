@@ -37,18 +37,12 @@
       - if @presenter.tickets.empty?
         .panel-body No tickets found
       - else
-        %table.table.table-striped
-          %thead
-            %tr
-              %th Key
-              %th Summary
-              %th Status
-          %tbody
-            - @presenter.tickets.each do |ticket|
-              %tr.ticket
-                %td= ticket.key
-                %td= ticket.summary
-                %td= ticket.status
+        - table(headers: %w(Key Summary Status)) do
+          - @presenter.tickets.each do |ticket|
+            %tr.ticket
+              %td= ticket.key
+              %td= ticket.summary
+              %td= ticket.status
 
 .row
   .col-lg-6
@@ -56,37 +50,26 @@
       - if @presenter.deploys.empty?
         .panel-body No deploys found
       - else
-        %table.table.table-striped
-          %thead
-            %tr
-              %th Correct
-              %th App
-              %th Version
-          %tbody
-            - @presenter.deploys.each do |deploy|
-              %tr.deploy
-                %td
-                  - icon deploy_status_icon_class(deploy.correct)
-                %td= deploy.app_name
-                %td= short_sha(deploy.version)
+        - table(headers: %w(Correct App Version)) do
+          - @presenter.deploys.each do |deploy|
+            %tr.deploy
+              %td
+                - icon deploy_status_icon_class(deploy.correct)
+              %td= deploy.app_name
+              %td= short_sha(deploy.version)
+
   .col-lg-6
     - panel(heading: 'Test Results', klass: 'builds', status: @presenter.build_status) do
       - if @presenter.builds.empty?
         .panel-body No builds found
       - else
-        %table.table.table-striped
-          %thead
-            %tr
-              %th Status
-              %th App
-              %th Source
-          %tbody
-            - @presenter.builds.each do |app_name, build|
-              %tr.build
-                %td
-                  - icon build_status_icon_class(build.status)
-                %td= app_name
-                %td= build.source
+        - table(headers: %w(Status App Source)) do
+          - @presenter.builds.each do |app_name, build|
+            %tr.build
+              %td
+                - icon build_status_icon_class(build.status)
+              %td= app_name
+              %td= build.source
 
 .row
   .col-lg-6
