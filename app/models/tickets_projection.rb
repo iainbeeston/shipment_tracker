@@ -8,16 +8,15 @@ class TicketsProjection
 
     new_attributes = { key: event.key, summary: event.summary, status: event.status }
 
-    if event.status_changed?
-      approver_attributes = if event.status == 'Done'
-                              { approver_email: event.user_email, approved_at: event.updated }
-                            else
-                              { approver_email: nil, approved_at: nil }
-                            end
-      new_attributes.merge!(approver_attributes)
-    end
+    approver_attributes = if event.status_changed_to?('Done')
+                            { approver_email: event.user_email, approved_at: event.updated }
+                          elsif event.status_changed_from?('Done')
+                            { approver_email: nil, approved_at: nil }
+                          else
+                            {}
+                          end
 
-    update_ticket(event.key, new_attributes)
+    update_ticket(event.key, new_attributes.merge(approver_attributes))
   end
 
   def tickets

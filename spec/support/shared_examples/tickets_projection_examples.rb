@@ -40,7 +40,7 @@ shared_examples 'a tickets projection' do
       it 'removes the approver information' do
         projection.apply(build(:jira_event, key: 'JIRA-1'))
         projection.apply(build(:jira_event, :done, key: 'JIRA-1'))
-        projection.apply(build(:jira_event, :to_do, key: 'JIRA-1'))
+        projection.apply(build(:jira_event, :rejected, key: 'JIRA-1'))
 
         expect(projection.tickets.first.approver_email).to be nil
         expect(projection.tickets.first.approved_at).to be nil

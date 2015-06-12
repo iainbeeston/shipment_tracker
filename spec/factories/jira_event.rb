@@ -77,6 +77,15 @@ FactoryGirl.define do
       )
       status 'Done'
     end
+
+    trait :rejected do
+      changelog_details(
+        'changelog' => {
+          'items' => [{ 'field' => 'status', 'fromString' => 'Done', 'toString' => 'In Progress' }],
+        },
+      )
+      status 'In Progress'
+    end
   end
 
   factory :jira_event_user_created, class: JiraEvent do

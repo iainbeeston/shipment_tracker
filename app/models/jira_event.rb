@@ -27,12 +27,21 @@ class JiraEvent < Event
     details.fetch('issue').fetch('fields').fetch('updated')
   end
 
-  def status_changed?
-    changelog = details.fetch('changelog', 'items' => [])
-    changelog.fetch('items').any? { |item| item['field'] == 'status' }
-  end
-
   def comment
     details.fetch('comment', {}).fetch('body', '')
+  end
+
+  def status_changed_from?(previous_status)
+    changelog_items.any? { |item| item['field'] == 'status' && item['fromString'] == previous_status }
+  end
+
+  def status_changed_to?(new_status)
+    changelog_items.any? { |item| item['field'] == 'status' && item['toString'] == new_status }
+  end
+
+  private
+
+  def changelog_items
+    details.fetch('changelog', 'items' => []).fetch('items')
   end
 end
