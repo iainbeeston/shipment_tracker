@@ -19,9 +19,10 @@ class FeatureReviewsController < ApplicationController
       uat_url: @uat_url,
       projection_url: request.original_url,
     )
-    projection.apply_all(Event.in_order_of_creation)
+    freezable_projection = FreezableProjection.new(projection)
+    freezable_projection.apply_all(Event.in_order_of_creation)
 
-    @presenter = FeatureReviewPresenter.new(projection)
+    @presenter = FeatureReviewPresenter.new(freezable_projection)
   end
 
   private
