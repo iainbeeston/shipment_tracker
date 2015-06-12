@@ -36,7 +36,7 @@ class FeatureReviewProjection
     when DeployEvent
       apply_deploy_event(event)
     when JiraEvent
-      apply_ticket_event(event)
+      apply_jira_event(event)
     when ManualTestEvent
       apply_manual_test_event(event)
     end
@@ -67,16 +67,16 @@ class FeatureReviewProjection
     @deploys[deploy_event.app_name] = deploy
   end
 
-  def apply_ticket_event(ticket_event)
-    return unless ticket_event.issue?
-    return unless @tickets.key?(ticket_event.key) || matches_projection_url?(ticket_event.comment)
+  def apply_jira_event(jira_event)
+    return unless jira_event.issue?
+    return unless @tickets.key?(jira_event.key) || matches_projection_url?(jira_event.comment)
 
     ticket = Ticket.new(
-      key: ticket_event.key,
-      summary: ticket_event.summary,
-      status: ticket_event.status,
+      key: jira_event.key,
+      summary: jira_event.summary,
+      status: jira_event.status,
     )
-    @tickets[ticket_event.key] = ticket
+    @tickets[jira_event.key] = ticket
   end
 
   def apply_manual_test_event(manual_test_event)
