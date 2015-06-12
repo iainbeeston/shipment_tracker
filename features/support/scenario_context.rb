@@ -80,6 +80,12 @@ module Support
       post_json '/events/jira', event.details
     end
 
+    def reject_ticket(jira_key)
+      ticket_details = @tickets.fetch(jira_key).except(:status)
+      event = build(:jira_event, :rejected, ticket_details)
+      post_json '/events/jira', event.details
+    end
+
     def review_url
       fail 'Review url not set' unless @review_url
       @review_url

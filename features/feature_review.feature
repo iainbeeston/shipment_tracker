@@ -77,3 +77,47 @@ Scenario: QA rejects and approves feature
 
   When tester "Bob" "accepts" the feature
   Then I should see the QA acceptance with heading "success" and name "Bob"
+
+Scenario: Feature review freezes after the tickets get approved
+  Given a ticket "JIRA-123" with summary "A ticket" is started
+  And a commit "#abc" by "Alice" is created for app "frontend"
+  And CircleCi "passes" for commit "#abc"
+  And commit "#abc" is deployed by "Alice" on server "http://uat.fundingcircle.com"
+  And a developer prepares a review for UAT "http://uat.fundingcircle.com" with apps
+    | app_name | version |
+    | frontend | #abc    |
+  And adds the link to a comment for ticket "JIRA-123"
+
+  When I visit the feature review
+  And tester "Bob" "accepts" the feature
+
+  Then I should see a summary with heading "success" and content
+    | status  | title           |
+    | success | Test Results    |
+    | success | UAT Environment |
+    | success | QA Acceptance   |
+
+  When ticket "JIRA-123" is approved by "carol@fundingcircle.com" at "11:42:24"
+
+  And CircleCi "fails" for commit "#abc"
+  And a commit "#xyz" by "David" is created for app "frontend"
+  And commit "#xyz" is deployed by "David" on server "http://uat.fundingcircle.com"
+  And tester "Bob" "rejects" the feature
+
+  And I visit the feature review
+
+  Then I should see a summary with heading "success" and content
+    | status  | title           |
+    | success | Test Results    |
+    | success | UAT Environment |
+    | success | QA Acceptance   |
+
+  When ticket "JIRA-123" is rejected
+
+  And I visit the feature review
+
+  Then I should see a summary with heading "danger" and content
+    | status  | title           |
+    | failed  | Test Results    |
+    | failed  | UAT Environment |
+    | failed  | QA Acceptance   |

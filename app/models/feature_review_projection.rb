@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ClassLength
 class FeatureReviewProjection
   attr_reader :builds, :qa_submission
 
@@ -9,6 +10,9 @@ class FeatureReviewProjection
     @builds = apps_hash_with_value(apps, Build.new)
     @deploys = {}
     @tickets = {}
+
+    @frozen = false
+    @frozen_events = []
   end
 
   def apply_all(events)
@@ -29,7 +33,20 @@ class FeatureReviewProjection
 
   attr_reader :projection_url
 
+  # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def apply(event)
+    if frozen?
+      if unfreezing?(event)
+        unfreeze!
+        apply_all(@frozen_events)
+      else
+        @frozen_events << event
+        return
+      end
+    elsif freezing?(event)
+      freeze!
+    end
+
     case event
     when CircleCiEvent, JenkinsEvent
       apply_build_event(event)
@@ -41,6 +58,7 @@ class FeatureReviewProjection
       apply_manual_test_event(event)
     end
   end
+  # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
   def apply_build_event(build_event)
     app = versions[build_event.version]
@@ -114,4 +132,25 @@ class FeatureReviewProjection
   def apps_hash_with_value(apps, value)
     apps.map { |key, _| [key, value] }.to_h
   end
+
+  def freezing?(event)
+    event.is_a?(JiraEvent) && event.status_changed_to?('Done')
+  end
+
+  def unfreezing?(event)
+    event.is_a?(JiraEvent) && event.status_changed_from?('Done')
+  end
+
+  def freeze!
+    @frozen = true
+  end
+
+  def unfreeze!
+    @frozen = false
+  end
+
+  def frozen?
+    @frozen
+  end
 end
+# rubocop:enable Metrics/ClassLength

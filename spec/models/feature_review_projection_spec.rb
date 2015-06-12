@@ -23,7 +23,6 @@ RSpec.describe FeatureReviewProjection do
         build(:jira_event, :to_do, jira_1),
         build(:jira_event, :in_progress, jira_1),
         build(:jira_event, :ready_for_review, jira_1.merge(comment_body: "Please review #{projection_url}")),
-        build(:jira_event, :done, jira_1),
 
         build(:jira_event, :to_do, key: 'JIRA-2'),
         build(:jira_event, :to_do, key: 'JIRA-3', comment_body: "Review #{projection_url}/extra/stuff"),
@@ -31,6 +30,9 @@ RSpec.describe FeatureReviewProjection do
         build(:jira_event, :to_do, jira_4),
         build(:jira_event, :in_progress, jira_4),
         build(:jira_event, :ready_for_review, jira_4.merge(comment_body: "#{projection_url} is ready!")),
+
+        # TODO: Move back to jira_1 section once multi-ticket is implemented
+        build(:jira_event, :done, jira_1),
       ]
     }
 
@@ -227,6 +229,123 @@ RSpec.describe FeatureReviewProjection do
           QaSubmission.new(
             status: 'accepted',
             name: 'Alice',
+          ),
+        )
+      end
+    end
+  end
+
+  describe 'freezing' do
+    let(:apps) { { 'frontend' => 'abc' } }
+
+    let(:events_before_freezing) {
+      [
+        build(:deploy_event,
+          app_name: 'frontend',
+          server: uat_url,
+          version: 'abc',
+          deployed_by: 'Alice'),
+        build(:circle_ci_event,
+          success?: true,
+          version: 'abc'),
+        build(:manual_test_event,
+          status: 'success',
+          name: 'Bob',
+          apps: [{ name: 'frontend', version: 'abc' }]),
+      ]
+    }
+
+    let(:freezing_event) {
+      [
+        build(:jira_event,
+          :done,
+          key: 'JIRA-1',
+          comment_body: "#{projection_url} is ready!"),
+      ]
+    }
+
+    let(:events_after_freezing) {
+      [
+        build(:deploy_event,
+          app_name: 'frontend',
+          server: uat_url,
+          version: 'xyz',
+          deployed_by: 'Alice'),
+        build(:circle_ci_event,
+          success?: false,
+          version: 'abc'),
+        build(:manual_test_event,
+          status: 'failed',
+          name: 'Bob',
+          apps: [{ name: 'frontend', version: 'abc' }]),
+      ]
+    }
+
+    let(:events) { events_before_freezing + freezing_event + events_after_freezing }
+
+    context 'when a feature review is frozen' do
+      it 'ignores events following the ticket approval' do
+        projection.apply_all(events)
+
+        expect(projection.deploys).to eq([
+          Deploy.new(
+            app_name: 'frontend',
+            server: uat_url,
+            version: 'abc',
+            deployed_by: 'Alice',
+            correct: :yes,
+          ),
+        ])
+
+        expect(projection.builds).to eq(
+          'frontend' => Build.new(source: 'CircleCi', status: 'success', version: 'abc'),
+        )
+
+        expect(projection.qa_submission).to eq(
+          QaSubmission.new(
+            status: 'accepted',
+            name: 'Bob',
+          ),
+        )
+      end
+    end
+
+    context 'when a frozen feature review is unfrozen' do
+      let(:unfreezing_event) { [build(:jira_event, :rejected, key: 'JIRA-1')] }
+
+      let(:event_after_unfreezing) { [build(:circle_ci_event, success?: true, version: 'abc')] }
+
+      let(:events) {
+        events_before_freezing +
+          freezing_event +
+          events_after_freezing +
+          unfreezing_event +
+          event_after_unfreezing
+      }
+
+      it 'applies all events since freezing' do
+        projection.apply_all(events)
+
+        expect(projection.tickets).to eq([Ticket.new(key: 'JIRA-1', status: 'In Progress')])
+
+        expect(projection.deploys).to eq([
+          Deploy.new(
+            app_name: 'frontend',
+            server: uat_url,
+            version: 'xyz',
+            deployed_by: 'Alice',
+            correct: :no,
+          ),
+        ])
+
+        expect(projection.builds).to eq(
+          'frontend' => Build.new(source: 'CircleCi', status: 'success', version: 'abc'),
+        )
+
+        expect(projection.qa_submission).to eq(
+          QaSubmission.new(
+            status: 'rejected',
+            name: 'Bob',
           ),
         )
       end
