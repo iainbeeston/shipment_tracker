@@ -42,37 +42,65 @@ FactoryGirl.define do
 
     initialize_with { new(attributes) }
 
-    trait :to_do do
-      changelog_details(
-        'changelog' => {
-          'items' => [{ 'field' => 'status', 'toString' => 'To Do' }],
-        },
-      )
+    trait :created do
       status 'To Do'
     end
 
-    trait :in_progress do
+    trait :started do
       changelog_details(
         'changelog' => {
-          'items' => [{ 'field' => 'status', 'toString' => 'In Progress' }],
+          'items' => [
+            {
+              'field' => 'status',
+              'fromString' => 'To Do',
+              'toString' => 'In Progress',
+            },
+          ],
         },
       )
       status 'In Progress'
     end
 
-    trait :ready_for_review do
+    trait :development_completed do
       changelog_details(
         'changelog' => {
-          'items' => [{ 'field' => 'status', 'toString' => 'Ready For Review' }],
+          'items' => [
+            {
+              'field' => 'status',
+              'fromString' => 'In Progress',
+              'toString' => 'Ready For Review',
+            },
+          ],
         },
       )
       status 'Ready For Review'
     end
 
-    trait :done do
+    trait :approved do
       changelog_details(
         'changelog' => {
-          'items' => [{ 'field' => 'status', 'toString' => 'Done' }],
+          'items' => [
+            {
+              'field' => 'status',
+              'fromString' => 'Ready For Review',
+              'toString' => 'Ready for Deployment',
+            },
+          ],
+        },
+      )
+      status 'Ready for Deployment'
+    end
+
+    trait :deployed do
+      changelog_details(
+        'changelog' => {
+          'items' => [
+            {
+              'field' => 'status',
+              'fromString' => 'Ready for Deployment',
+              'toString' => 'Done',
+            },
+          ],
         },
       )
       status 'Done'
@@ -81,7 +109,13 @@ FactoryGirl.define do
     trait :rejected do
       changelog_details(
         'changelog' => {
-          'items' => [{ 'field' => 'status', 'fromString' => 'Done', 'toString' => 'In Progress' }],
+          'items' => [
+            {
+              'field' => 'status',
+              'fromString' => 'Ready for Deployment',
+              'toString' => 'In Progress',
+            },
+          ],
         },
       )
       status 'In Progress'

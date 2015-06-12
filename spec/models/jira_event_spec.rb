@@ -1,17 +1,55 @@
 require 'rails_helper'
 
 RSpec.describe JiraEvent do
-  describe '#status_changed_from?(previous_status)' do
-    it 'returns true if the issue status has changed from previous_status' do
-      expect(build(:jira_event, :in_progress).status_changed_from?('Done')).to be false
-      expect(build(:jira_event, :rejected).status_changed_from?('Done')).to be true
+  describe '#approval?' do
+    context 'when the status changes from unapproved to approved' do
+      it 'returns true' do
+        expect(build(:jira_event, :approved).approval?).to be true
+      end
+    end
+
+    context 'when the status changes from approved to approved' do
+      it 'returns false' do
+        expect(build(:jira_event, :deployed).approval?).to be false
+      end
+    end
+
+    context 'when the status changes from unapproved to unapproved' do
+      it 'returns false' do
+        expect(build(:jira_event, :development_completed).approval?).to be false
+      end
+    end
+
+    context 'when the status changes from approved to unapproved' do
+      it 'returns false' do
+        expect(build(:jira_event, :rejected).approval?).to be false
+      end
     end
   end
 
-  describe '#status_changed_to?(new_status)' do
-    it 'returns true if the issue status has changed to new_status' do
-      expect(build(:jira_event, :in_progress).status_changed_to?('Done')).to be false
-      expect(build(:jira_event, :done).status_changed_to?('Done')).to be true
+  describe '#unapproval?' do
+    context 'when the status changes from unapproved to approved' do
+      it 'returns false' do
+        expect(build(:jira_event, :approved).unapproval?).to be false
+      end
+    end
+
+    context 'when the status changes from approved to approved' do
+      it 'returns false' do
+        expect(build(:jira_event, :deployed).unapproval?).to be false
+      end
+    end
+
+    context 'when the status changes from unapproved to unapproved' do
+      it 'returns false' do
+        expect(build(:jira_event, :development_completed).unapproval?).to be false
+      end
+    end
+
+    context 'when the status changes from approved to unapproved' do
+      it 'returns true' do
+        expect(build(:jira_event, :rejected).unapproval?).to be true
+      end
     end
   end
 end

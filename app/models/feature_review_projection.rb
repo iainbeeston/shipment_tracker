@@ -30,6 +30,10 @@ class FeatureReviewProjection
     end
   end
 
+  def approved?
+    tickets.present? && tickets.all?(&:done?)
+  end
+
   def deploys
     @deploys.values
   end

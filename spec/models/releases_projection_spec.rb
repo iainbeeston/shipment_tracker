@@ -25,7 +25,7 @@ RSpec.describe ReleasesProjection do
       build(:jira_event, comment_body: feature_review_comment(foo: 'abc')),
       build(:jira_event, key: 'JIRA-123', comment_body: feature_review_comment(foo: 'abc', bar: 'jkl')),
       build(:jira_event, comment_body: feature_review_comment(foo: 'xyz')),
-      build(:jira_event, :done, key: 'JIRA-123'),
+      build(:jira_event, :approved, key: 'JIRA-123'),
     ]
   }
 
@@ -44,7 +44,7 @@ RSpec.describe ReleasesProjection do
             version: 'abc',
             subject: 'abc done',
             time: time,
-            feature_review_status: 'Done',
+            feature_review_status: 'Ready for Deployment',
             feature_review_path: feature_review_path(foo: 'abc', bar: 'jkl'),
             approved: true,
           ),
@@ -52,7 +52,7 @@ RSpec.describe ReleasesProjection do
             version: 'def',
             subject: 'def done',
             time: time,
-            feature_review_status: 'Done',
+            feature_review_status: 'Ready for Deployment',
             feature_review_path: feature_review_path(foo: 'abc', bar: 'jkl'),
             approved: true,
           ),

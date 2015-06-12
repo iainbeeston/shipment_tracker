@@ -8,9 +8,9 @@ class TicketsProjection
 
     new_attributes = { key: event.key, summary: event.summary, status: event.status }
 
-    approver_attributes = if event.status_changed_to?('Done')
+    approver_attributes = if event.approval?
                             { approver_email: event.user_email, approved_at: event.updated }
-                          elsif event.status_changed_from?('Done')
+                          elsif event.unapproval?
                             { approver_email: nil, approved_at: nil }
                           else
                             {}

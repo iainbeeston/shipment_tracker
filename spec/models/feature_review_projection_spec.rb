@@ -19,19 +19,17 @@ RSpec.describe FeatureReviewProjection do
 
     let(:events) {
       [
-        build(:jira_event, :to_do, jira_1),
-        build(:jira_event, :in_progress, jira_1),
-        build(:jira_event, :ready_for_review, jira_1.merge(comment_body: "Please review #{projection_url}")),
+        build(:jira_event, :created, jira_1),
+        build(:jira_event, :started, jira_1),
+        build(:jira_event, :development_completed, jira_1.merge(comment_body: "Review #{projection_url}")),
+        build(:jira_event, :deployed, jira_1),
 
-        build(:jira_event, :to_do, key: 'JIRA-2'),
-        build(:jira_event, :to_do, key: 'JIRA-3', comment_body: "Review #{projection_url}/extra/stuff"),
+        build(:jira_event, :created, key: 'JIRA-2'),
+        build(:jira_event, :created, key: 'JIRA-3', comment_body: "Review #{projection_url}/extra/stuff"),
 
-        build(:jira_event, :to_do, jira_4),
-        build(:jira_event, :in_progress, jira_4),
-        build(:jira_event, :ready_for_review, jira_4.merge(comment_body: "#{projection_url} is ready!")),
-
-        # TODO: Move back to jira_1 section once multi-ticket is implemented
-        build(:jira_event, :done, jira_1),
+        build(:jira_event, :created, jira_4),
+        build(:jira_event, :started, jira_4),
+        build(:jira_event, :development_completed, jira_4.merge(comment_body: "#{projection_url} is ready!")),
       ]
     }
 

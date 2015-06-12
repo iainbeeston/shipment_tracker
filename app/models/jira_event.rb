@@ -31,17 +31,29 @@ class JiraEvent < Event
     details.fetch('comment', {}).fetch('body', '')
   end
 
-  def status_changed_from?(previous_status)
-    changelog_items.any? { |item| item['field'] == 'status' && item['fromString'] == previous_status }
+  def approval?
+    changelog_items.any? { |item|
+      item['field'] == 'status' &&
+        approved_status?(item['toString']) &&
+        !approved_status?(item['fromString'])
+    }
   end
 
-  def status_changed_to?(new_status)
-    changelog_items.any? { |item| item['field'] == 'status' && item['toString'] == new_status }
+  def unapproval?
+    changelog_items.any? { |item|
+      item['field'] == 'status' &&
+        approved_status?(item['fromString']) &&
+        !approved_status?(item['toString'])
+    }
   end
 
   private
 
   def changelog_items
     details.fetch('changelog', 'items' => []).fetch('items')
+  end
+
+  def approved_status?(status)
+    Ticket::APPROVED_STATUSES.include?(status)
   end
 end

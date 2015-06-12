@@ -73,10 +73,11 @@ module Support
 
     def approve_ticket(jira_key, approver_email:, time:)
       ticket_details = @tickets.fetch(jira_key).except(:status)
-      event = build(:jira_event, :done, ticket_details.merge(
-                                          user_email: approver_email,
-                                          updated: time,
-      ))
+      event = build(
+        :jira_event,
+        :approved,
+        ticket_details.merge(user_email: approver_email, updated: time),
+      )
       post_json '/events/jira', event.details
     end
 

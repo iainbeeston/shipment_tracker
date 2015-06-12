@@ -21,9 +21,9 @@ Scenario: Viewing releases for an app
   When I view the releases for "frontend"
 
   Then I should see the releases
-    | id       | date     | message                            | issue audit | approved |
-    | #merge   | 16:04:19 | Merged `feature-one` into `master` | Done        | yes      |
-    | #branch2 | 15:04:19 | second commit                      | Done        | yes      |
-    | #branch1 | 14:01:17 | first commit                       | Done        | yes      |
-    | #master2 | 13:31:17 | recent commit                      |             | no       |
-    | #master1 | 13:01:17 | historic commit                    |             | no       |
+    | id       | date     | message                            | issue audit          | approved |
+    | #merge   | 16:04:19 | Merged `feature-one` into `master` | Ready for Deployment | yes      |
+    | #branch2 | 15:04:19 | second commit                      | Ready for Deployment | yes      |
+    | #branch1 | 14:01:17 | first commit                       | Ready for Deployment | yes      |
+    | #master2 | 13:31:17 | recent commit                      |                      | no       |
+    | #master1 | 13:01:17 | historic commit                    |                      | no       |

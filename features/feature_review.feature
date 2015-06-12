@@ -80,6 +80,7 @@ Scenario: QA rejects and approves feature
 
 Scenario: Feature review freezes after the tickets get approved
   Given a ticket "JIRA-123" with summary "A ticket" is started
+  Given a ticket "JIRA-124" with summary "A ticket" is started
   And a commit "#abc" by "Alice" is created for app "frontend"
   And CircleCi "passes" for commit "#abc"
   And commit "#abc" is deployed by "Alice" on server "http://uat.fundingcircle.com"
@@ -87,6 +88,7 @@ Scenario: Feature review freezes after the tickets get approved
     | app_name | version |
     | frontend | #abc    |
   And adds the link to a comment for ticket "JIRA-123"
+  And adds the link to a comment for ticket "JIRA-124"
 
   When I visit the feature review
   And tester "Bob" "accepts" the feature
@@ -98,6 +100,20 @@ Scenario: Feature review freezes after the tickets get approved
     | success | QA Acceptance   |
 
   When ticket "JIRA-123" is approved by "carol@fundingcircle.com" at "11:42:24"
+
+  And CircleCi "fails" for commit "#abc"
+
+  And I visit the feature review
+
+  Then I should see a summary with heading "danger" and content
+    | status  | title           |
+    | failed  | Test Results    |
+    | success | UAT Environment |
+    | success | QA Acceptance   |
+
+  And CircleCi "passes" for commit "#abc"
+
+  When ticket "JIRA-124" is approved by "carol@fundingcircle.com" at "11:45:24"
 
   And CircleCi "fails" for commit "#abc"
   And a commit "#xyz" by "David" is created for app "frontend"
