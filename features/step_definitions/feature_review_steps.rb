@@ -81,8 +81,11 @@ Then 'I should see a summary with heading "$status" and content' do |status, sum
   expect(feature_review_page.summary_contents).to match_array(expected_summary)
 end
 
-When 'I "$status" the feature as "$name"' do |status, name|
-  feature_review_page.create_qa_submission(status: status, name: name)
+When 'tester "$name" "$action" the feature' do |name, action|
+  feature_review_page.create_qa_submission(
+    name: name,
+    status: action.chomp('s'),
+  )
 end
 
 Then(/^I should see the QA acceptance with heading "([^\"]*)"$/) do |status|

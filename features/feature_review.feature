@@ -72,8 +72,8 @@ Scenario: QA rejects and approves feature
   When I visit the feature review
   Then I should see the QA acceptance with heading "warning"
 
-  When I "reject" the feature as "Alice"
+  When tester "Alice" "rejects" the feature
   Then I should see the QA acceptance with heading "danger" and name "Alice"
 
-  When I "accept" the feature as "Bob"
+  When tester "Bob" "accepts" the feature
   Then I should see the QA acceptance with heading "success" and name "Bob"
