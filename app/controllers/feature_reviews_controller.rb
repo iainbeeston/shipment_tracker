@@ -14,15 +14,14 @@ class FeatureReviewsController < ApplicationController
       return redirect_to new_feature_review_path
     end
 
-    projection = FeatureReviewProjection.new(
+    projection = FeatureReviewProjection.build(
       apps: @apps,
       uat_url: @uat_url,
       projection_url: request.original_url,
     )
-    freezable_projection = FreezableProjection.new(projection)
-    freezable_projection.apply_all(Event.in_order_of_creation)
+    projection.apply_all(Event.in_order_of_creation)
 
-    @presenter = FeatureReviewPresenter.new(freezable_projection)
+    @presenter = FeatureReviewPresenter.new(projection)
   end
 
   private

@@ -1,4 +1,4 @@
-class TicketsProjection
+class ReleasesTicketsProjection
   def initialize
     @tickets_table = {}
   end

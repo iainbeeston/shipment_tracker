@@ -5,7 +5,7 @@ class ReleasesProjection
 
   def initialize(per_page:, git_repository:)
     @per_page = per_page
-    @tickets_projection = TicketsProjection.new
+    @tickets_projection = ReleasesTicketsProjection.new
     @git_repository = git_repository
     @feature_reviews = {}
     @tickets_hash = {}

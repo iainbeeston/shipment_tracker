@@ -12,11 +12,6 @@ class Ticket
   end
 
   def approved?
-    approver_email.present? && approved_at.present?
-  end
-
-  def done?
-    # TODO: merge with approved
     APPROVED_STATUSES.include?(status)
   end
 
