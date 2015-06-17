@@ -5,16 +5,16 @@ gem 'rails', '~> 4.2.1'
 
 gem 'addressable', require: 'addressable/uri'
 gem 'bootstrap-sass'
+gem 'dotenv'
 gem 'haml-rails'
 gem 'newrelic_rpm'
 gem 'pg'
-gem 'unicorn'
-gem 'unicorn-rails'
 gem 'rack-timeout'
 gem 'rugged', '~> 0.23.0b2' # We need Rugged::Repository#descendant_of?
 gem 'sass-rails'
+gem 'unicorn'
+gem 'unicorn-rails'
 gem 'virtus'
-gem 'dotenv'
 
 group :development do
   gem 'spring'
