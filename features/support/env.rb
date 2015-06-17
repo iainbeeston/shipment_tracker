@@ -8,6 +8,7 @@ require 'simplecov'
 SimpleCov.start
 
 require 'cucumber/rails'
+require 'rack_session_access/capybara'
 
 $LOAD_PATH.unshift Rails.root.join('spec')
 

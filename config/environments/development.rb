@@ -1,5 +1,10 @@
+Dotenv.load!('.env.development')
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+
+  # TODO: Review why this is needed (not mentioned in Google doc)
+  config.x.auth0_connection = 'fundingcircle.com'
 
   # In the development environment your application's code is reloaded on
   # every request. This slows down response time but is perfect for development

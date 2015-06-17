@@ -1,6 +1,9 @@
 class EventsController < ActionController::Metal
   include ActionController::Redirecting
+  include AbstractController::Callbacks
   include Rails.application.routes.url_helpers
+
+  skip_before_action :require_login
 
   def create
     event_type.create(details: request.request_parameters)

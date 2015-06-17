@@ -8,6 +8,8 @@ gem 'bootstrap-sass'
 gem 'dotenv'
 gem 'haml-rails'
 gem 'newrelic_rpm'
+gem 'omniauth'
+gem 'omniauth-auth0'
 gem 'pg'
 gem 'rack-timeout'
 gem 'rugged', '~> 0.23.0b2' # We need Rugged::Repository#descendant_of?
@@ -27,6 +29,7 @@ group :development do
 end
 
 group :development, :test do
+  gem 'rack_session_access'
   gem 'rspec-rails'
   gem 'rubocop'
 end

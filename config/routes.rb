@@ -1,8 +1,9 @@
 Rails.application.routes.draw do
   root 'home#index'
 
-  # Status
-  # get 'heartbeat', to: 'heartbeat#index'
+  get '/auth/auth0/callback', to: 'sessions#auth0_success_callback'
+  get '/auth/failure', to: 'sessions#auth0_failure_callback'
+  delete '/sessions', to: 'sessions#destroy'
 
   # Events
   post 'events/:type', to: 'events#create', as: 'events'

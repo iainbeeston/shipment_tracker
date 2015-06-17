@@ -1,16 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe FeatureReviewsController do
-  describe 'GET #index' do
+  describe 'GET #index', skip_login: true do
+    it 'requires login' do
+      expect_any_instance_of(ApplicationController).to receive(:require_login).at_least(1).times
+      get :index
+    end
+
     context 'our routing' do
-      it 'matches the feature_review_location' do
+      it 'matches the feature_review_location'do
         actual_url = @routes.url_for host: 'www.example.com',
                                      controller: 'feature_reviews',
                                      action: 'index',
                                      apps: { a: '123', b: '456' },
                                      uat_url: 'http://foo.com'
-
-        puts actual_url
 
         feature_review_location = FeatureReviewLocation.new(actual_url)
         expect(feature_review_location.app_versions).to eq(a: '123', b: '456')
@@ -49,7 +52,7 @@ RSpec.describe FeatureReviewsController do
         allow(FeatureReviewPresenter).to receive(:new).with(projection).and_return(presenter)
       end
 
-      it 'shows a report for each application' do
+      it 'shows a report for each application', skip_login: true do
         expect(projection).to receive(:apply_all).with(events)
 
         get :index, apps: all_apps, uat_url: uat_url
@@ -59,7 +62,7 @@ RSpec.describe FeatureReviewsController do
     end
 
     context 'when no apps are submitted' do
-      it 'shows an error' do
+      it 'shows an error', skip_login: true do
         get :index, apps: { 'frontend' => '', 'backend' => '' }
 
         expect(response).to redirect_to(new_feature_review_path)

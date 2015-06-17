@@ -2,6 +2,9 @@ Feature: Viewing Releases
   As a deployer I want to view all releases for a given application so that I know which versions are safe
   to deploy
 
+Background:
+  Given I am logged in as "marcus@shipment-tracker.url"
+
 Scenario: Viewing releases for an app
   Given an application called "frontend"
   And a ticket "JIRA-123" with summary "Urgent ticket" is started

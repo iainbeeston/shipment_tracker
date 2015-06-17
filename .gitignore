@@ -24,3 +24,5 @@
 
 # Ignore SimpleCov's coverage directory
 /coverage
+
+.env.development

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe ReleasesController, type: :controller do
-  describe 'GET #index' do
+RSpec.describe ReleasesController do
+  describe 'GET #index', skip_login: true do
     let(:app_names) { %w(frontend backend) }
 
     before do
@@ -14,9 +14,14 @@ RSpec.describe ReleasesController, type: :controller do
       expect(response).to have_http_status(:success)
       expect(assigns(:app_names)).to eq(app_names)
     end
+
+    it 'requires login' do
+      expect_any_instance_of(ApplicationController).to receive(:require_login).at_least(1).times
+      get :index
+    end
   end
 
-  describe 'GET #show' do
+  describe 'GET #show', skip_login: true do
     let(:repository) { instance_double(GitRepository) }
     let(:repository_loader) { instance_double(GitRepositoryLoader) }
     let(:releases) { double(:releases) }
@@ -41,6 +46,12 @@ RSpec.describe ReleasesController, type: :controller do
       expect(response).to have_http_status(:success)
       expect(assigns(:app_name)).to eq('frontend')
       expect(assigns(:releases)).to eq(releases)
+    end
+
+    it 'requires login' do
+      allow(projection).to receive(:apply_all)
+      expect_any_instance_of(ApplicationController).to receive(:require_login).at_least(1).times
+      get :show, id: 'frontend'
     end
   end
 end

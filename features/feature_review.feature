@@ -2,6 +2,7 @@ Feature: Developer prepares a feature review so that it can be attached to a
   ticket for a PO to use in acceptance.
 
 Background:
+  Given I am logged in as "marcus@shipment-tracker.url"
   Given an application called "frontend"
   And an application called "backend"
   And an application called "mobile"

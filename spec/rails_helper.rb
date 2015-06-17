@@ -26,6 +26,10 @@ require 'factory_girl'
 ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
+  config.before(:each, skip_login: true) do
+    allow_any_instance_of(ApplicationController).to receive(:require_login)
+  end
+
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
 
