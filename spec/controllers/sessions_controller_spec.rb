@@ -15,7 +15,6 @@ describe SessionsController do
       }
     end
 
-    # TODO: Do we want to redirect to root?
     it 'redirects to root' do
       expect(get :auth0_success_callback).to redirect_to(root_path)
     end
@@ -69,7 +68,8 @@ describe SessionsController do
     end
 
     it 'redirects to Auth0 logout' do
-      expect(delete :destroy).to redirect_to('https://fundingcircle.auth0.com/logout')
+      stub_const('ENV', 'AUTH0_DOMAIN' => 'test.auth.com')
+      expect(delete :destroy).to redirect_to('https://test.auth.com/logout')
     end
   end
 end

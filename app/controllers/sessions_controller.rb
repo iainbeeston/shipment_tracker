@@ -13,6 +13,6 @@ class SessionsController < ApplicationController
 
   def destroy
     session[:current_user] = nil
-    redirect_to ENV.fetch('AUTH_LOGOUT_URL', 'https://fundingcircle.auth0.com/logout')
+    redirect_to ENV.fetch('AUTH_LOGOUT_URL', "https://#{ENV['AUTH0_DOMAIN']}/logout")
   end
 end
