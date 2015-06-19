@@ -8,6 +8,12 @@ class GitRepository
     @repository = repository
   end
 
+  def exists?(full_sha)
+    @repository.lookup(full_sha).present?
+  rescue Rugged::InvalidError, Rugged::ObjectError, Rugged::OdbError
+    false
+  end
+
   def commits_between(from, to)
     instrument('commits_between') do
       validate_commit!(from) unless from.nil?

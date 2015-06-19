@@ -38,6 +38,30 @@ RSpec.describe GitRepository do
     end
   end
 
+  describe '#exists?' do
+    subject { repo.exists?(sha) }
+
+    context 'when commit id exists' do
+      let(:sha) { test_git_repo.create_commit(author_name: 'Alice').oid }
+      it { is_expected.to be(true) }
+    end
+
+    context 'when commit id does not exist' do
+      let(:sha) { '8056d10ec2776f5f2d6fe382560dc20a14fb565d' }
+      it { is_expected.to be(false) }
+    end
+
+    context 'when commit id is too short (even if it exists)' do
+      let(:sha) { test_git_repo.create_commit(author_name: 'Alice').oid.slice(1..3) }
+      it { is_expected.to be(false) }
+    end
+
+    context 'when commit id is invalid' do
+      let(:sha) { '1NV4LiD' }
+      it { is_expected.to be(false) }
+    end
+  end
+
   describe '#last_unmerged_commit_matching_query' do
     it 'returns last unmerged commit where the message contains the query' do
       test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-1 master', time: Time.new(2015, 4, 16))
