@@ -9,7 +9,7 @@ RSpec.describe FeatureReviewLookup do
     let(:rugged_repo) { Rugged::Repository.new(test_git_repo.dir) }
     let(:git_repository) { GitRepository.new(rugged_repo) }
 
-    subject(:lookup) { FeatureReviewLookup.new(git_repository) }
+    subject(:lookup) { FeatureReviewLookup.new(git_repositories: [git_repository]) }
 
     context 'when a Feature Review is linked to multiple times' do
       before do
