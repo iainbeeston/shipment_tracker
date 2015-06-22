@@ -12,9 +12,9 @@ module Pages
       }
     end
 
-    def builds(for_app: nil)
+    def builds
       verify!
-      app_container(for_app).all('.build').map { |build_line|
+      page.all('.build').map { |build_line|
         Sections::BuildSection.from_element(build_line)
       }
     end
@@ -29,9 +29,9 @@ module Pages
       page.find(".panel.#{panel_class}")[:class].match(/panel-(?<status>\w+)/)[:status]
     end
 
-    def deploys(for_app: nil)
+    def deploys
       verify!
-      app_container(for_app).all('.deploy').map { |deploy_line|
+      page.all('.deploy').map { |deploy_line|
         Sections::FeatureReviewDeploySection.from_element(deploy_line)
       }
     end
@@ -68,11 +68,6 @@ module Pages
 
     def on_page?
       page.current_url =~ Regexp.new(Regexp.escape(url_helpers.feature_reviews_path))
-    end
-
-    def app_container(app_name)
-      return page unless app_name
-      page.find(".#{app_name}")
     end
   end
 end
