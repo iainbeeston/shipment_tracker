@@ -80,9 +80,47 @@ class GitRepository
     dependent_commits + commits_between(common_ancestor_oid, commit_oid)[0...-1]
   end
 
+  # Returns all commits that are children of the given commit
+  # up to and including the merge commit.
+  def get_descendant_commits_of_branch(commit_oid)
+    return [] if commit_on_master?(commit_oid)
+
+    commits = []
+
+    walker = get_walker(main_branch.target_id, commit_oid, false)
+    walker.each do |commit|
+      commits << commit if repository.descendant_of?(commit.oid, commit_oid)
+      break if commit == merge_to_master_commit(commit_oid)
+    end
+
+    build_commits(commits)
+  end
+
   private
 
   attr_reader :repository
+
+  def get_walker(push_commit_oid, hide_commit_oid, simplify = false)
+    walker = Rugged::Walker.new(repository)
+    walker.sorting(Rugged::SORT_TOPO | Rugged::SORT_REVERSE)
+    walker.simplify_first_parent if simplify
+    walker.push(push_commit_oid)
+    walker.hide(hide_commit_oid)
+    walker
+  end
+
+  def merge_to_master_commit(commit_oid)
+    walker = get_walker(main_branch.target_id, commit_oid, true)
+    walker.find { |commit| repository.descendant_of?(commit.oid, commit_oid) }
+  end
+
+  def commit_on_master?(commit_oid)
+    parent_commit = repository.lookup(commit_oid).parents.first
+    return true unless parent_commit
+
+    walker = get_walker(main_branch.target_id, parent_commit.oid, true)
+    walker.first.oid == commit_oid
+  end
 
   def merge_commit_for?(merge_commit, commit_oid)
     merge_commit.parent_ids.second == commit_oid

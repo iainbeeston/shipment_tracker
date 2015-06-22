@@ -184,6 +184,64 @@ RSpec.describe GitRepository do
     end
   end
 
+  describe '#get_descendant_commits_of_branch' do
+    context "when given commit is part of a branch that's merged into master" do
+      it 'returns the descendant commits up to and including the merge commit' do
+        test_git_repo.create_commit(author_name: 'Alice', message: 'master 1')
+        test_git_repo.create_branch('branch')
+        test_git_repo.checkout_branch('branch')
+        test_git_repo.create_commit(author_name: 'Alice', message: 'branch 1')
+        branch_2 = test_git_repo.create_commit(author_name: 'Alice', message: 'branch 2')
+        branch_3 = test_git_repo.create_commit(author_name: 'Alice', message: 'branch 3')
+        test_git_repo.checkout_branch('master')
+        test_git_repo.create_commit(author_name: 'Alice', message: 'master 2')
+        merge_commit = test_git_repo.merge_branch(branch_name: 'branch', author_name: 'Alice', time: Time.now)
+        test_git_repo.create_commit(author_name: 'Alice', message: 'master 3')
+
+        expect(repo.get_descendant_commits_of_branch(branch_2.oid)).to contain_exactly(
+          build_commit(branch_3),
+          build_commit(merge_commit),
+        )
+      end
+    end
+
+    context 'when given commit on master' do
+      it 'returns empty' do
+        test_git_repo.create_commit(author_name: 'Alice', message: 'master 1')
+        test_git_repo.checkout_branch('master')
+        master_2 = test_git_repo.create_commit(author_name: 'Alice', message: 'master 2')
+        test_git_repo.create_commit(author_name: 'Alice', message: 'master 3')
+
+        expect(repo.get_descendant_commits_of_branch(master_2.oid)).to be_empty
+      end
+
+      context 'and it is the initial commit' do
+        it 'returns empty' do
+          master_1 = test_git_repo.create_commit(author_name: 'Alice', message: 'master 1')
+          test_git_repo.checkout_branch('master')
+          test_git_repo.create_commit(author_name: 'Alice', message: 'master 2')
+
+          expect(repo.get_descendant_commits_of_branch(master_1.oid)).to be_empty
+        end
+      end
+    end
+
+    context 'when branch not merged' do
+      it 'returns the descendant commits up to the tip of the branch' do
+        test_git_repo.create_commit(author_name: 'Alice', message: 'master 1')
+        test_git_repo.create_branch('branch')
+        test_git_repo.checkout_branch('branch')
+        test_git_repo.create_commit(author_name: 'Alice', message: 'branch 1')
+        branch_2 = test_git_repo.create_commit(author_name: 'Alice', message: 'branch 2')
+        test_git_repo.create_commit(author_name: 'Alice', message: 'branch 3')
+        test_git_repo.checkout_branch('master')
+        test_git_repo.create_commit(author_name: 'Alice', message: 'master 2')
+
+        expect(repo.get_descendant_commits_of_branch(branch_2.oid)).to be_empty
+      end
+    end
+  end
+
   describe '#get_dependent_commits' do
     it 'returns the ancestors of a commit up to the merge base' do
       test_git_repo.create_commit(author_name: 'Alice', message: 'master 1')
