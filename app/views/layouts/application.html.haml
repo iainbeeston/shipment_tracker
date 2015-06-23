@@ -19,6 +19,8 @@
             = link_to 'Repository locations', repository_locations_path
           %li
             = link_to 'Releases', releases_path
+          %li
+            = link_to 'Tokens', tokens_path
         .collapse.navbar-collapse
           %ul.nav.navbar-nav.navbar-right
             - if session[:current_user].present?
