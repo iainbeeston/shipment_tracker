@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150507103704) do
+ActiveRecord::Schema.define(version: 20150619141417) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,5 +31,14 @@ ActiveRecord::Schema.define(version: 20150507103704) do
   end
 
   add_index "repository_locations", ["name"], name: "index_repository_locations_on_name", unique: true, using: :btree
+
+  create_table "tokens", force: :cascade do |t|
+    t.string   "source"
+    t.string   "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "tokens", ["value"], name: "index_tokens_on_value", unique: true, using: :btree
 
 end

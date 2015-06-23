@@ -26,6 +26,13 @@ module Pages
       url_helpers: Rails.application.routes.url_helpers,
     )
   end
+
+  def tokens_page
+    Pages::TokensPage.new(
+      page: page,
+      url_helpers: Rails.application.routes.url_helpers,
+    )
+  end
 end
 
 World(Pages)

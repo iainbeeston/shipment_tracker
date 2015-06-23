@@ -1,0 +1,10 @@
+= form_for(@token) do |f|
+  = f.label :source
+  = f.text_field :source
+  = f.submit 'Create Token'
+
+- table headers: ["Source", "URL"] do
+  - @tokens.each do |token|
+    %tr.token
+      %td= token.source
+      %td= events_url(type: token.source, token: token.value)

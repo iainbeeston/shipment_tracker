@@ -17,6 +17,7 @@ gem 'sass-rails'
 gem 'unicorn'
 gem 'unicorn-rails'
 gem 'virtus'
+gem 'has_secure_token'
 
 group :development do
   gem 'spring'
