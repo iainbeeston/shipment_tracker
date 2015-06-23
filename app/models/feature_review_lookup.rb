@@ -13,7 +13,6 @@ class FeatureReviewLookup
     urls = []
 
     @git_repositories.each do |git_repository|
-
       return [] unless git_repository.exists?(sha)
 
       shas = [sha] + git_repository.get_descendant_commits_of_branch(sha).map(&:id)

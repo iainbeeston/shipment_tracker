@@ -1,6 +1,6 @@
 module Pages
   def repository_location_page
-    Pages::RepositoryLocation.new(
+    Pages::RepositoryLocationPage.new(
       page: page,
       url_helpers: Rails.application.routes.url_helpers,
     )

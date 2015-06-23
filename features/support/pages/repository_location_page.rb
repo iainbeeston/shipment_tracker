@@ -1,5 +1,5 @@
 module Pages
-  class RepositoryLocation
+  class RepositoryLocationPage
     def initialize(page:, url_helpers:)
       @page        = page
       @url_helpers = url_helpers
