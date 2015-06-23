@@ -2,8 +2,7 @@ class EventsController < ActionController::Metal
   include ActionController::Redirecting
   include AbstractController::Callbacks
   include Rails.application.routes.url_helpers
-
-  skip_before_action :require_login
+  include Authentication
 
   def create
     event_type.create(details: request.request_parameters)
@@ -25,7 +24,7 @@ class EventsController < ActionController::Metal
       'jenkins'     => JenkinsEvent,
       'jira'        => JiraEvent,
       'manual_test' => ManualTestEvent,
-    }.fetch(params[:type])
+    }.fetch(params[:type]) { |type| fail "Unrecognized event type '#{type}'" }
   end
 
   def path_from_url(url_or_path)
@@ -33,5 +32,10 @@ class EventsController < ActionController::Metal
     URI.parse('http://domain.com').merge(url_or_path).request_uri
   rescue URI::InvalidURIError
     nil
+  end
+
+  def logged_out_strategy
+    self.status = 403
+    self.response_body = 'Forbidden'
   end
 end

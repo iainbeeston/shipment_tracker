@@ -2,110 +2,82 @@ require 'rails_helper'
 
 describe EventsController do
   describe 'POST #create' do
-    context 'with return_to param' do
-      let(:type) { 'circleci' }
+    let(:token) { 'abc123' }
+    let(:details) { { 'any' => 'value' } }
+
+    context 'routing' do
+      it 'routes /event/:type correctly' do
+        expect(post: '/events/anything').to route_to(controller: 'events', action: 'create', type: 'anything')
+      end
+    end
+
+    context 'when logged in' do
+      before do
+        logged_in(uid: 'circleci')
+      end
 
       {
-        '/my/projection?with=data' => '/my/projection?with=data',
-        'http://evil.com/magic/url?with=query' => '/magic/url?with=query',
-        '/path' => '/path',
-      }.each do |url, path|
-        it "redirects #{url} to the #{path}" do
-          post :create,
-            'type' => type,
-            'return_to' => url
+        'deploy'      => DeployEvent,
+        'circleci'    => CircleCiEvent,
+        'jenkins'     => JenkinsEvent,
+        'jira'        => JiraEvent,
+        'manual_test' => ManualTestEvent,
+      }.each do |event_type, event_class|
+        describe "POST /events/#{event_type}" do
+          it "creates a #{event_class} event" do
+            expect(event_class).to receive(:create).with(details: details)
 
-          expect(response).to redirect_to(path)
+            post :create, details.merge('type' => event_type), format: :json
+
+            expect(response).to have_http_status(:success)
+          end
         end
       end
 
-      it 'does not redirect when invalid' do
-        post :create, 'return_to' => 'TOTALLY NOT VALID', 'type' => type
-
-        expect(response).to have_http_status(:success), 'Expected HTTP success as we should not redirect'
+      context 'with an unrecognized event type' do
+        it 'throws an error' do
+          expect {
+            post :create, 'type' => 'other', 'any' => 'message', format: :json
+          }.to raise_error(RuntimeError, "Unrecognized event type 'other'")
+        end
       end
 
-      it 'does not redirect when blank' do
-        post :create, 'return_to' => '', 'type' => type
+      context 'with a return_to param' do
+        {
+          '/my/projection?with=data' => '/my/projection?with=data',
+          'http://evil.com/magic/url?with=query' => '/magic/url?with=query',
+          '/path' => '/path',
+        }.each do |url, path|
+          it "redirects #{url} to the #{path}" do
+            post :create, 'type' => 'circleci', 'return_to' => url
 
-        expect(response).to have_http_status(:success), 'Expected HTTP success as we should not redirect'
-      end
-    end
+            expect(response).to redirect_to(path)
+          end
+        end
 
-    context '/deploy with valid JSON' do
-      let(:route_params) { { type: 'deploy' } }
+        it 'does not redirect when invalid' do
+          post :create, 'return_to' => 'TOTALLY NOT VALID', 'type' => 'circleci'
 
-      it { should route(:post, '/events/deploy').to(action: :create, type: 'deploy') }
+          expect(response).to have_http_status(:success), 'Expected HTTP success as we should not redirect'
+        end
 
-      it 'saves an event object with correct details' do
-        post :create, route_params.merge('deployed_by' => 'alice'), format: :json
+        it 'does not redirect when blank' do
+          post :create, 'return_to' => '', 'type' => 'circleci'
 
-        expect(DeployEvent.last.details).to eq('deployed_by' => 'alice')
-        expect(response).to have_http_status(:success)
-      end
-    end
-
-    context '/circle with valid JSON' do
-      let(:route_params) { { type: 'circleci' } }
-
-      it { should route(:post, '/events/circleci').to(action: :create, type: 'circleci') }
-
-      it 'saves an event object with correct details' do
-        post :create, route_params.merge('status' => 'success'), format: :json
-
-        expect(CircleCiEvent.last.details).to eq('status' => 'success')
-        expect(response).to have_http_status(:success)
+          expect(response).to have_http_status(:success), 'Expected HTTP success as we should not redirect'
+        end
       end
     end
 
-    context '/jenkins with valid JSON' do
-      let(:route_params) { { type: 'jenkins' } }
-
-      it { should route(:post, '/events/jenkins').to(action: :create, type: 'jenkins') }
-
-      it 'saves an event object with correct details' do
-        post :create, route_params.merge('jenkins' => 'hudson'), format: :json
-
-        expect(JenkinsEvent.last.details).to eq('jenkins' => 'hudson')
-        expect(response).to have_http_status(:success)
+    context 'when logged out' do
+      before do
+        logged_out
       end
-    end
 
-    context '/jira with valid JSON' do
-      let(:route_params) { { type: 'jira' } }
+      it 'returns 403 Forbidden' do
+        post :create, type: 'circleci'
 
-      it { should route(:post, '/events/jira').to(action: :create, type: 'jira') }
-
-      it 'saves an event object with correct details' do
-        post :create, route_params.merge('issue' => { 'key' => 'JIRA-123' }), format: :json
-
-        expect(JiraEvent.last.details).to eq('issue' => { 'key' => 'JIRA-123' })
-        expect(response).to have_http_status(:success)
-      end
-    end
-
-    context '/manual_test with form-encoded params' do
-      let(:route_params) { { type: 'manual_test' } }
-
-      it { should route(:post, '/events/manual_test').to(action: :create, type: 'manual_test') }
-
-      it 'saves an event object with correct details' do
-        post :create, route_params.merge('status' => 'success'), format: :json
-
-        expect(ManualTestEvent.last.details).to eq('status' => 'success')
-        expect(response).to have_http_status(:success)
-      end
-    end
-
-    context '/other with valid JSON' do
-      let(:route_params) { { type: 'other' } }
-
-      it { should route(:post, '/events/other').to(action: :create, type: 'other') }
-
-      it 'throws an error' do
-        expect {
-          post :create, route_params.merge('any' => 'message'), format: :json
-        }.to raise_error
+        expect(response).to be_forbidden
       end
     end
   end

@@ -38,6 +38,11 @@ Given 'commit "$version" is deployed by "$name" on server "$server"' do |version
 end
 
 def post_event(type, payload)
+  OmniAuth.config.test_mode = true
+  OmniAuth.config.mock_auth[:event_token] = OmniAuth::AuthHash.new(
+    provider: 'event_token',
+    uid:      type,
+  )
   url = "/events/#{type}"
   post url, payload.to_json, 'CONTENT_TYPE' => 'application/json'
 end
