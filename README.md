@@ -1,5 +1,5 @@
 # Shipment Tracker
-[![Circle CI](https://img.shields.io/circleci/project/FundingCircle/shipment_tracker.svg)](https://circleci.com/gh/FundingCircle/shipment_tracker)
+[![Circle CI](https://img.shields.io/circleci/project/FundingCircle/shipment_tracker/master.svg)](https://circleci.com/gh/FundingCircle/shipment_tracker)
 [![Code Climate](https://img.shields.io/codeclimate/github/FundingCircle/shipment_tracker.svg)](https://codeclimate.com/github/FundingCircle/shipment_tracker)
 [![Test Coverage](https://img.shields.io/codeclimate/coverage/github/FundingCircle/shipment_tracker.svg)](https://codeclimate.com/github/FundingCircle/shipment_tracker)
 
