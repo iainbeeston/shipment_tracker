@@ -3,13 +3,8 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
-  before_action :require_login
-
-  include SessionsHelper
-
-  def require_login
-    redirect_to login_url if session[:current_user].nil?
-  end
+  include Authentication
+  helper_method :login_url, :current_user
 
   def git_repository_loader
     @git_repository_loader ||= GitRepositoryLoader.from_rails_config
