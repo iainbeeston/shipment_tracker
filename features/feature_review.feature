@@ -1,3 +1,4 @@
+@fake_authentication
 Feature: Developer prepares a feature review so that it can be attached to a
   ticket for a PO to use in acceptance.
 

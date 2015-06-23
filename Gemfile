@@ -29,7 +29,6 @@ group :development do
 end
 
 group :development, :test do
-  gem 'rack_session_access'
   gem 'rspec-rails'
   gem 'rubocop'
 end

@@ -8,7 +8,7 @@ module SessionsHelper
   end
 
   def auth0_login_url
-    auth0_domain = ENV.fetch('AUTH0_DOMAIN')
+    auth0_domain = ENV.fetch('AUTH0_DOMAIN', 'fundingcircle.auth0.com')
     auth0_client_id = ENV['AUTH0_CLIENT_ID']
     auth0_connection = Rails.application.config.x.auth0_connection
     redirect_uri = "#{request.protocol}#{request.host_with_port}/auth/auth0/callback"

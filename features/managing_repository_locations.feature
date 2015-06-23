@@ -1,3 +1,4 @@
+@fake_authentication
 Feature: Managing Repository Locations
 
 Background:
