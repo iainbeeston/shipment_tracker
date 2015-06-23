@@ -50,7 +50,7 @@ module Support
 
       [ticket_details1, ticket_details2].each do |ticket_details|
         event = build(:jira_event, ticket_details)
-        post_json '/events/jira', event.details
+        post_event 'jira', event.details
 
         @tickets[key] = ticket_details.merge(issue_id: event.issue_id)
       end
@@ -68,7 +68,7 @@ module Support
     def link_ticket(jira_key)
       ticket_details = @tickets.fetch(jira_key)
       event = build(:jira_event, ticket_details.merge(comment_body: "Here you go: #{review_url}"))
-      post_json '/events/jira', event.details
+      post_event 'jira', event.details
     end
 
     def approve_ticket(jira_key, approver_email:, time:)
@@ -78,13 +78,13 @@ module Support
         :approved,
         ticket_details.merge(user_email: approver_email, updated: time),
       )
-      post_json '/events/jira', event.details
+      post_event 'jira', event.details
     end
 
     def reject_ticket(jira_key)
       ticket_details = @tickets.fetch(jira_key).except(:status)
       event = build(:jira_event, :rejected, ticket_details)
-      post_json '/events/jira', event.details
+      post_event 'jira', event.details
     end
 
     def review_url

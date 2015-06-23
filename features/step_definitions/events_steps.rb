@@ -24,11 +24,11 @@ Given 'CircleCi "$outcome" for commit "$version"' do |outcome, version|
     version: scenario_context.resolve_version(version),
   ).details
 
-  post_json '/events/circleci', payload
+  post_event 'circleci', payload
 end
 
 Given 'commit "$version" is deployed by "$name" on server "$server"' do |version, name, server|
-  post_json '/deploys', build(
+  post_event 'deploy', build(
     :deploy_event,
     server: server,
     app_name: scenario_context.resolve_app(version),
@@ -37,6 +37,7 @@ Given 'commit "$version" is deployed by "$name" on server "$server"' do |version
   ).details
 end
 
-def post_json(url, payload)
+def post_event(type, payload)
+  url = "/events/#{type}"
   post url, payload.to_json, 'CONTENT_TYPE' => 'application/json'
 end
