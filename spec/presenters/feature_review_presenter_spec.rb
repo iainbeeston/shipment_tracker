@@ -13,16 +13,18 @@ RSpec.describe FeatureReviewPresenter do
       builds: builds,
       deploys: deploys,
       qa_submission: qa_submission,
+      locked?: true,
     )
   }
 
   subject(:presenter) { FeatureReviewPresenter.new(projection) }
 
-  it 'delegates #tickets, #builds, #deploys and #qa_submission to the projection' do
+  it 'delegates #tickets, #builds, #deploys, #qa_submission and #locked? to the projection' do
     expect(presenter.tickets).to eq(projection.tickets)
     expect(presenter.builds).to eq(projection.builds)
     expect(presenter.deploys).to eq(projection.deploys)
     expect(presenter.qa_submission).to eq(projection.qa_submission)
+    expect(presenter.locked?).to eq(projection.locked?)
   end
 
   describe '#build_status' do

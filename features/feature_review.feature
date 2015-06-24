@@ -124,7 +124,9 @@ Scenario: Feature review locks after the tickets get approved
 
   And I visit the feature review
 
-  Then I should see a summary with heading "success" and content
+  Then I should see that the feature review is locked
+
+  And a summary with heading "success" and content
     | status  | title           |
     | success | Test Results    |
     | success | UAT Environment |
@@ -134,7 +136,9 @@ Scenario: Feature review locks after the tickets get approved
 
   And I visit the feature review
 
-  Then I should see a summary with heading "danger" and content
+  Then I should see that the feature review is not locked
+
+  And a summary with heading "danger" and content
     | status  | title           |
     | failed  | Test Results    |
     | failed  | UAT Environment |

@@ -23,6 +23,10 @@ class FeatureReviewProjection
     end
   end
 
+  def locked?
+    @tickets_projection.approved?
+  end
+
   def apply(event)
     if locked? && !unlocking_event?(event)
       queue_potential_event(event)
@@ -59,10 +63,6 @@ class FeatureReviewProjection
 
   def unlocking_event?(event)
     event.is_a?(JiraEvent) && event.unapproval?
-  end
-
-  def locked?
-    @tickets_projection.approved?
   end
 
   def queue_potential_event(event)

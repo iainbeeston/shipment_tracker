@@ -58,6 +58,11 @@ module Pages
       page.all('.summary li').map { |summary_line| Sections::SummarySection.from_element(summary_line) }
     end
 
+    def locked?
+      verify!
+      page.all('.glyphicon-lock').any?
+    end
+
     private
 
     attr_reader :page, :url_helpers

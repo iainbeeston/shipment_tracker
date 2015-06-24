@@ -40,6 +40,10 @@ RSpec.describe FeatureReviewProjection do
   context 'when the tickets projection is approved' do
     let(:tickets_projection) { instance_double(FeatureReviewTicketsProjection, approved?: true) }
 
+    it 'becomes locked' do
+      expect(projection).to be_locked
+    end
+
     it 'rejects events' do
       expect(builds_projection).to_not receive(:apply)
       expect(deploys_projection).to_not receive(:apply)
@@ -69,6 +73,8 @@ RSpec.describe FeatureReviewProjection do
         end
 
         projection.apply(unapproval_event)
+
+        expect(projection).not_to be_locked
 
         expect(tickets_projection).to have_received(:apply).with(event_before_unapproval).ordered
         expect(tickets_projection).to have_received(:apply).with(unapproval_event).ordered

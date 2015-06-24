@@ -72,7 +72,7 @@ Then 'I should only see the ticket' do |ticket_table|
   expect(feature_review_page.tickets).to match_array(expected_tickets)
 end
 
-Then 'I should see a summary with heading "$status" and content' do |status, summary_table|
+Then(/^(I should see )?a summary with heading "([^\"]*)" and content$/) do |_, status, summary_table|
   expected_summary = summary_table.hashes.map { |summary_item|
     Sections::SummarySection.new(
       status: summary_item.fetch('status'),
@@ -89,6 +89,14 @@ When 'tester "$name" "$action" the feature' do |name, action|
     name: name,
     status: action.chomp('s'),
   )
+end
+
+Then 'I should see that the feature review is locked' do
+  expect(feature_review_page).to be_locked
+end
+
+Then 'I should see that the feature review is not locked' do
+  expect(feature_review_page).to_not be_locked
 end
 
 Then(/^I should see the QA acceptance with heading "([^\"]*)"$/) do |status|

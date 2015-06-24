@@ -1,4 +1,7 @@
-%h1 Feature Review
+%h1
+  Feature Review
+  - if @presenter.locked?
+    %span.glyphicon.glyphicon-lock{'aria-hidden' => true}
 
 .row
   .col-lg-6
