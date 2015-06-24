@@ -1,0 +1,17 @@
+%h1 Feature Review Search
+
+= form_tag(search_feature_reviews_path, method: "get", class: 'form-horizontal', id: 'search-form') do
+  .form-group.row
+    = label_tag("version", "Version", class: 'col-md-2 control-label')
+    .col-md-4
+      = text_field_tag("version", "", placeholder: "Commit SHA", class: 'form-control')
+    .col-md-1
+      = submit_tag("Search", class: "btn btn-primary pull-right")
+
+- if @links.present?
+  %table.table.table-striped
+    %tr
+      %th Feature Review Link
+    - @links.each do |link|
+      %tr
+        %td= link_to link, link, class: 'feature_review_link'

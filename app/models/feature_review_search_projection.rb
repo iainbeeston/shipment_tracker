@@ -1,4 +1,4 @@
-class FeatureReviewLookup
+class FeatureReviewSearchProjection
   def initialize(git_repositories: [])
     @git_repositories = git_repositories
     @events = []
@@ -20,7 +20,7 @@ class FeatureReviewLookup
         locations = FeatureReviewLocation.from_text(event.comment).select { |location|
           (location.versions & shas).present?  # Set intersection present?
         }
-        locations.map(&:url)
+        locations.map(&:path)
       }
     end
 

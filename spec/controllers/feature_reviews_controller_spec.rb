@@ -70,4 +70,57 @@ RSpec.describe FeatureReviewsController do
       end
     end
   end
+
+  describe 'GET #search', skip_login: true do
+    context 'when no search entered' do
+      it 'it assigns links as empty' do
+        get :search
+        expect(assigns(:links)).to be_empty
+      end
+    end
+
+    context 'when search query submitted' do
+      let(:projection) { instance_double(FeatureReviewSearchProjection) }
+
+      let(:expected_links) { ['/somelink'] }
+      let(:locations) {
+        [
+          RepositoryLocation.new(name: 'frontend'),
+          RepositoryLocation.new(name: 'backend'),
+        ]
+      }
+      let(:frontend_repo) { instance_double(GitRepository) }
+      let(:backend_repo) { instance_double(GitRepository) }
+      let(:repos) { [frontend_repo, backend_repo] }
+
+      before do
+        allow(RepositoryLocation).to receive(:all).and_return([])
+        allow(FeatureReviewSearchProjection).to receive(:new).and_return(projection)
+        allow(projection).to receive(:feature_requests_for).with('abc123').and_return(expected_links)
+      end
+
+      it 'assigns links for found Feature Reviews' do
+        get :search, version: 'abc123'
+        expect(assigns(:links)).to eq(expected_links)
+      end
+
+      it 'searches accross all repository locations' do
+        allow(RepositoryLocation).to receive(:all).and_return(locations)
+
+        expect_any_instance_of(GitRepositoryLoader).to receive(:load)
+          .with('frontend')
+          .and_return(frontend_repo)
+
+        expect_any_instance_of(GitRepositoryLoader).to receive(:load)
+          .with('backend')
+          .and_return(backend_repo)
+
+        allow(FeatureReviewSearchProjection).to receive(:new)
+          .with(git_repositories: repos)
+          .and_return(projection)
+
+        get :search, version: 'abc123'
+      end
+    end
+  end
 end

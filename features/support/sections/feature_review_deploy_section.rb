@@ -1,10 +1,6 @@
-module Sections
-  class ShortCommitSha < Virtus::Attribute
-    def coerce(value)
-      value[0...7]
-    end
-  end
+require_relative 'short_commit_sha'
 
+module Sections
   class FeatureReviewDeploySection
     include Virtus.value_object
 

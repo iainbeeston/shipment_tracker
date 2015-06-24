@@ -1,15 +1,19 @@
 require 'rails_helper'
-require 'feature_review_lookup'
+require 'feature_review_search_projection'
 require 'git_repository'
 require 'support/git_test_repository'
 
-RSpec.describe FeatureReviewLookup do
+def path_from_url(url)
+  URI.parse(url).request_uri
+end
+
+RSpec.describe FeatureReviewSearchProjection do
   describe '#feature_requests_for' do
     let(:test_git_repo) { Support::GitTestRepository.new }
     let(:rugged_repo) { Rugged::Repository.new(test_git_repo.dir) }
     let(:git_repository) { GitRepository.new(rugged_repo) }
 
-    subject(:lookup) { FeatureReviewLookup.new(git_repositories: [git_repository]) }
+    subject(:lookup) { FeatureReviewSearchProjection.new(git_repositories: [git_repository]) }
 
     context 'when a Feature Review is linked to multiple times' do
       before do
@@ -21,7 +25,7 @@ RSpec.describe FeatureReviewLookup do
       end
 
       it 'returns a single URL to the Feature Review' do
-        expect(lookup.feature_requests_for(@commit.oid)).to contain_exactly(@url)
+        expect(lookup.feature_requests_for(@commit.oid)).to contain_exactly(path_from_url(@url))
       end
     end
 
@@ -44,7 +48,10 @@ RSpec.describe FeatureReviewLookup do
       end
 
       it 'returns URLs for both exact match and Feature Review to the decendant sha' do
-        expect(lookup.feature_requests_for(@commit1.oid)).to contain_exactly(@url1, @url2)
+        expect(lookup.feature_requests_for(@commit1.oid)).to contain_exactly(
+          path_from_url(@url1),
+          path_from_url(@url2),
+        )
       end
     end
 

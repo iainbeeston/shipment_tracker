@@ -1,10 +1,12 @@
+require_relative 'short_commit_sha'
+
 module Sections
   class AppInfoSection
     include Virtus.value_object
 
     values do
       attribute :app_name, String
-      attribute :version, String
+      attribute :version, ShortCommitSha
     end
 
     def self.from_element(app_info_element)

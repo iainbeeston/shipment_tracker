@@ -13,7 +13,10 @@ end
 
 Then 'I should see the feature review page with the applications:' do |table|
   expected_app_info = table.hashes.map { |hash|
-    Sections::AppInfoSection.new(hash)
+    Sections::AppInfoSection.new(
+      app_name: hash.fetch('app_name'),
+      version: scenario_context.resolve_version(hash.fetch('version')),
+    )
   }
 
   expect(feature_review_page.app_info).to match_array(expected_app_info)
