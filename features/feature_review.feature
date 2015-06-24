@@ -80,7 +80,7 @@ Scenario: QA rejects and approves feature
   When tester "Bob" "accepts" the feature
   Then I should see the QA acceptance with heading "success" and name "Bob"
 
-Scenario: Feature review freezes after the tickets get approved
+Scenario: Feature review locks after the tickets get approved
   Given a ticket "JIRA-123" with summary "A ticket" is started
   Given a ticket "JIRA-124" with summary "A ticket" is started
   And a commit "#abc" by "Alice" is created for app "frontend"

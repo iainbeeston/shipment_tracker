@@ -24,7 +24,7 @@ class FeatureReviewProjection
   end
 
   def apply(event)
-    if frozen? && !unfreezing_event?(event)
+    if locked? && !unlocking_event?(event)
       queue_potential_event(event)
     else
       apply_queued_events_to_projections
@@ -57,11 +57,11 @@ class FeatureReviewProjection
     @manual_tests_projection.apply(event)
   end
 
-  def unfreezing_event?(event)
+  def unlocking_event?(event)
     event.is_a?(JiraEvent) && event.unapproval?
   end
 
-  def frozen?
+  def locked?
     @tickets_projection.approved?
   end
 
