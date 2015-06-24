@@ -60,7 +60,7 @@ module Pages
 
     def locked?
       verify!
-      page.all('.glyphicon-lock').any?
+      page.all('.icon-lock').any?
     end
 
     private
