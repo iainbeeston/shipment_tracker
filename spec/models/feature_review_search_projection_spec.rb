@@ -10,10 +10,15 @@ end
 RSpec.describe FeatureReviewSearchProjection do
   describe '#feature_requests_for' do
     let(:test_git_repo) { Support::GitTestRepository.new }
+    let(:another_test_git_repo) { Support::GitTestRepository.new }
     let(:rugged_repo) { Rugged::Repository.new(test_git_repo.dir) }
+    let(:another_rugged_repo) { Rugged::Repository.new(another_test_git_repo.dir) }
     let(:git_repository) { GitRepository.new(rugged_repo) }
+    let(:another_git_repository) { GitRepository.new(another_rugged_repo) }
 
-    subject(:lookup) { FeatureReviewSearchProjection.new(git_repositories: [git_repository]) }
+    subject(:lookup) {
+      FeatureReviewSearchProjection.new(git_repositories: [another_git_repository, git_repository])
+    }
 
     context 'when a Feature Review is linked to multiple times' do
       before do

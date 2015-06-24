@@ -42,10 +42,10 @@ class FeatureReviewsController < ApplicationController
   end
 
   def git_repositories
-    repo  = []
+    repos  = []
     RepositoryLocation.all.map(&:name).each do |name|
-      repo << git_repository_loader.load(name)
+      repos << git_repository_loader.load(name)
     end
-    repo
+    repos
   end
 end
