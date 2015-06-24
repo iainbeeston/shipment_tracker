@@ -16,21 +16,23 @@
           %li
             = link_to 'Prepare review', new_feature_review_path
           %li
+            = link_to 'Search reviews', search_feature_reviews_path
+          %li
             = link_to 'Repository locations', repository_locations_path
           %li
             = link_to 'Releases', releases_path
           %li
             = link_to 'Tokens', tokens_path
-        .collapse.navbar-collapse
-          %ul.nav.navbar-nav.navbar-right
-            - if session[:current_user].present?
-              %li
-                %p.navbar-text= "Logged in as #{current_user.email}"
-              %li
-                = button_to 'Log out', { controller: 'sessions', action: 'destroy'}, method: :delete, class: 'btn btn-secondary navbar-btn'
-            - else
-              %li
-                = link_to 'Log in', login_url
+        %ul.nav.navbar-nav.navbar-right
+          - if session[:current_user].present?
+            %li
+              %p.navbar-text
+                %small= current_user.email
+            %li
+              = button_to 'Log out', { controller: 'sessions', action: 'destroy'}, method: :delete, class: 'btn btn-secondary navbar-btn'
+          - else
+            %li
+              = link_to 'Log in', login_url
     .container
       - if flash[:error] # the red one
         .alert.alert-danger= flash[:error]
