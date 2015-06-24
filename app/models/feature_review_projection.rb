@@ -5,7 +5,7 @@ class FeatureReviewProjection
     @manual_tests_projection = manual_tests_projection
     @tickets_projection = tickets_projection
 
-    @frozen_events = []
+    @events_queue = []
   end
 
   def self.build(apps:, uat_url:, projection_url:)
@@ -24,14 +24,10 @@ class FeatureReviewProjection
   end
 
   def apply(event)
-    if @tickets_projection.approved? && !unfreezing?(event)
-      @frozen_events << event
+    if frozen? && !unfreezing_event?(event)
+      queue_potential_event(event)
     else
-      @frozen_events.each do |frozen_event|
-        apply_to_projections(frozen_event)
-      end
-      @frozen_events = []
-
+      apply_queued_events_to_projections
       apply_to_projections(event)
     end
   end
@@ -61,7 +57,22 @@ class FeatureReviewProjection
     @manual_tests_projection.apply(event)
   end
 
-  def unfreezing?(event)
+  def unfreezing_event?(event)
     event.is_a?(JiraEvent) && event.unapproval?
+  end
+
+  def frozen?
+    @tickets_projection.approved?
+  end
+
+  def queue_potential_event(event)
+    @events_queue << event
+  end
+
+  def apply_queued_events_to_projections
+    @events_queue.each do |queued_event|
+      apply_to_projections(queued_event)
+    end
+    @events_queue = []
   end
 end
