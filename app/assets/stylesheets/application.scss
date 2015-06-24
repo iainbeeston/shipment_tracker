@@ -6,7 +6,6 @@ body {
   font-family: verdana, sans-serif;
 }
 
-
 .panel {
   margin-top: 10px;
 
@@ -22,7 +21,6 @@ body {
   }
 }
 
-
 .qa-submission {
   .qa-accept,
   .qa-reject {
@@ -36,4 +34,19 @@ body {
 
 #search-form {
   margin: 40px 0;
+}
+
+.icon-success {
+  @extend .glyphicon;
+  @extend .glyphicon-ok;
+}
+
+.icon-danger {
+  @extend .glyphicon;
+  @extend .glyphicon-remove;
+}
+
+.icon-warning {
+  @extend .glyphicon;
+  @extend .glyphicon-alert;
 }

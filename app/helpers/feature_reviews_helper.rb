@@ -1,9 +1,9 @@
 module FeatureReviewsHelper
-  def panel(heading:, status: :undefined, klass: nil, &block)
+  def panel(heading:, status: :info, klass: nil, &block)
     haml_tag('.panel', class: [klass, panel_class(status)]) do
       haml_tag('.panel-heading') do
         haml_tag('h2') do
-          haml_tag('span.glyphicon', class: panel_icon_class(status), 'aria-hidden' => true)
+          icon(icon_class(status))
           haml_concat heading
         end
       end
@@ -11,34 +11,9 @@ module FeatureReviewsHelper
     end
   end
 
-  def icon(status)
-    haml_tag('span.status.glyphicon', '', class: status, 'aria-hidden' => true)
-  end
-
-  def panel_class(status)
-    case status
-    when :success
-      'panel-success'
-    when :failure
-      'panel-danger'
-    when :undefined
-      'panel-info'
-    else
-      'panel-warning'
-    end
-  end
-
-  def panel_icon_class(status)
-    case status
-    when :success
-      'glyphicon-ok'
-    when :failure
-      'glyphicon-remove'
-    when :undefined
-      nil
-    else
-      'glyphicon-alert'
-    end
+  def icon(classes)
+    return unless classes
+    haml_tag('span.glyphicon', '', class: classes, 'aria-hidden' => true)
   end
 
   def table(headers: [], &block)
@@ -54,34 +29,33 @@ module FeatureReviewsHelper
     end
   end
 
-  def deploy_status_icon_class(status)
-    case status
-    when :yes
-      'text-success glyphicon-ok'
-    when :no
-      'text-danger glyphicon-remove'
-    end
+  def panel_class(status)
+    "panel-#{item_class(status)}"
   end
 
-  def build_status_icon_class(status)
-    case status
-    when 'success'
-      'text-success glyphicon-ok'
-    when 'failed'
-      'text-danger glyphicon-remove'
-    else
-      'text-warning glyphicon-alert'
-    end
+  def text_class(status)
+    "text-#{item_class(status)}"
   end
 
-  def summary_item_classes(status)
-    case status
-    when :success
-      'text-success glyphicon-ok'
-    when :failure
-      'text-danger glyphicon-remove'
+  def icon_class(status)
+    return nil if status == :info
+    "icon-#{item_class(status)}"
+  end
+
+  def item_status_icon_class(status)
+    "#{icon_class(status)} status #{text_class(status)}"
+  end
+
+  def item_class(status)
+    case status && status.to_sym
+    when :success, :yes
+      'success'
+    when :failure, :failed, :no
+      'danger'
+    when :info
+      'info'
     else
-      'text-warning glyphicon-alert'
+      'warning'
     end
   end
 
