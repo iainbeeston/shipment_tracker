@@ -29,7 +29,7 @@ class FeatureReviewProjection
 
   def apply(event)
     if locked? && !unlocking_event?(event)
-      queue_potential_event(event)
+      queue_event(event)
     else
       apply_queued_events_to_projections
       apply_to_projections(event)
@@ -65,7 +65,7 @@ class FeatureReviewProjection
     event.is_a?(JiraEvent) && event.unapproval?
   end
 
-  def queue_potential_event(event)
+  def queue_event(event)
     @events_queue << event
   end
 
