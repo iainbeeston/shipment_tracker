@@ -3,7 +3,7 @@ module FeatureReviewsHelper
     haml_tag('.panel', class: [klass, panel_class(status)]) do
       haml_tag('.panel-heading') do
         haml_tag('h2') do
-          icon(icon_class(status))
+          icon(classes: icon_class(status))
           haml_concat heading
         end
       end
@@ -11,9 +11,9 @@ module FeatureReviewsHelper
     end
   end
 
-  def icon(classes)
+  def icon(classes:, **attributes)
     return unless classes
-    haml_tag('span.glyphicon', '', class: classes, 'aria-hidden' => true)
+    haml_tag('span.glyphicon', '', attributes.merge(class: classes, aria: { hidden: true }))
   end
 
   def table(headers: [], &block)
