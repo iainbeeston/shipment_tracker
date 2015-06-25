@@ -7,26 +7,26 @@ gem 'addressable', require: 'addressable/uri'
 gem 'bootstrap-sass'
 gem 'dotenv'
 gem 'haml-rails'
+gem 'has_secure_token'
 gem 'newrelic_rpm'
-gem 'omniauth'
 gem 'omniauth-auth0'
+gem 'omniauth'
 gem 'pg'
 gem 'rack-timeout'
 gem 'rugged', '~> 0.23.0b2' # We need Rugged::Repository#descendant_of?
 gem 'sass-rails'
-gem 'unicorn'
 gem 'unicorn-rails'
+gem 'unicorn'
 gem 'virtus'
-gem 'has_secure_token'
 
 group :development do
-  gem 'spring'
-  gem 'guard'
+  gem 'guard-cucumber'
   gem 'guard-rspec'
   gem 'guard-rubocop'
-  gem 'guard-cucumber'
-  gem 'terminal-notifier-guard'
+  gem 'guard'
   gem 'pry-rails'
+  gem 'spring'
+  gem 'terminal-notifier-guard'
 end
 
 group :development, :test do
