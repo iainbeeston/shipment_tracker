@@ -1,6 +1,7 @@
 require 'rails_helper'
 require 'git_repository'
 require 'support/git_test_repository'
+require 'support/repository_builder'
 
 require 'rugged'
 
@@ -34,18 +35,17 @@ RSpec.describe GitRepository do
   end
 
   describe '#commits_between' do
+    let(:test_git_repo) { Support::RepositoryBuilder.build(git_diagram) }
+    let(:git_diagram) { '-A-B-C-o' }
+
     it 'returns all commits between two commits' do
-      commit_first  = test_git_repo.create_commit(author_name: 'a', message: 'message 1')
-      commit_second = test_git_repo.create_commit(author_name: 'b', message: 'message 2')
-      commit_third  = test_git_repo.create_commit(author_name: 'c', message: 'message 3')
-      test_git_repo.create_commit(author_name: 'd')
+      commit_a = test_git_repo.commit_for_pretend_version('A')
+      commit_b = test_git_repo.commit_for_pretend_version('B')
+      commit_c = test_git_repo.commit_for_pretend_version('C')
 
-      commits = repo.commits_between(commit_first.oid, commit_third.oid)
+      commits = repo.commits_between(commit_a, commit_c).map(&:id)
 
-      expect(commits).to contain_exactly(
-        build_commit(commit_second),
-        build_commit(commit_third),
-      )
+      expect(commits).to contain_exactly(commit_b, commit_c)
     end
 
     context 'when an invalid commit is provided' do

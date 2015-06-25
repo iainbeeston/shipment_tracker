@@ -18,6 +18,8 @@ module Support
         create_example_2
       when example_3
         create_example_3
+      when example_4
+        create_example_4
       else
         fail "Unrecognised:\n#{git_ascii_graph}"
       end
@@ -61,6 +63,17 @@ module Support
     end
 
     def create_example_3
+      test_git_repo.create_commit
+    end
+
+    def example_4
+      '-A-B-C-o'
+    end
+
+    def create_example_4
+      test_git_repo.create_commit(pretend_version: 'A')
+      test_git_repo.create_commit(pretend_version: 'B')
+      test_git_repo.create_commit(pretend_version: 'C')
       test_git_repo.create_commit
     end
   end
