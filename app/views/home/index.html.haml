@@ -65,6 +65,12 @@
   Statuses are conveniently summarized in a "Summary" panel.
   Possible statuses are <i>pass</i>, <i>fail</i>, and <i>warning</i>.
 %p Once the PO is satisfied, they can approve the work on JIRA.
+%p
+  When all associated tickets are accepted, the Feature Review locks, meaning any new events
+  (e.g. build results from Continuous Integration or Deploys) will not be shown.
+  The intention is to show what the Feature Review looked like at the moment of acceptance.
+  If a Feature Review is unlocked by "unaccepting" any of the tickets, any events since its last acceptance
+  will be shown.
 
 %h2 Deployer
 %p
