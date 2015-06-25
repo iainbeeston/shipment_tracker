@@ -26,7 +26,7 @@ module Support
       @now = Time.at(0)
     end
 
-    def create_commit(author_name:, pretend_version: nil, message: 'A new commit', time: nil)
+    def create_commit(author_name: 'Alice', pretend_version: nil, message: 'A new commit', time: nil)
       oid = repo.write('file contents', :blob)
       index = repo.index
 
@@ -55,7 +55,7 @@ module Support
       repo.checkout(branch_name)
     end
 
-    def merge_branch(branch_name:, author_name:, time:, pretend_version: nil)
+    def merge_branch(branch_name:, author_name: 'Alice', time: Time.now, pretend_version: nil)
       master_tip_oid = repo.branches['master'].target_id
       branch_tip_oid = repo.branches[branch_name].target_id
       merge_index = repo.merge_commits(master_tip_oid, branch_tip_oid)
