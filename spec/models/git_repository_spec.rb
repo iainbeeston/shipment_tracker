@@ -9,35 +9,6 @@ RSpec.describe GitRepository do
   let(:rugged_repo) { Rugged::Repository.new(test_git_repo.dir) }
   subject(:repo) { GitRepository.new(rugged_repo) }
 
-  describe '#unmerged_commits_matching_query' do
-    it 'returns all unmerged commits where the message contains the query' do
-      test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-1 master')
-
-      test_git_repo.create_branch('foo')
-      test_git_repo.checkout('foo')
-      second_commit = test_git_repo.create_commit(author_name: 'Bob', message: 'ENG-1 foo')
-      test_git_repo.create_commit(author_name: 'Bob', message: 'ENG-2 foo')
-
-      test_git_repo.checkout('master')
-      test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-2 master')
-
-      test_git_repo.create_branch('bar')
-      test_git_repo.checkout('bar')
-      third_commit = test_git_repo.create_commit(author_name: 'Carol', message: 'ENG-1 bar')
-      test_git_repo.create_commit(author_name: 'Carol', message: 'ENG-2 bar')
-
-      test_git_repo.checkout('master')
-      test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-1 master')
-
-      commits = repo.unmerged_commits_matching_query('ENG-1')
-
-      expect(commits).to contain_exactly(
-        build_commit(second_commit),
-        build_commit(third_commit),
-      )
-    end
-  end
-
   describe '#exists?' do
     subject { repo.exists?(sha) }
 
@@ -59,22 +30,6 @@ RSpec.describe GitRepository do
     context 'when commit id is invalid' do
       let(:sha) { '1NV4LiD' }
       it { is_expected.to be(false) }
-    end
-  end
-
-  describe '#last_unmerged_commit_matching_query' do
-    it 'returns last unmerged commit where the message contains the query' do
-      test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-1 master', time: Time.new(2015, 4, 16))
-      test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-2 master')
-      test_git_repo.create_branch('foo')
-      test_git_repo.create_commit(author_name: 'Bob', message: 'ENG-1 master', time: Time.new(2015, 4, 17))
-      test_git_repo.checkout('foo')
-      expected_commit = test_git_repo.create_commit(author_name: 'Carol', message: 'ENG-1 foo')
-      test_git_repo.create_commit(author_name: 'Alice', message: 'ENG-2 foo')
-      test_git_repo.checkout('master')
-      test_git_repo.create_commit(author_name: 'Bob', message: 'ENG-1 master')
-
-      expect(repo.last_unmerged_commit_matching_query('ENG-1')).to eq(build_commit(expected_commit))
     end
   end
 

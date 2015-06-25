@@ -17,13 +17,5 @@ module LogSubscribers
     def commits_between(event)
       self.class.runtime += event.duration
     end
-
-    def unmerged_commits_matching_query(event)
-      self.class.runtime += event.duration
-    end
-
-    def last_unmerged_commit_matching_query(event)
-      self.class.runtime += event.duration
-    end
   end
 end
