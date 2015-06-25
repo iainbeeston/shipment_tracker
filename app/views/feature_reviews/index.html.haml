@@ -94,13 +94,12 @@
             = hidden_field_tag('testing_environment[apps][][version]', version)
           .radio.qa-accept
             %label
-              = radio_button_tag 'status', 'success', required: true
+              = radio_button_tag 'status', 'success', false, required: true, disabled: @presenter.locked?
               Accept
           .radio.qa-reject
             %label
-              = radio_button_tag 'status', 'failed', required: true
+              = radio_button_tag 'status', 'failed', false, required: true, disabled: @presenter.locked?
               Reject
           = label_tag('user[name]', 'Name', class: 'control-label sr-only')
-          = text_field_tag('user[name]', '', placeholder: 'Firstname Surname', class: 'form-control qa-name-field', required: true)
-          = submit_tag('Submit', class: 'btn btn-primary')
-
+          = text_field_tag('user[name]', '', placeholder: 'Firstname Surname', class: 'form-control qa-name-field', required: true, disabled: @presenter.locked?)
+          = submit_tag('Submit', class: 'btn btn-primary', disabled: @presenter.locked?)
