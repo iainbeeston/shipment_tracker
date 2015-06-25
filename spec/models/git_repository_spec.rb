@@ -14,7 +14,7 @@ RSpec.describe GitRepository do
     subject { repo.exists?(sha) }
 
     context 'when commit id exists' do
-      let(:sha) { test_git_repo.create_commit(author_name: 'Alice').oid }
+      let(:sha) { test_git_repo.create_commit.oid }
       it { is_expected.to be(true) }
     end
 
@@ -24,7 +24,7 @@ RSpec.describe GitRepository do
     end
 
     context 'when commit id is too short (even if it exists)' do
-      let(:sha) { test_git_repo.create_commit(author_name: 'Alice').oid.slice(1..3) }
+      let(:sha) { test_git_repo.create_commit.oid.slice(1..3) }
       it { is_expected.to be(false) }
     end
 
@@ -50,8 +50,8 @@ RSpec.describe GitRepository do
 
     context 'when an invalid commit is provided' do
       it 'raises a GitRepository::CommitNotValid exception' do
-        valid_commit = test_git_repo.create_commit(author_name: 'foo')
-        invalid_commit_oid = 'INVALID!!!'
+        valid_commit = test_git_repo.create_commit
+        invalid_commit_oid = '1NV4LiD'
 
         expect {
           repo.commits_between(valid_commit.oid, invalid_commit_oid)
@@ -61,7 +61,7 @@ RSpec.describe GitRepository do
 
     context 'when a non existent commit is provided' do
       it 'raises a GitRepository::CommitNotValid exception' do
-        valid_commit = test_git_repo.create_commit(author_name: 'foo')
+        valid_commit = test_git_repo.create_commit
         non_existent_commit_oid = '8120765f3fce2da11a5c8e17d3ca800847912424'
 
         expect {
@@ -73,10 +73,10 @@ RSpec.describe GitRepository do
 
   describe '#recent_commits' do
     it 'returns specified number of recent commits' do
-      test_git_repo.create_commit(author_name: 'a', message: 'message 1')
-      commit_second = test_git_repo.create_commit(author_name: 'b', message: 'message 2')
-      commit_third  = test_git_repo.create_commit(author_name: 'c', message: 'message 3')
-      commit_fourth = test_git_repo.create_commit(author_name: 'd', message: 'message 4')
+      test_git_repo.create_commit
+      commit_second = test_git_repo.create_commit
+      commit_third  = test_git_repo.create_commit
+      commit_fourth = test_git_repo.create_commit
 
       commits = repo.recent_commits(3)
 
@@ -88,8 +88,7 @@ RSpec.describe GitRepository do
     end
 
     describe 'branch selection' do
-      let(:sample_commit) { test_git_repo.create_commit(author_name: 'b', message: 'message 2') }
-      let(:production_branch) {}
+      let(:sample_commit) { test_git_repo.create_commit }
       let(:master_branch) { double('branch', target_id: '123') }
       let(:local_master_branch) { double('branch', target_id: '123') }
 
@@ -142,16 +141,16 @@ RSpec.describe GitRepository do
   describe '#get_descendant_commits_of_branch' do
     context "when given commit is part of a branch that's merged into master" do
       it 'returns the descendant commits up to and including the merge commit' do
-        test_git_repo.create_commit(author_name: 'Alice', message: 'master 1')
+        test_git_repo.create_commit
         test_git_repo.create_branch('branch')
         test_git_repo.checkout_branch('branch')
-        test_git_repo.create_commit(author_name: 'Alice', message: 'branch 1')
-        branch_2 = test_git_repo.create_commit(author_name: 'Alice', message: 'branch 2')
-        branch_3 = test_git_repo.create_commit(author_name: 'Alice', message: 'branch 3')
+        test_git_repo.create_commit
+        branch_2 = test_git_repo.create_commit
+        branch_3 = test_git_repo.create_commit
         test_git_repo.checkout_branch('master')
-        test_git_repo.create_commit(author_name: 'Alice', message: 'master 2')
-        merge_commit = test_git_repo.merge_branch(branch_name: 'branch', author_name: 'Alice', time: Time.now)
-        test_git_repo.create_commit(author_name: 'Alice', message: 'master 3')
+        test_git_repo.create_commit
+        merge_commit = test_git_repo.merge_branch(branch_name: 'branch')
+        test_git_repo.create_commit
 
         expect(repo.get_descendant_commits_of_branch(branch_2.oid)).to contain_exactly(
           build_commit(branch_3),
@@ -162,19 +161,19 @@ RSpec.describe GitRepository do
 
     context 'when given commit on master' do
       it 'returns empty' do
-        test_git_repo.create_commit(author_name: 'Alice', message: 'master 1')
+        test_git_repo.create_commit
         test_git_repo.checkout_branch('master')
-        master_2 = test_git_repo.create_commit(author_name: 'Alice', message: 'master 2')
-        test_git_repo.create_commit(author_name: 'Alice', message: 'master 3')
+        master_2 = test_git_repo.create_commit
+        test_git_repo.create_commit
 
         expect(repo.get_descendant_commits_of_branch(master_2.oid)).to be_empty
       end
 
       context 'and it is the initial commit' do
         it 'returns empty' do
-          master_1 = test_git_repo.create_commit(author_name: 'Alice', message: 'master 1')
+          master_1 = test_git_repo.create_commit
           test_git_repo.checkout_branch('master')
-          test_git_repo.create_commit(author_name: 'Alice', message: 'master 2')
+          test_git_repo.create_commit
 
           expect(repo.get_descendant_commits_of_branch(master_1.oid)).to be_empty
         end
@@ -183,14 +182,14 @@ RSpec.describe GitRepository do
 
     context 'when branch not merged' do
       it 'returns the descendant commits up to the tip of the branch' do
-        test_git_repo.create_commit(author_name: 'Alice', message: 'master 1')
+        test_git_repo.create_commit
         test_git_repo.create_branch('branch')
         test_git_repo.checkout_branch('branch')
-        test_git_repo.create_commit(author_name: 'Alice', message: 'branch 1')
-        branch_2 = test_git_repo.create_commit(author_name: 'Alice', message: 'branch 2')
-        test_git_repo.create_commit(author_name: 'Alice', message: 'branch 3')
+        test_git_repo.create_commit
+        branch_2 = test_git_repo.create_commit
+        test_git_repo.create_commit
         test_git_repo.checkout_branch('master')
-        test_git_repo.create_commit(author_name: 'Alice', message: 'master 2')
+        test_git_repo.create_commit
 
         expect(repo.get_descendant_commits_of_branch(branch_2.oid)).to be_empty
       end
@@ -199,16 +198,16 @@ RSpec.describe GitRepository do
 
   describe '#get_dependent_commits' do
     it 'returns the ancestors of a commit up to the merge base' do
-      test_git_repo.create_commit(author_name: 'Alice', message: 'master 1')
+      test_git_repo.create_commit
       test_git_repo.create_branch('branch')
       test_git_repo.checkout_branch('branch')
-      branch_1 = test_git_repo.create_commit(author_name: 'Alice', message: 'branch 1')
-      branch_2 = test_git_repo.create_commit(author_name: 'Alice', message: 'branch 2')
-      branch_3 = test_git_repo.create_commit(author_name: 'Alice', message: 'branch 3')
-      test_git_repo.create_commit(author_name: 'Alice', message: 'branch 4')
+      branch_1 = test_git_repo.create_commit
+      branch_2 = test_git_repo.create_commit
+      branch_3 = test_git_repo.create_commit
+      test_git_repo.create_commit
       test_git_repo.checkout_branch('master')
-      test_git_repo.create_commit(author_name: 'Alice', message: 'master 2')
-      test_git_repo.merge_branch(branch_name: 'branch', author_name: 'Alice', time: Time.now)
+      test_git_repo.create_commit
+      test_git_repo.merge_branch(branch_name: 'branch')
 
       expect(repo.get_dependent_commits(branch_3.oid)).to contain_exactly(
         build_commit(branch_2),
@@ -218,14 +217,14 @@ RSpec.describe GitRepository do
 
     context 'when the commit is the parent of a merge commit' do
       it 'includes the merge commit in the result' do
-        test_git_repo.create_commit(author_name: 'Alice', message: 'master 1')
+        test_git_repo.create_commit
         test_git_repo.create_branch('branch')
         test_git_repo.checkout_branch('branch')
-        branch_1 = test_git_repo.create_commit(author_name: 'Alice', message: 'branch 1')
-        branch_2 = test_git_repo.create_commit(author_name: 'Alice', message: 'branch 2')
+        branch_1 = test_git_repo.create_commit
+        branch_2 = test_git_repo.create_commit
         test_git_repo.checkout_branch('master')
-        test_git_repo.create_commit(author_name: 'Alice', message: 'master 2')
-        merge = test_git_repo.merge_branch(branch_name: 'branch', author_name: 'Alice', time: Time.now)
+        test_git_repo.create_commit
+        merge = test_git_repo.merge_branch(branch_name: 'branch')
 
         expect(repo.get_dependent_commits(branch_2.oid)).to contain_exactly(
           build_commit(branch_1),
