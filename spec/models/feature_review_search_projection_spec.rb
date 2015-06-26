@@ -1,8 +1,9 @@
 require 'rails_helper'
-require 'feature_review_search_projection'
-require 'git_repository'
 require 'support/git_test_repository'
 require 'support/repository_builder'
+
+require 'feature_review_search_projection'
+require 'git_repository'
 
 RSpec.describe FeatureReviewSearchProjection do
   describe '#feature_requests_for' do
