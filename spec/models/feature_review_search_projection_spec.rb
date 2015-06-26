@@ -22,13 +22,12 @@ RSpec.describe FeatureReviewSearchProjection do
       let(:git_diagram) { '-A' }
 
       it 'returns a single URL to the Feature Review' do
-        commit_a = test_git_repo.commit_for_pretend_version('A')
-        url = "http://example.com/feature_reviews?apps[app1]=#{commit_a}"
+        url = "http://example.com/feature_reviews?apps[app1]=#{commit('A')}"
 
         lookup.apply(build(:jira_event, comment_body: "Here you go: #{url}"))
         lookup.apply(build(:jira_event, comment_body: "Please review #{url}"))
 
-        expect(lookup.feature_requests_for(commit_a)).to contain_exactly(path_from_url(url))
+        expect(lookup.feature_requests_for(commit('A'))).to contain_exactly(path_from_url(url))
       end
     end
 
@@ -42,16 +41,13 @@ RSpec.describe FeatureReviewSearchProjection do
       end
 
       it 'returns URLs for both exact match and Feature Review to the decendant sha' do
-        commit_a = test_git_repo.commit_for_pretend_version('A')
-        commit_b = test_git_repo.commit_for_pretend_version('B')
-
-        url1 = "http://example.com/feature_reviews?apps[app1]=#{commit_a}"
-        url2 = "http://example.com/feature_reviews?apps[app1]=#{commit_b}"
+        url1 = "http://example.com/feature_reviews?apps[app1]=#{commit('A')}"
+        url2 = "http://example.com/feature_reviews?apps[app1]=#{commit('B')}"
 
         lookup.apply(build(:jira_event, comment_body: "Here you go: #{url1}"))
         lookup.apply(build(:jira_event, comment_body: "Review this instead: #{url2}"))
 
-        expect(lookup.feature_requests_for(commit_a)).to contain_exactly(
+        expect(lookup.feature_requests_for(commit('A'))).to contain_exactly(
           path_from_url(url1),
           path_from_url(url2),
         )
@@ -68,13 +64,10 @@ RSpec.describe FeatureReviewSearchProjection do
       end
 
       it 'does not return any URLs' do
-        commit_a = test_git_repo.commit_for_pretend_version('A')
-        commit_b = test_git_repo.commit_for_pretend_version('B')
-
-        url = "http://example.com/feature_reviews?apps[app1]=#{commit_a}"
+        url = "http://example.com/feature_reviews?apps[app1]=#{commit('A')}"
 
         lookup.apply(build(:jira_event, comment_body: "Here you go: #{url}"))
-        expect(lookup.feature_requests_for(commit_b)).to be_empty
+        expect(lookup.feature_requests_for(commit('B'))).to be_empty
       end
     end
 
@@ -106,5 +99,9 @@ RSpec.describe FeatureReviewSearchProjection do
 
   def path_from_url(url)
     URI.parse(url).request_uri
+  end
+
+  def commit(version)
+    test_git_repo.commit_for_pretend_version(version)
   end
 end

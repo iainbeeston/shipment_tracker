@@ -6,15 +6,17 @@ require 'support/repository_builder'
 require 'rugged'
 
 RSpec.describe GitRepository do
-  let(:test_git_repo) { Support::GitTestRepository.new }
+  let(:test_git_repo) { Support::RepositoryBuilder.build(git_diagram) }
   let(:rugged_repo) { Rugged::Repository.new(test_git_repo.dir) }
   subject(:repo) { GitRepository.new(rugged_repo) }
 
   describe '#exists?' do
+    let(:git_diagram) { '-A' }
+
     subject { repo.exists?(sha) }
 
     context 'when commit id exists' do
-      let(:sha) { test_git_repo.create_commit.oid }
+      let(:sha) { commit('A') }
       it { is_expected.to be(true) }
     end
 
@@ -24,7 +26,7 @@ RSpec.describe GitRepository do
     end
 
     context 'when commit id is too short (even if it exists)' do
-      let(:sha) { test_git_repo.create_commit.oid.slice(1..3) }
+      let(:sha) { commit('A').slice(1..3) }
       it { is_expected.to be(false) }
     end
 
@@ -35,91 +37,77 @@ RSpec.describe GitRepository do
   end
 
   describe '#commits_between' do
-    let(:test_git_repo) { Support::RepositoryBuilder.build(git_diagram) }
     let(:git_diagram) { '-A-B-C-o' }
 
     it 'returns all commits between two commits' do
-      commit_a = test_git_repo.commit_for_pretend_version('A')
-      commit_b = test_git_repo.commit_for_pretend_version('B')
-      commit_c = test_git_repo.commit_for_pretend_version('C')
+      commits = repo.commits_between(commit('A'), commit('C')).map(&:id)
 
-      commits = repo.commits_between(commit_a, commit_c).map(&:id)
-
-      expect(commits).to contain_exactly(commit_b, commit_c)
+      expect(commits).to contain_exactly(commit('B'), commit('C'))
     end
 
     context 'when an invalid commit is provided' do
       it 'raises a GitRepository::CommitNotValid exception' do
-        valid_commit = test_git_repo.create_commit
-        invalid_commit_oid = '1NV4LiD'
+        invalid_commit = '1NV4LiD'
 
         expect {
-          repo.commits_between(valid_commit.oid, invalid_commit_oid)
-        }.to raise_error(GitRepository::CommitNotValid, invalid_commit_oid)
+          repo.commits_between(commit('C'), invalid_commit)
+        }.to raise_error(GitRepository::CommitNotValid, invalid_commit)
       end
     end
 
     context 'when a non existent commit is provided' do
       it 'raises a GitRepository::CommitNotValid exception' do
-        valid_commit = test_git_repo.create_commit
-        non_existent_commit_oid = '8120765f3fce2da11a5c8e17d3ca800847912424'
+        non_existent_commit = '8120765f3fce2da11a5c8e17d3ca800847912424'
 
         expect {
-          repo.commits_between(valid_commit.oid, non_existent_commit_oid)
-        }.to raise_error(GitRepository::CommitNotFound, non_existent_commit_oid)
+          repo.commits_between(commit('C'), non_existent_commit)
+        }.to raise_error(GitRepository::CommitNotFound, non_existent_commit)
       end
     end
   end
 
   describe '#recent_commits' do
+    let(:git_diagram) { '-o-A-B-C' }
+
     it 'returns specified number of recent commits' do
-      test_git_repo.create_commit
-      commit_second = test_git_repo.create_commit
-      commit_third  = test_git_repo.create_commit
-      commit_fourth = test_git_repo.create_commit
+      commits = repo.recent_commits(3).map(&:id)
 
-      commits = repo.recent_commits(3)
-
-      expect(commits).to eq([
-        build_commit(commit_fourth),
-        build_commit(commit_third),
-        build_commit(commit_second),
-      ])
+      expect(commits).to eq([commit('C'), commit('B'), commit('A')])
     end
 
     describe 'branch selection' do
-      let(:sample_commit) { test_git_repo.create_commit }
-      let(:master_branch) { double('branch', target_id: '123') }
-      let(:local_master_branch) { double('branch', target_id: '123') }
+      let(:git_diagram) { '-A' }
 
       before do
         allow(rugged_repo).to receive(:branches).and_return(branches)
       end
 
+      subject { repo.recent_commits(3).map(&:id) }
+
       context 'when there is a remote production branch' do
         let(:branches) {
           {
-            'origin/production' => double('branch', target_id: sample_commit.oid),
+            'origin/production' => double('branch', target_id: commit('A')),
             'origin/master' => double('branch'),
             'master' => double('branch'),
           }
         }
 
         it 'returns commits from origin/production' do
-          expect(repo.recent_commits(3)).to eq([build_commit(sample_commit)])
+          is_expected.to eq([commit('A')])
         end
       end
 
       context 'when there is a remote master branch, but no remote production' do
         let(:branches) {
           {
-            'origin/master' => double('branch', target_id: sample_commit.oid),
+            'origin/master' => double('branch', target_id: commit('A')),
             'master' => double('branch'),
           }
         }
 
         it 'returns commits from origin/master' do
-          expect(repo.recent_commits(3)).to eq([build_commit(sample_commit)])
+          is_expected.to eq([commit('A')])
         end
       end
 
@@ -127,12 +115,12 @@ RSpec.describe GitRepository do
         let(:branches) {
           {
             'origin/other' => double('branch'),
-            'master' => double('branch', target_id: sample_commit.oid),
+            'master' => double('branch', target_id: commit('A')),
           }
         }
 
         it 'returns commits from master' do
-          expect(repo.recent_commits(3)).to eq([build_commit(sample_commit)])
+          is_expected.to eq([commit('A')])
         end
       end
     end
@@ -140,106 +128,87 @@ RSpec.describe GitRepository do
 
   describe '#get_descendant_commits_of_branch' do
     context "when given commit is part of a branch that's merged into master" do
-      it 'returns the descendant commits up to and including the merge commit' do
-        test_git_repo.create_commit
-        test_git_repo.create_branch('branch')
-        test_git_repo.checkout_branch('branch')
-        test_git_repo.create_commit
-        branch_2 = test_git_repo.create_commit
-        branch_3 = test_git_repo.create_commit
-        test_git_repo.checkout_branch('master')
-        test_git_repo.create_commit
-        merge_commit = test_git_repo.merge_branch(branch_name: 'branch')
-        test_git_repo.create_commit
+      let(:git_diagram) do
+        <<-'EOS'
+             o-A-B
+            /     \
+          -o---o---C---o
+        EOS
+      end
 
-        expect(repo.get_descendant_commits_of_branch(branch_2.oid)).to contain_exactly(
-          build_commit(branch_3),
-          build_commit(merge_commit),
-        )
+      it 'returns the descendant commits up to and including the merge commit' do
+        descendant_commits = repo.get_descendant_commits_of_branch(commit('A')).map(&:id)
+
+        expect(descendant_commits).to contain_exactly(commit('B'), commit('C'))
       end
     end
 
     context 'when given commit on master' do
-      it 'returns empty' do
-        test_git_repo.create_commit
-        test_git_repo.checkout_branch('master')
-        master_2 = test_git_repo.create_commit
-        test_git_repo.create_commit
+      let(:git_diagram) { '-o-A-o' }
 
-        expect(repo.get_descendant_commits_of_branch(master_2.oid)).to be_empty
+      it 'returns empty' do
+        expect(repo.get_descendant_commits_of_branch(commit('A'))).to be_empty
       end
 
       context 'and it is the initial commit' do
-        it 'returns empty' do
-          master_1 = test_git_repo.create_commit
-          test_git_repo.checkout_branch('master')
-          test_git_repo.create_commit
+        let(:git_diagram) { '-A-o' }
 
-          expect(repo.get_descendant_commits_of_branch(master_1.oid)).to be_empty
+        it 'returns empty' do
+          expect(repo.get_descendant_commits_of_branch(commit('A'))).to be_empty
         end
       end
     end
 
     context 'when branch not merged' do
-      it 'returns the descendant commits up to the tip of the branch' do
-        test_git_repo.create_commit
-        test_git_repo.create_branch('branch')
-        test_git_repo.checkout_branch('branch')
-        test_git_repo.create_commit
-        branch_2 = test_git_repo.create_commit
-        test_git_repo.create_commit
-        test_git_repo.checkout_branch('master')
-        test_git_repo.create_commit
+      let(:git_diagram) do
+        <<-'EOS'
+             o-A-o
+            /
+          -o-----o
+        EOS
+      end
 
-        expect(repo.get_descendant_commits_of_branch(branch_2.oid)).to be_empty
+      it 'returns the descendant commits up to the tip of the branch' do
+        expect(repo.get_descendant_commits_of_branch(commit('A'))).to be_empty
       end
     end
   end
 
   describe '#get_dependent_commits' do
-    it 'returns the ancestors of a commit up to the merge base' do
-      test_git_repo.create_commit
-      test_git_repo.create_branch('branch')
-      test_git_repo.checkout_branch('branch')
-      branch_1 = test_git_repo.create_commit
-      branch_2 = test_git_repo.create_commit
-      branch_3 = test_git_repo.create_commit
-      test_git_repo.create_commit
-      test_git_repo.checkout_branch('master')
-      test_git_repo.create_commit
-      test_git_repo.merge_branch(branch_name: 'branch')
+    let(:git_diagram) do
+      <<-'EOS'
+           A-B-C-o
+          /       \
+        -o----o----o
+      EOS
+    end
 
-      expect(repo.get_dependent_commits(branch_3.oid)).to contain_exactly(
-        build_commit(branch_2),
-        build_commit(branch_1),
-      )
+    subject { repo.get_dependent_commits(sha).map(&:id) }
+
+    let(:sha) { commit('C') }
+    it 'returns the ancestors of a commit up to the merge base' do
+      is_expected.to contain_exactly(commit('B'), commit('A'))
     end
 
     context 'when the commit is the parent of a merge commit' do
-      it 'includes the merge commit in the result' do
-        test_git_repo.create_commit
-        test_git_repo.create_branch('branch')
-        test_git_repo.checkout_branch('branch')
-        branch_1 = test_git_repo.create_commit
-        branch_2 = test_git_repo.create_commit
-        test_git_repo.checkout_branch('master')
-        test_git_repo.create_commit
-        merge = test_git_repo.merge_branch(branch_name: 'branch')
+      let(:git_diagram) do
+        <<-'EOS'
+             A-B
+            /   \
+          -o--o--C
+        EOS
+      end
 
-        expect(repo.get_dependent_commits(branch_2.oid)).to contain_exactly(
-          build_commit(branch_1),
-          build_commit(merge),
-        )
+      let(:sha) { commit('B') }
+      it 'includes the merge commit in the result' do
+        is_expected.to contain_exactly(commit('A'), commit('C'))
       end
     end
   end
 
-  def build_commit(commit)
-    GitCommit.new(
-      id: commit.oid,
-      author_name: commit.author[:name],
-      message: commit.message,
-      time: commit.time,
-    )
+  private
+
+  def commit(version)
+    test_git_repo.commit_for_pretend_version(version)
   end
 end

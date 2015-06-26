@@ -10,71 +10,170 @@ module Support
       @test_git_repo = test_git_repo
     end
 
-    def build(git_ascii_graph)
-      case git_ascii_graph.strip_heredoc
-      when example_1
-        create_example_1
-      when example_2
-        create_example_2
-      when example_3
-        create_example_3
-      when example_4
-        create_example_4
-      else
-        fail "Unrecognised:\n#{git_ascii_graph}"
+    class << self
+      def add_example(diagram, code)
+        examples[diagram] = code
       end
 
+      def examples
+        @examples ||= {}
+      end
+    end
+
+    def build(git_ascii_graph)
+      self.class.examples.fetch(git_ascii_graph.strip_heredoc) {
+        fail "Unrecognised git tree:\n#{git_ascii_graph}"
+      }.call(test_git_repo)
       test_git_repo
     end
 
     private
 
     attr_reader :test_git_repo
+  end
+end
 
-    def example_1
-      <<-'EOS'.strip_heredoc
+Support::RepositoryBuilder.add_example(
+  <<-'EOS'.strip_heredoc,
            o-A-B
           /     \
         -o-------o
       EOS
-    end
+  proc do |repo|
+    repo.create_commit
+    repo.create_branch('branch')
+    repo.checkout_branch('branch')
+    repo.create_commit
+    repo.create_commit(pretend_version: 'A')
+    repo.create_commit(pretend_version: 'B')
+    repo.checkout_branch('master')
+    repo.merge_branch(branch_name: 'branch')
+  end,
+)
 
-    def create_example_1
-      test_git_repo.create_commit
-      test_git_repo.create_branch('branch')
-      test_git_repo.checkout_branch('branch')
-      test_git_repo.create_commit
-      test_git_repo.create_commit(pretend_version: 'A')
-      test_git_repo.create_commit(pretend_version: 'B')
-      test_git_repo.checkout_branch('master')
-      test_git_repo.merge_branch(branch_name: 'branch')
-    end
+Support::RepositoryBuilder.add_example(
+  '-A',
+  proc do |repo|
+    repo.create_commit(pretend_version: 'A')
+  end,
+)
 
-    def example_2
-      '-A'
-    end
+Support::RepositoryBuilder.add_example(
+  '-o',
+  proc do |repo|
+    repo.create_commit
+  end,
+)
 
-    def create_example_2
-      test_git_repo.create_commit(pretend_version: 'A')
-    end
+Support::RepositoryBuilder.add_example(
+  '-A-B-C-o',
+  proc do |repo|
+    repo.create_commit(pretend_version: 'A')
+    repo.create_commit(pretend_version: 'B')
+    repo.create_commit(pretend_version: 'C')
+    repo.create_commit
+  end,
+)
 
-    def example_3
-      '-o'
-    end
+Support::RepositoryBuilder.add_example(
+  <<-'EOS'.strip_heredoc,
+           o-A-B
+          /     \
+        -o---o---C---o
+      EOS
+  proc do |repo|
+    repo.create_commit
+    repo.create_branch('branch')
+    repo.checkout_branch('branch')
+    repo.create_commit
+    repo.create_commit(pretend_version: 'A')
+    repo.create_commit(pretend_version: 'B')
+    repo.checkout_branch('master')
+    repo.create_commit
+    repo.merge_branch(branch_name: 'branch', pretend_version: 'C')
+    repo.create_commit
+  end,
+)
 
-    def create_example_3
-      test_git_repo.create_commit
-    end
+Support::RepositoryBuilder.add_example(
+  '-A-o',
+  proc do |repo|
+    repo.create_commit(pretend_version: 'A')
+    repo.create_commit
+  end,
+)
 
-    def example_4
-      '-A-B-C-o'
-    end
+Support::RepositoryBuilder.add_example(
+  '-o-A-o',
+  proc do |repo|
+    repo.create_commit
+    repo.create_commit(pretend_version: 'A')
+    repo.create_commit
+  end,
+)
 
-    def create_example_4
-      test_git_repo.create_commit(pretend_version: 'A')
-      test_git_repo.create_commit(pretend_version: 'B')
-      test_git_repo.create_commit(pretend_version: 'C')
-      test_git_repo.create_commit
-    end
-  end
-end
+Support::RepositoryBuilder.add_example(
+  <<-'EOS'.strip_heredoc,
+           o-A-o
+          /
+        -o-----o
+      EOS
+  proc do |repo|
+    repo.create_commit
+    repo.create_branch('branch')
+    repo.checkout_branch('branch')
+    repo.create_commit
+    repo.create_commit(pretend_version: 'A')
+    repo.create_commit
+    repo.checkout_branch('master')
+    repo.create_commit
+  end,
+)
+
+Support::RepositoryBuilder.add_example(
+  <<-'EOS'.strip_heredoc,
+           A-B-C-o
+          /       \
+        -o----o----o
+      EOS
+  proc do |repo|
+    repo.create_commit
+    repo.create_branch('branch')
+    repo.checkout_branch('branch')
+    repo.create_commit(pretend_version: 'A')
+    repo.create_commit(pretend_version: 'B')
+    repo.create_commit(pretend_version: 'C')
+    repo.create_commit
+    repo.checkout_branch('master')
+    repo.create_commit
+    repo.merge_branch(branch_name: 'branch')
+  end,
+)
+
+Support::RepositoryBuilder.add_example(
+  <<-'EOS'.strip_heredoc,
+           A-B
+          /   \
+        -o--o--C
+      EOS
+  proc do |repo|
+    repo.create_commit
+    repo.create_branch('branch')
+    repo.checkout_branch('branch')
+    repo.create_commit(pretend_version: 'A')
+    repo.create_commit(pretend_version: 'B')
+    repo.checkout_branch('master')
+    repo.create_commit
+    repo.merge_branch(branch_name: 'branch', pretend_version: 'C')
+  end,
+)
+
+Support::RepositoryBuilder.add_example(
+  '-o-A-B-C',
+  proc do |repo|
+    repo.create_commit
+    repo.create_commit(pretend_version: 'A')
+    repo.create_commit(pretend_version: 'B')
+    repo.create_commit(pretend_version: 'C')
+  end,
+)

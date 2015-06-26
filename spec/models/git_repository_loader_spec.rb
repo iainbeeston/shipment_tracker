@@ -22,7 +22,7 @@ RSpec.describe GitRepositoryLoader do
       let(:test_git_repo) { Support::GitTestRepository.new }
 
       before do
-        test_git_repo.create_commit(author_name: 'first commit')
+        test_git_repo.create_commit
       end
 
       it 'returns a GitRepository' do
