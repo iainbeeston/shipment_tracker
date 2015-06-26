@@ -1,0 +1,2 @@
+class UatEvent < Event
+end

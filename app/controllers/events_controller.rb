@@ -24,6 +24,7 @@ class EventsController < ActionController::Metal
       'jenkins'     => JenkinsEvent,
       'jira'        => JiraEvent,
       'manual_test' => ManualTestEvent,
+      'uat'         => UatEvent,
     }.fetch(params[:type]) { |type| fail "Unrecognized event type '#{type}'" }
   end
 

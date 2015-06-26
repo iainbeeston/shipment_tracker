@@ -22,6 +22,7 @@ describe EventsController do
         'jenkins'     => JenkinsEvent,
         'jira'        => JiraEvent,
         'manual_test' => ManualTestEvent,
+        'uat'         => UatEvent,
       }.each do |event_type, event_class|
         describe "POST /events/#{event_type}" do
           it "creates a #{event_class} event" do
