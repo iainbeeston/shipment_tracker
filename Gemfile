@@ -16,6 +16,7 @@ gem 'pg'
 gem 'rack-timeout'
 gem 'rugged', '~> 0.23.0b2' # We need Rugged::Repository#descendant_of?
 gem 'sass-rails'
+gem 'uglifier'
 gem 'unicorn-rails'
 gem 'unicorn'
 gem 'virtus'
