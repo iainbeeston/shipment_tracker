@@ -75,10 +75,10 @@ RSpec.describe ReleasesProjection do
   end
 
   def feature_review_path(apps)
-    "/feature_reviews?#{{ apps: apps }.to_query}"
+    URI.parse(feature_review_url(apps)).request_uri
   end
 
   def feature_review_url(apps)
-    "http://shipment-tracker.url#{feature_review_path(apps)}"
+    Support::FeatureReviewUrl.build(apps)
   end
 end

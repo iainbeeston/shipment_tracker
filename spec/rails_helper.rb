@@ -6,6 +6,7 @@ require 'rspec/rails'
 require 'factory_girl'
 
 require 'support/authentication'
+require 'support/feature_review_url'
 
 # Add additional requires below this line. Rails is not loaded until this point!
 

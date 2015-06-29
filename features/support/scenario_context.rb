@@ -1,4 +1,5 @@
 require 'support/git_test_repository'
+require 'support/feature_review_url'
 require 'repository_location'
 
 require 'rack/test'
@@ -62,7 +63,7 @@ module Support
         apps_hash[app[:app_name]] = resolve_version(app[:version])
       end
 
-      @review_url = host.merge("/feature_reviews?#{{ apps: apps_hash, uat_url: uat_url }.to_query}").to_s
+      @review_url = Support::FeatureReviewUrl.new(@host).build(apps_hash, uat_url)
     end
 
     def link_ticket(jira_key)
@@ -101,10 +102,6 @@ module Support
     attr_reader :app
 
     include Rack::Test::Methods
-
-    def host
-      URI.parse(@host)
-    end
 
     def commit_from_pretend(pretend_commit)
       value = @repos.values.map { |r| r.commit_for_pretend_version(pretend_commit) }.compact.first

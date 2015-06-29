@@ -13,10 +13,10 @@ RSpec.describe FeatureReviewSearchProjection do
   subject(:projection) { FeatureReviewSearchProjection.new(git_repository) }
 
   describe '#feature_reviews_for(version)' do
-    let(:url_a) { "http://example.com/feature_reviews?apps[app1]=#{commit('A')}" }
-    let(:url_b) { "http://example.com/feature_reviews?apps[app1]=#{commit('B')}" }
-    let(:url_c) { "http://example.com/feature_reviews?apps[app1]=#{commit('C')}" }
-    let(:url_d) { "http://example.com/feature_reviews?apps[app1]=#{commit('D')}" }
+    let(:url_a) { Support::FeatureReviewUrl.build(app1: commit('A')) }
+    let(:url_b) { Support::FeatureReviewUrl.build(app1: commit('B')) }
+    let(:url_c) { Support::FeatureReviewUrl.build(app1: commit('C')) }
+    let(:url_d) { Support::FeatureReviewUrl.build(app1: commit('D')) }
 
     let(:feature_reviews_urls) { [] }
 
@@ -122,7 +122,7 @@ EOS
 
     context 'when searching for a non existent commit' do
       let(:commit_id) { 'def' }
-      let(:feature_reviews_urls) { ["http://example.com/feature_reviews?apps[app1]=#{commit_id}"] }
+      let(:feature_reviews_urls) { [Support::FeatureReviewUrl.build(app1: commit_id)] }
 
       it 'does not return a URL' do
         expect(projection.feature_reviews_for(commit_id)).to be_empty

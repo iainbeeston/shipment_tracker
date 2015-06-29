@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe FeatureReviewTicketsProjection do
-  let(:projection_url) { 'http://example.com/feature_reviews?foo[bar]=baz' }
+  let(:projection_url) { Support::FeatureReviewUrl.build(app1: 'abc') }
+
   subject(:projection) { FeatureReviewTicketsProjection.new(projection_url: projection_url) }
 
   let(:jira_1) { { key: 'JIRA-1', summary: 'Ticket 1' } }
@@ -48,8 +49,8 @@ RSpec.describe FeatureReviewTicketsProjection do
         build(:jira_event, key: 'JIRA-1', comment_body: "Review again #{url2}"),
       ]
     }
-    let(:url1) { 'http://example.com/feature_reviews?foo[bar]=one' }
-    let(:url2) { 'http://example.com/feature_reviews?foo[bar]=two' }
+    let(:url1) { Support::FeatureReviewUrl.build(app1: 'one') }
+    let(:url2) { Support::FeatureReviewUrl.build(app2: 'two') }
 
     subject(:projection1) { FeatureReviewTicketsProjection.new(projection_url: url1) }
     subject(:projection2) { FeatureReviewTicketsProjection.new(projection_url: url2) }
@@ -62,19 +63,6 @@ RSpec.describe FeatureReviewTicketsProjection do
 
       expect(projection1.tickets).to eq([Ticket.new(key: 'JIRA-1')])
       expect(projection2.tickets).to eq([Ticket.new(key: 'JIRA-1')])
-    end
-  end
-
-  context 'when url is percent encoded' do
-    let(:url) { 'http://example.com/feature_reviews?foo%5Bbar%5D=baz' }
-    let(:events) { [build(:jira_event, key: 'JIRA-1', comment_body: "Review #{url}")] }
-
-    it 'projects the tickets referenced in JIRA comments' do
-      events.each do |event|
-        projection.apply(event)
-      end
-
-      expect(projection.tickets).to eq([Ticket.new(key: 'JIRA-1', status: 'To Do')])
     end
   end
 end
