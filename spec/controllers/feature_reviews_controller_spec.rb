@@ -72,54 +72,41 @@ RSpec.describe FeatureReviewsController do
   end
 
   describe 'GET #search', skip_login: true do
+    let(:applications) { %w(frontend backend mobile) }
+    let(:events) { [instance_double(Event)] }
+
+    let(:projection) { instance_double(FeatureReviewSearchProjection) }
+    let(:git_repository_loader) { instance_double(GitRepositoryLoader) }
+    let(:repository) { instance_double(GitRepository) }
+
+    before do
+      allow(RepositoryLocation).to receive(:app_names).and_return(applications)
+      allow(GitRepositoryLoader).to receive(:new).and_return(git_repository_loader)
+      allow(FeatureReviewSearchProjection).to receive(:new).with(repository).and_return(projection)
+      allow(Event).to receive(:in_order_of_creation).and_return(events)
+
+      allow(git_repository_loader).to receive(:load).with('frontend').and_return(repository)
+    end
+
     context 'when no search entered' do
       it 'it assigns links as empty' do
         get :search
         expect(assigns(:links)).to be_empty
+        expect(assigns(:applications)).to eq(applications)
       end
     end
 
     context 'when search query submitted' do
-      let(:projection) { instance_double(FeatureReviewSearchProjection) }
-
       let(:expected_links) { ['/somelink'] }
-      let(:locations) {
-        [
-          RepositoryLocation.new(name: 'frontend'),
-          RepositoryLocation.new(name: 'backend'),
-        ]
-      }
-      let(:frontend_repo) { instance_double(GitRepository) }
-      let(:backend_repo) { instance_double(GitRepository) }
-      let(:repos) { [frontend_repo, backend_repo] }
-
-      before do
-        allow(RepositoryLocation).to receive(:all).and_return([])
-        allow(FeatureReviewSearchProjection).to receive(:new).and_return(projection)
-        allow(projection).to receive(:feature_requests_for).with('abc123').and_return(expected_links)
-      end
 
       it 'assigns links for found Feature Reviews' do
-        get :search, version: 'abc123'
+        expect(projection).to receive(:apply_all).with(events).ordered
+        expect(projection).to receive(:feature_reviews_for).with('abc123').and_return(expected_links).ordered
+
+        get :search, version: 'abc123', application: 'frontend'
+
         expect(assigns(:links)).to eq(expected_links)
-      end
-
-      it 'searches accross all repository locations' do
-        allow(RepositoryLocation).to receive(:all).and_return(locations)
-
-        expect_any_instance_of(GitRepositoryLoader).to receive(:load)
-          .with('frontend')
-          .and_return(frontend_repo)
-
-        expect_any_instance_of(GitRepositoryLoader).to receive(:load)
-          .with('backend')
-          .and_return(backend_repo)
-
-        allow(FeatureReviewSearchProjection).to receive(:new)
-          .with(git_repositories: repos)
-          .and_return(projection)
-
-        get :search, version: 'abc123'
+        expect(assigns(:applications)).to eq(applications)
       end
     end
   end

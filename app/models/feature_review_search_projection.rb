@@ -1,29 +1,40 @@
 class FeatureReviewSearchProjection
-  def initialize(git_repositories: [])
-    @git_repositories = git_repositories
-    @events = []
+  def initialize(git_repository)
+    @git_repository = git_repository
+    @feature_review_locations = Set.new
+  end
+
+  def apply_all(events)
+    events.each(&method(:apply))
   end
 
   def apply(event)
     return unless event.is_a?(JiraEvent) && event.issue?
-    @events << event
+    add_feature_review_locations(FeatureReviewLocation.from_text(event.comment))
   end
 
-  def feature_requests_for(sha)
-    urls = []
+  def feature_reviews_for(version)
+    return [] unless git_repository.exists?(version)
 
-    @git_repositories.each do |git_repository|
-      next unless git_repository.exists?(sha)
+    resolved_version = resolve(version)
+    versions = [resolved_version] + child_versions(resolved_version)
+    feature_review_locations.select { |location| (location.versions & versions).any? }.map(&:url)
+  end
 
-      shas = [sha] + git_repository.get_descendant_commits_of_branch(sha).map(&:id)
-      urls += @events.flat_map { |event|
-        locations = FeatureReviewLocation.from_text(event.comment).select { |location|
-          (location.versions & shas).present?  # Set intersection present?
-        }
-        locations.map(&:path)
-      }
-    end
+  private
 
-    urls.uniq
+  attr_reader :feature_review_locations, :git_repository
+
+  def resolve(version)
+    return version unless git_repository.merge?(version)
+    git_repository.branch_parent(version)
+  end
+
+  def add_feature_review_locations(locations)
+    @feature_review_locations.merge(locations)
+  end
+
+  def child_versions(version)
+    git_repository.get_descendant_commits_of_branch(version).map(&:id)
   end
 end

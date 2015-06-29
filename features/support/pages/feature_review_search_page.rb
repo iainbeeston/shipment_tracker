@@ -5,8 +5,9 @@ module Pages
       @url_helpers = url_helpers
     end
 
-    def visit(version)
+    def search_for(app:, version:)
       page.visit url_helpers.search_feature_reviews_path
+      page.select app, from: 'Application'
       page.fill_in('version', with: version)
       page.click_link_or_button('Search')
     end

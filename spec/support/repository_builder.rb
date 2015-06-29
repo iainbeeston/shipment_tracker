@@ -34,34 +34,9 @@ module Support
 end
 
 Support::RepositoryBuilder.add_example(
-  <<-'EOS'.strip_heredoc,
-           o-A-B
-          /     \
-        -o-------o
-      EOS
-  proc do |repo|
-    repo.create_commit
-    repo.create_branch('branch')
-    repo.checkout_branch('branch')
-    repo.create_commit
-    repo.create_commit(pretend_version: 'A')
-    repo.create_commit(pretend_version: 'B')
-    repo.checkout_branch('master')
-    repo.merge_branch(branch_name: 'branch')
-  end,
-)
-
-Support::RepositoryBuilder.add_example(
   '-A',
   proc do |repo|
     repo.create_commit(pretend_version: 'A')
-  end,
-)
-
-Support::RepositoryBuilder.add_example(
-  '-o',
-  proc do |repo|
-    repo.create_commit
   end,
 )
 
@@ -175,5 +150,23 @@ Support::RepositoryBuilder.add_example(
     repo.create_commit(pretend_version: 'A')
     repo.create_commit(pretend_version: 'B')
     repo.create_commit(pretend_version: 'C')
+  end,
+)
+
+Support::RepositoryBuilder.add_example(
+  <<-'EOS'.strip_heredoc,
+       A-B
+      /   \
+    -o-----C---D
+  EOS
+  proc do |repo|
+    repo.create_commit
+    repo.create_branch('branch')
+    repo.checkout_branch('branch')
+    repo.create_commit(pretend_version: 'A')
+    repo.create_commit(pretend_version: 'B')
+    repo.checkout_branch('master')
+    repo.merge_branch(branch_name: 'branch', pretend_version: 'C')
+    repo.create_commit(pretend_version: 'D')
   end,
 )

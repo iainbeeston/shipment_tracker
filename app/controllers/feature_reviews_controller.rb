@@ -26,13 +26,17 @@ class FeatureReviewsController < ApplicationController
 
   def search
     @links = []
-    return unless params[:version]
-    projection = FeatureReviewSearchProjection.new(git_repositories: git_repositories)
-    Event.in_order_of_creation.each do |event|
-      projection.apply(event)
-    end
+    @applications = RepositoryLocation.app_names
+    @version = params[:version]
+    @application = params[:application]
 
-    @links = projection.feature_requests_for(params[:version])
+    return unless @version && @application
+
+    projection = FeatureReviewSearchProjection.new(git_repository_for(@application))
+    projection.apply_all(Event.in_order_of_creation)
+
+    @links = projection.feature_reviews_for(@version)
+    flash[:error] = 'No Feature Reviews found.' if @links.empty?
   end
 
   private
@@ -41,11 +45,7 @@ class FeatureReviewsController < ApplicationController
     params.fetch(:apps, {}).select { |_name, version| version.present? }
   end
 
-  def git_repositories
-    repos  = []
-    RepositoryLocation.all.map(&:name).each do |name|
-      repos << git_repository_loader.load(name)
-    end
-    repos
+  def git_repository_for(app_name)
+    git_repository_loader.load(app_name)
   end
 end

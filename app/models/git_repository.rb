@@ -77,6 +77,16 @@ class GitRepository
     build_commits(commits)
   end
 
+  def merge?(commit_oid)
+    validate_commit!(commit_oid)
+    @repository.lookup(commit_oid).parents.count > 1
+  end
+
+  def branch_parent(commit_oid)
+    validate_commit!(commit_oid)
+    @repository.lookup(commit_oid).parents.last.oid
+  end
+
   private
 
   attr_reader :repository

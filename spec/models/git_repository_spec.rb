@@ -174,6 +174,70 @@ RSpec.describe GitRepository do
     end
   end
 
+  describe '#merge?' do
+    let(:git_diagram) do
+      <<-'EOS'
+           o-A-B
+          /     \
+        -o---o---C---o
+      EOS
+    end
+
+    subject { repo.merge?(sha) }
+
+    context 'when on a merge commit' do
+      let(:sha) { commit('C') }
+      it { is_expected.to be(true) }
+    end
+
+    context 'when on a non merge commit' do
+      let(:sha) { commit('B') }
+      it { is_expected.to be(false) }
+    end
+
+    context 'when not a real commit id' do
+      let(:sha) { 'asdfbdd!' }
+      it { expect { subject }.to raise_error(GitRepository::CommitNotValid, sha) }
+    end
+
+    context 'when a non existent commit id' do
+      let(:sha) { '5c6e280c6c4f5aff08a179526b6d73410552f453' }
+      it { expect { subject }.to raise_error(GitRepository::CommitNotFound, sha) }
+    end
+  end
+
+  describe '#branch_parent' do
+    let(:git_diagram) do
+      <<-'EOS'
+           o-A-B
+          /     \
+        -o---o---C---o
+      EOS
+    end
+
+    subject { repo.branch_parent(sha) }
+
+    context 'when on a merge commit' do
+      let(:sha) { commit('C') }
+      it { is_expected.to eq(commit('B')) }
+    end
+
+    context 'when on a non merge commit' do
+      let(:sha) { commit('B') }
+      it { is_expected.to eq(commit('A')) }
+    end
+
+    context 'when not a real commit id' do
+      let(:sha) { 'asdfbdd!' }
+      it { expect { subject }.to raise_error(GitRepository::CommitNotValid, sha) }
+    end
+
+    context 'when a non existent commit id' do
+      let(:sha) { '5c6e280c6c4f5aff08a179526b6d73410552f453' }
+      it { expect { subject }.to raise_error(GitRepository::CommitNotFound, sha) }
+    end
+  end
+
   describe '#get_dependent_commits' do
     let(:git_diagram) do
       <<-'EOS'

@@ -1,16 +1,16 @@
 require 'rails_helper'
-require 'support/git_test_repository'
 require 'support/repository_builder'
-
-require 'feature_review_search_projection'
+require 'rugged/repository'
 require 'git_repository'
 
-RSpec.describe FeatureReviewSearchProjection do
+require 'transformer/pull_request'
+
+RSpec.describe Transformer::PullRequest do
   let(:test_git_repo) { Support::RepositoryBuilder.build(git_diagram) }
   let(:rugged_repo) { Rugged::Repository.new(test_git_repo.dir) }
   let(:git_repository) { GitRepository.new(rugged_repo) }
 
-  subject(:projection) { FeatureReviewSearchProjection.new(git_repository) }
+  subject(:transformer) { Transformer::PullRequest.new(git_repository) }
 
   describe '#feature_reviews_for(version)' do
     let(:url_a) { "http://example.com/feature_reviews?apps[app1]=#{commit('A')}" }
@@ -18,10 +18,8 @@ RSpec.describe FeatureReviewSearchProjection do
     let(:url_c) { "http://example.com/feature_reviews?apps[app1]=#{commit('C')}" }
     let(:url_d) { "http://example.com/feature_reviews?apps[app1]=#{commit('D')}" }
 
-    let(:feature_reviews_urls) { [] }
-
     def test(commit_name, expected)
-      actual = projection.feature_reviews_for(commit(commit_name))
+      actual = transformer.feature_reviews_for(commit(commit_name))
       expect(actual).to(
         match_array(expected),
         <<-EOS
@@ -55,7 +53,7 @@ EOS
     end
 
     before do
-      projection.apply_all feature_reviews_urls.map { |url|
+      transformer.apply_all feature_reviews_urls.map { |url|
         build(:jira_event, comment_body: "Here you go: #{url}")
       }
     end
@@ -119,34 +117,11 @@ EOS
         end
       end
     end
-
-    context 'when searching for a non existent commit' do
-      let(:commit_id) { 'def' }
-      let(:feature_reviews_urls) { ["http://example.com/feature_reviews?apps[app1]=#{commit_id}"] }
-
-      it 'does not return a URL' do
-        expect(projection.feature_reviews_for(commit_id)).to be_empty
-      end
-    end
-
-    context 'when given an irrelevant jira event' do
-      it 'does not return a URL' do
-        projection.apply_all([build(:jira_event, comment_body: nil)])
-        expect(projection.feature_reviews_for('random_string')).to be_empty
-      end
-    end
-
-    context 'when given non jira events' do
-      it 'does not blow up' do
-        projection.apply_all([build(:circle_ci_event)])
-        expect { projection.feature_reviews_for('1') }.to_not raise_error
-      end
-    end
   end
 
   private
 
-  def commit(version)
-    test_git_repo.commit_for_pretend_version(version)
+  def commit(commit_name)
+    test_git_repo.commit_for_pretend_version(commit_name)
   end
 end
