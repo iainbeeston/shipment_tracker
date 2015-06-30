@@ -74,11 +74,16 @@ Scenario: QA rejects and approves feature
   When I visit the feature review
   Then I should see the QA acceptance with heading "warning"
 
-  When tester "Alice" "rejects" the feature
-  Then I should see the QA acceptance with heading "danger" and name "Alice"
+  When I "reject" the feature with comment "Not good enough"
+  Then I should see the QA acceptance
+    | status  | email                       | comment         |
+    | danger  | marcus@shipment-tracker.url | Not good enough |
 
-  When tester "Bob" "accepts" the feature
-  Then I should see the QA acceptance with heading "success" and name "Bob"
+
+  When I "accept" the feature with comment "Superb!"
+  Then I should see the QA acceptance
+    | status  | email                       | comment |
+    | success | marcus@shipment-tracker.url | Superb! |
 
 Scenario: Feature review locks after the tickets get approved
   Given a ticket "JIRA-123" with summary "A ticket" is started
@@ -93,7 +98,7 @@ Scenario: Feature review locks after the tickets get approved
   And adds the link to a comment for ticket "JIRA-124"
 
   When I visit the feature review
-  And tester "Bob" "accepts" the feature
+  And I "accept" the feature with comment "LGTM"
 
   Then I should see a summary with heading "success" and content
     | status  | title           |
@@ -120,7 +125,7 @@ Scenario: Feature review locks after the tickets get approved
   And CircleCi "fails" for commit "#abc"
   And a commit "#xyz" by "David" is created for app "frontend"
   And commit "#xyz" is deployed by "David" on server "http://uat.fundingcircle.com"
-  And tester "Bob" "rejects" the feature
+  And I "reject" the feature with comment "Shabby"
 
   And I visit the feature review
 

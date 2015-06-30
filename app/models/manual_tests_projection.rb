@@ -10,8 +10,9 @@ class ManualTestsProjection
     return unless apps_hash(event.apps) == @apps
 
     @qa_submission = QaSubmission.new(
-      name: event.user_name,
+      email: event.email,
       status: event.status == 'success' ? 'accepted' : 'rejected',
+      comment: event.comment,
       created_at: event.created_at,
     )
   end

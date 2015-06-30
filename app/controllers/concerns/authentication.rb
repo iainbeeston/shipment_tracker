@@ -18,7 +18,15 @@ module Authentication
   end
 
   def current_user
-    OpenStruct.new(session[:current_user])
+    OpenStruct.new(setup_current_user)
+  end
+
+  def setup_current_user
+    session[:current_user] ||= request.env.fetch('omniauth.auth', {})['info']
+  end
+
+  def teardown_current_user
+    session[:current_user] = nil
   end
 
   def login_url

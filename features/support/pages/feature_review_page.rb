@@ -36,10 +36,10 @@ module Pages
       }
     end
 
-    def create_qa_submission(status:, name:)
+    def create_qa_submission(status:, comment:)
       verify!
-      page.fill_in('user[name]', with: name)
       page.choose(status.capitalize)
+      page.fill_in('Comment', with: comment)
       page.click_link_or_button('Submit')
     end
 

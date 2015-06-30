@@ -5,7 +5,7 @@ class EventsController < ActionController::Metal
   include Authentication
 
   def create
-    event_type.create(details: request.request_parameters)
+    event_type.create(details: decorate_with_email(request.request_parameters))
 
     redirect_to redirect_path if redirect_path
     self.response_body = 'ok'
@@ -15,6 +15,12 @@ class EventsController < ActionController::Metal
 
   def redirect_path
     @redirect_path ||= path_from_url(params[:return_to])
+  end
+
+  def decorate_with_email(details)
+    return details unless params[:type] == 'manual_test' && current_user.email.present?
+    details['email'] = current_user.email
+    details
   end
 
   def event_type

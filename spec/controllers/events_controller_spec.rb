@@ -43,6 +43,21 @@ describe EventsController do
         end
       end
 
+      context 'with a manual_test' do
+        let(:type) { 'manual_test' }
+        before do
+          logged_in(uid: 'someComplexUUID', info: { email: 'joe@example.com' })
+        end
+
+        it 'overrides the email field to be that of the logged in user' do
+          post :create, 'type' => type, 'any' => 'message', 'email' => 'hacker@example.com', format: :json
+          event_details = ManualTestEvent.last.details
+
+          expect(response).to be_success
+          expect(event_details['email']).to eq('joe@example.com')
+        end
+      end
+
       context 'with a return_to param' do
         {
           '/my/projection?with=data' => '/my/projection?with=data',

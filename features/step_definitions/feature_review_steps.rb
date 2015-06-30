@@ -78,10 +78,10 @@ Then(/^(I should see )?a summary with heading "([^\"]*)" and content$/) do |_, s
   expect(feature_review_page.summary_contents).to match_array(expected_summary)
 end
 
-When 'tester "$name" "$action" the feature' do |name, action|
+When 'I "$action" the feature with comment "$comment"' do |action, comment|
   feature_review_page.create_qa_submission(
-    name: name,
-    status: action.chomp('s'),
+    comment: comment,
+    status: action,
   )
 end
 
@@ -93,13 +93,17 @@ Then 'I should see that the feature review is not locked' do
   expect(feature_review_page).to_not be_locked
 end
 
-Then(/^I should see the QA acceptance with heading "([^\"]*)"$/) do |status|
+Then 'I should see the QA acceptance with heading "$status"' do |status|
   expect(feature_review_page.panel_heading_status('qa-submission')).to eq(status)
 end
 
-Then 'I should see the QA acceptance with heading "$status" and name "$name"' do |status, name|
-  expected_qa_submission = Sections::QaSubmissionSection.new(name: name)
+Then 'I should see the QA acceptance' do |table|
+  qa_acceptance = table.hashes.first
+  expected_qa_submission = Sections::QaSubmissionSection.new(
+    email: qa_acceptance['email'],
+    comment: qa_acceptance['comment'],
+  )
 
-  expect(feature_review_page.panel_heading_status('qa-submission')).to eq(status)
+  expect(feature_review_page.panel_heading_status('qa-submission')).to eq(qa_acceptance['status'])
   expect(feature_review_page.qa_submission).to eq(expected_qa_submission)
 end

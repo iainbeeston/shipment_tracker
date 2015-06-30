@@ -10,21 +10,24 @@ RSpec.describe ManualTestsProjection do
       [
         build(:manual_test_event,
           status: 'success',
-          name: 'Alice',
+          email: 'alice@example.com',
+          comment: 'LGTM',
           apps: [
             { name: 'frontend', version: 'abc' },
             { name: 'backend', version: 'def' },
           ]),
         build(:manual_test_event,
           status: 'failed',
-          name: 'Benjamin',
+          email: 'benjamin@example.com',
+          comment: 'Nonsense',
           apps: [
             { name: 'frontend', version: 'abc' },
             { name: 'backend', version: 'def' },
           ]),
         build(:manual_test_event,
           status: 'failed',
-          name: 'Carol',
+          email: 'carol@example.com',
+          comment: 'Disgusting',
           apps: [
             { name: 'frontend', version: 'abc' },
             { name: 'backend', version: 'ghi' },
@@ -40,7 +43,8 @@ RSpec.describe ManualTestsProjection do
       expect(projection.qa_submission).to eq(
         QaSubmission.new(
           status: 'rejected',
-          name: 'Benjamin',
+          email: 'benjamin@example.com',
+          comment: 'Nonsense',
         ),
       )
     end
@@ -51,7 +55,8 @@ RSpec.describe ManualTestsProjection do
       [
         build(:manual_test_event,
           status: 'success',
-          name: 'Alice',
+          email: 'alice@example.com',
+          comment: 'Fabulous',
           apps: [
             { name: 'frontend', version: 'abc' },
             { name: 'backend', version: 'def' },
@@ -67,7 +72,8 @@ RSpec.describe ManualTestsProjection do
       expect(projection.qa_submission).to eq(
         QaSubmission.new(
           status: 'accepted',
-          name: 'Alice',
+          email: 'alice@example.com',
+          comment: 'Fabulous',
         ),
       )
     end

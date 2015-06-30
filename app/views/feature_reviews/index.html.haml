@@ -79,19 +79,20 @@
     - panel(heading: 'QA Acceptance', klass: 'qa-submission', status: @presenter.qa_status) do
       .panel-body
         - if @presenter.qa_submission
-          %span.qa-name
-            %strong= @presenter.qa_submission.name
-          at
-          %span.qa-time= @presenter.qa_submission.created_at
+          %p
+            %span.qa-email
+              %strong= @presenter.qa_submission.email
+            at
+            %span.qa-time= @presenter.qa_submission.created_at
+          %p.qa-comment= @presenter.qa_submission.comment
         - else
           Not reviewed by QA
       .panel-footer
         = form_tag(events_path(type: 'manual_test'), method: 'post', class: 'form-inline') do
           = hidden_field_tag(:return_to, @return_to)
-          = hidden_field_tag('testing_environment[uat_url]', @uat_url)
           - @apps.each do |app_name, version|
-            = hidden_field_tag('testing_environment[apps][][name]', app_name)
-            = hidden_field_tag('testing_environment[apps][][version]', version)
+            = hidden_field_tag('apps[][name]', app_name)
+            = hidden_field_tag('apps[][version]', version)
           .radio.qa-accept
             %label
               = radio_button_tag 'status', 'success', false, required: true, disabled: @presenter.locked?
@@ -100,6 +101,7 @@
             %label
               = radio_button_tag 'status', 'failed', false, required: true, disabled: @presenter.locked?
               Reject
-          = label_tag('user[name]', 'Name', class: 'control-label sr-only')
-          = text_field_tag('user[name]', '', placeholder: 'Firstname Surname', class: 'form-control qa-name-field', required: true, disabled: @presenter.locked?)
+
+          = label_tag('comment', 'Comment', class: 'control-label sr-only')
+          = text_area_tag('comment', '', placeholder: 'Comment', class: 'form-control', required: true, disabled: @presenter.locked?)
           = submit_tag('Submit', class: 'btn btn-primary', disabled: @presenter.locked?)
