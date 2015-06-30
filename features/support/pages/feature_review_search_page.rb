@@ -14,9 +14,7 @@ module Pages
 
     def links
       verify!
-      page.all('.feature_review_link').map { |feature_review_line|
-        Sections::FeatureReviewLinkSection.from_element(feature_review_line)
-      }
+      page.all('.feature_review_link').map { |feature_review_line| feature_review_line[:href] }
     end
 
     def click_nth_link(position)

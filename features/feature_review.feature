@@ -56,15 +56,15 @@ Scenario: Viewing a feature review
     | JIRA-123 | Urgent ticket | In Progress |
 
   And I should see the builds with heading "warning" and content
-    | status  | app      | source   |
+    | Status  | App      | Source   |
     | success | frontend | CircleCi |
     | success | backend  | CircleCi |
     | n/a     | mobile   |          |
 
   And I should see the deploys to UAT with heading "danger" and content
-    | app_name   | version | correct |
-    | frontend   | #abc    | yes     |
-    | backend    | #old    | no      |
+    | App      | Version | Correct |
+    | frontend | #abc    | yes     |
+    | backend  | #old    | no      |
 
 Scenario: QA rejects and approves feature
   Given a developer prepares a review for UAT "http://uat.fundingcircle.com" with apps

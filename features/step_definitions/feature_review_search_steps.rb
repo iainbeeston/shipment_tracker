@@ -5,8 +5,7 @@ end
 
 Then 'I should see the feature review for' do |links_table|
   links = links_table.hashes.map { |apps_hash|
-    link = scenario_context.prepare_review([apps_hash], apps_hash['uat'])
-    Sections::FeatureReviewLinkSection.new('link' => link)
+    scenario_context.prepare_review([apps_hash], apps_hash['uat'])
   }
 
   expect(feature_review_search_page.links).to match_array(links)

@@ -31,14 +31,7 @@ When 'I visit the feature review' do
 end
 
 Then 'I should see the builds with heading "$status" and content' do |status, builds_table|
-  expected_builds = builds_table.hashes.map { |build|
-    Sections::BuildSection.new(
-      app: build.fetch('app'),
-      source: build.fetch('source'),
-      status: build.fetch('status'),
-    )
-  }
-
+  expected_builds = builds_table.hashes
   expect(feature_review_page.panel_heading_status('builds')).to eq(status)
   expect(feature_review_page.builds).to match_array(expected_builds)
 end
@@ -48,12 +41,8 @@ Then 'I can see the UAT environment "$uat"' do |uat|
 end
 
 Then 'I should see the deploys to UAT with heading "$status" and content' do |status, deploys_table|
-  expected_deploys = deploys_table.hashes.map { |deploy|
-    Sections::FeatureReviewDeploySection.new(
-      app_name: deploy.fetch('app_name'),
-      version: scenario_context.resolve_version(deploy.fetch('version')),
-      correct: deploy.fetch('correct'),
-    )
+  expected_deploys = deploys_table.hashes.map {|ticket|
+    ticket.merge('Version' => scenario_context.resolve_version(ticket['Version']).slice(0..6))
   }
 
   expect(feature_review_page.panel_heading_status('deploys')).to eq(status)
@@ -62,18 +51,11 @@ end
 
 Then 'I should only see the ticket' do |ticket_table|
   expected_tickets = ticket_table.hashes
-
   expect(feature_review_page.tickets).to match_array(expected_tickets)
 end
 
 Then(/^(I should see )?a summary with heading "([^\"]*)" and content$/) do |_, status, summary_table|
-  expected_summary = summary_table.hashes.map { |summary_item|
-    Sections::SummarySection.new(
-      status: summary_item.fetch('status'),
-      title: summary_item.fetch('title'),
-    )
-  }
-
+  expected_summary = summary_table.hashes.map { |summary_item| Sections::SummarySection.new(summary_item) }
   expect(feature_review_page.panel_heading_status('summary')).to eq(status)
   expect(feature_review_page.summary_contents).to match_array(expected_summary)
 end

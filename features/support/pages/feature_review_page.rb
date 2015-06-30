@@ -14,9 +14,14 @@ module Pages
 
     def builds
       verify!
-      page.all('.build').map { |build_line|
-        Sections::BuildSection.from_element(build_line)
-      }
+      Sections::TableSection.new(
+        page.find('.builds table'),
+        icon_translations: {
+          'text-success' => 'success',
+          'text-danger'  => 'failed',
+          'text-warning' => 'n/a',
+        },
+      ).items
     end
 
     def uat_url
@@ -31,9 +36,13 @@ module Pages
 
     def deploys
       verify!
-      page.all('.deploy').map { |deploy_line|
-        Sections::FeatureReviewDeploySection.from_element(deploy_line)
-      }
+      Sections::TableSection.new(
+        page.find('.deploys table'),
+        icon_translations: {
+          'text-success' => 'yes',
+          'text-danger'  => 'no',
+        },
+      ).items
     end
 
     def create_qa_submission(status:, comment:)
