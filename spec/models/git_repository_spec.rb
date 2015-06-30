@@ -172,6 +172,19 @@ RSpec.describe GitRepository do
         expect(repo.get_descendant_commits_of_branch(commit('A'))).to be_empty
       end
     end
+
+    context 'when the sha is invalid' do
+      let(:git_diagram) do
+        <<-'EOS'
+             o-A-o
+            /
+          -o-----o
+        EOS
+      end
+      it 'returns empty' do
+        expect(repo.get_descendant_commits_of_branch('InvalidSha')).to be_empty
+      end
+    end
   end
 
   describe '#merge?' do

@@ -9,9 +9,7 @@ class GitRepository
   end
 
   def exists?(full_sha)
-    @repository.lookup(full_sha).present?
-  rescue Rugged::InvalidError, Rugged::ObjectError, Rugged::OdbError
-    false
+    lookup(full_sha).present?
   end
 
   def commits_between(from, to)
@@ -64,14 +62,16 @@ class GitRepository
   # Returns all commits that are children of the given commit
   # up to and including the merge commit.
   def get_descendant_commits_of_branch(commit_oid)
-    return [] if commit_on_master?(commit_oid)
+    verified_commit_oid = lookup(commit_oid).try(:oid)
+
+    return [] if verified_commit_oid.nil? || commit_on_master?(commit_oid)
 
     commits = []
 
-    walker = get_walker(main_branch.target_id, commit_oid, false)
+    walker = get_walker(main_branch.target_id, verified_commit_oid, false)
     walker.each do |commit|
-      commits << commit if repository.descendant_of?(commit.oid, commit_oid)
-      break if commit == merge_to_master_commit(commit_oid)
+      commits << commit if repository.descendant_of?(commit.oid, verified_commit_oid)
+      break if commit == merge_to_master_commit(verified_commit_oid)
     end
 
     build_commits(commits)
@@ -147,5 +147,11 @@ class GitRepository
     repository.branches['origin/production'] ||
       repository.branches['origin/master'] ||
       repository.branches['master']
+  end
+
+  def lookup(sha)
+    repository.lookup(sha)
+  rescue Rugged::InvalidError, Rugged::ObjectError, Rugged::OdbError
+    nil
   end
 end
