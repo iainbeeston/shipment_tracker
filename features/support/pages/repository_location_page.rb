@@ -17,7 +17,7 @@ module Pages
     end
 
     def repository_locations
-      page.all('.repository_location').map { |e| Sections::RepositoryLocation.from_element(e) }
+      Sections::TableSection.new(page.find('table.repository_locations')).items
     end
 
     private

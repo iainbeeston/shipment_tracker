@@ -18,8 +18,8 @@ module FeatureReviewsHelper
     haml_tag('span.glyphicon', '', attributes)
   end
 
-  def table(headers: [], &block)
-    haml_tag('table.table.table-striped') do
+  def table(headers: [], classes: nil, &block)
+    haml_tag('table.table.table-striped', class: classes) do
       haml_tag('thead') do
         haml_tag('tr') do
           headers.each do |header|

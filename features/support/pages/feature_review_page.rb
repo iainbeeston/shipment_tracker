@@ -50,7 +50,7 @@ module Pages
 
     def tickets
       verify!
-      page.all('.ticket').map { |ticket_line| Sections::TicketSection.from_element(ticket_line) }
+      Sections::TableSection.new(page.find('.tickets table')).items
     end
 
     def summary_contents

@@ -61,13 +61,7 @@ Then 'I should see the deploys to UAT with heading "$status" and content' do |st
 end
 
 Then 'I should only see the ticket' do |ticket_table|
-  expected_tickets = ticket_table.hashes.map { |ticket|
-    Sections::TicketSection.new(
-      key: ticket.fetch('key'),
-      summary: ticket.fetch('summary'),
-      status: ticket.fetch('status'),
-    )
-  }
+  expected_tickets = ticket_table.hashes
 
   expect(feature_review_page.tickets).to match_array(expected_tickets)
 end

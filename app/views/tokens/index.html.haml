@@ -3,8 +3,8 @@
   = f.text_field :source
   = f.submit 'Create Token'
 
-- table headers: ["Source", "URL"] do
+- table headers: ["Source", "URL"], classes: 'tokens' do
   - @tokens.each do |token|
-    %tr.token
+    %tr
       %td= token.source
       %td= events_url(type: token.source, token: token.value)

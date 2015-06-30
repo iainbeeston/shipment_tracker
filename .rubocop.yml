@@ -35,4 +35,7 @@ Metrics/MethodLength:
   Max: 15
 
 Metrics/AbcSize:
-  Max: 26
+  Max: 22
+
+Style/MultilineBlockChain:
+  Enabled: false

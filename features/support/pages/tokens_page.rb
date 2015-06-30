@@ -17,9 +17,7 @@ module Pages
 
     def tokens
       verify!
-      page.all('.token').map { |token_line|
-        Sections::TokenSection.from_element(token_line)
-      }
+      Sections::TableSection.new(page.find('table.tokens')).items
     end
 
     private

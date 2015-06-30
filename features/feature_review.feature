@@ -52,7 +52,7 @@ Scenario: Viewing a feature review
     | n/a     | QA Acceptance   |
 
   And I should only see the ticket
-    | key      | summary       | status      |
+    | Key      | Summary       | Status      |
     | JIRA-123 | Urgent ticket | In Progress |
 
   And I should see the builds with heading "warning" and content

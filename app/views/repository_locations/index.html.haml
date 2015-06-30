@@ -14,11 +14,8 @@
       = form.submit(class: 'btn btn-primary')
 
 
-%table.table.table-striped
-  %tr
-    %th Name
-    %th URI
+- table headers: ["Name", "URI"], classes: 'repository_locations' do
   - @repository_locations.each do |repository_location|
-    %tr[repository_location]
+    %tr
       %td= repository_location.name
       %td= repository_location.uri
