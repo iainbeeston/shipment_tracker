@@ -2,15 +2,6 @@ worker_processes Integer(ENV['WEB_CONCURRENCY'] || 1)
 timeout 15
 preload_app true
 
-root = File.expand_path('..', __dir__)
-paths = {
-  stderr: File.join(root, 'log/production.log'),
-  stdout: File.join(root, 'log/production.log'),
-}
-
-stderr_path paths.fetch(:stderr)
-stdout_path paths.fetch(:stdout)
-
 before_fork do |_server, _worker|
   Signal.trap 'TERM' do
     Rails.logger.warn 'Unicorn master intercepting TERM and sending myself QUIT instead'
