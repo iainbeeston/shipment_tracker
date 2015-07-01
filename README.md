@@ -60,7 +60,7 @@ Note that port 1201 is only needed in development; it's the expected port by aut
 You can also use Foreman to start the server and use settings from Heroku:
 
 ```
-SSH_USER=git SSH_PRIVATE_KEY=$(heroku config:get SSH_PRIVATE_KEY) SSH_PUBLIC_KEY=$(heroku config:get SSH_PUBLIC_KEY) foreman s -p 1201
+bin/boot_with_heroku_settings
 ```
 
 ## License
