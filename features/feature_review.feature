@@ -21,6 +21,26 @@ Scenario: Preparing link for ticket
     | backend  | def1234 |
   And I can see the UAT environment "http://www.some.url"
 
+Scenario: Viewing User Acceptance Tests results on a Feature review
+  Given a commit "#abc" by "Alice" is created for app "frontend"
+  And a commit "#def" by "Bob" is created for app "backend"
+  And commit "#abc" is deployed by "Alice" on server "uat.fundingcircle.com"
+  And commit "#def" is deployed by "Bob" on server "uat.fundingcircle.com"
+  And a developer prepares a review for UAT "uat.fundingcircle.com" with apps
+    | app_name | version |
+    | frontend | #abc    |
+    | backend  | #def    |
+  And User Acceptance Tests at version "abc123" which "passed" on server "uat.fundingcircle.com"
+  And User Acceptance Tests at version "abc123" which "failed" on server "other-uat.fundingcircle.com"
+
+  When I visit the feature review
+
+  Then I should see a summary that includes
+    | status  | title                 |
+    | success | User Acceptance Tests |
+
+  And I should see the results of the User Acceptance Tests with heading "success" and version "abc123"
+
 Scenario: Viewing a feature review
   Given a ticket "JIRA-123" with summary "Urgent ticket" is started
   And a commit "#abc" by "Alice" is created for app "frontend"
@@ -46,10 +66,11 @@ Scenario: Viewing a feature review
   When I visit the feature review
 
   Then I should see a summary with heading "danger" and content
-    | status  | title           |
-    | n/a     | Test Results    |
-    | failed  | UAT Environment |
-    | n/a     | QA Acceptance   |
+    | status  | title                 |
+    | n/a     | Test Results          |
+    | failed  | UAT Environment       |
+    | n/a     | QA Acceptance         |
+    | n/a     | User Acceptance Tests |
 
   And I should only see the ticket
     | Key      | Summary       | Status      |
@@ -100,10 +121,11 @@ Scenario: Feature review locks after the tickets get approved
   And I "accept" the feature with comment "LGTM"
 
   Then I should see a summary with heading "success" and content
-    | status  | title           |
-    | success | Test Results    |
-    | success | UAT Environment |
-    | success | QA Acceptance   |
+    | status  | title                 |
+    | success | Test Results          |
+    | success | UAT Environment       |
+    | success | QA Acceptance         |
+    | n/a     | User Acceptance Tests |
 
   When ticket "JIRA-123" is approved by "carol@fundingcircle.com" at "11:42:24"
 
@@ -112,10 +134,11 @@ Scenario: Feature review locks after the tickets get approved
   And I visit the feature review
 
   Then I should see a summary with heading "danger" and content
-    | status  | title           |
-    | failed  | Test Results    |
-    | success | UAT Environment |
-    | success | QA Acceptance   |
+    | status  | title                 |
+    | failed  | Test Results          |
+    | success | UAT Environment       |
+    | success | QA Acceptance         |
+    | n/a     | User Acceptance Tests |
 
   And CircleCi "passes" for commit "#abc"
 
@@ -131,10 +154,11 @@ Scenario: Feature review locks after the tickets get approved
   Then I should see that the feature review is locked
 
   And a summary with heading "success" and content
-    | status  | title           |
-    | success | Test Results    |
-    | success | UAT Environment |
-    | success | QA Acceptance   |
+    | status  | title                 |
+    | success | Test Results          |
+    | success | UAT Environment       |
+    | success | QA Acceptance         |
+    | n/a     | User Acceptance Tests |
 
   When ticket "JIRA-123" is rejected
 
@@ -143,7 +167,8 @@ Scenario: Feature review locks after the tickets get approved
   Then I should see that the feature review is not locked
 
   And a summary with heading "danger" and content
-    | status  | title           |
-    | failed  | Test Results    |
-    | failed  | UAT Environment |
-    | failed  | QA Acceptance   |
+    | status | title                 |
+    | failed | Test Results          |
+    | failed | UAT Environment       |
+    | failed | QA Acceptance         |
+    | n/a    | User Acceptance Tests |

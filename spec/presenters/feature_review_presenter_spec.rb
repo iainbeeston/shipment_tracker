@@ -5,6 +5,7 @@ RSpec.describe FeatureReviewPresenter do
   let(:builds) { {} }
   let(:deploys) { [] }
   let(:qa_submission) { nil }
+  let(:uatests) { nil }
 
   let(:projection) {
     instance_double(
@@ -13,6 +14,7 @@ RSpec.describe FeatureReviewPresenter do
       builds: builds,
       deploys: deploys,
       qa_submission: qa_submission,
+      uatests: uatests,
       locked?: true,
     )
   }
@@ -24,6 +26,7 @@ RSpec.describe FeatureReviewPresenter do
     expect(presenter.builds).to eq(projection.builds)
     expect(presenter.deploys).to eq(projection.deploys)
     expect(presenter.qa_submission).to eq(projection.qa_submission)
+    expect(presenter.uatests).to eq(projection.uatests)
     expect(presenter.locked?).to eq(projection.locked?)
   end
 
@@ -127,6 +130,30 @@ RSpec.describe FeatureReviewPresenter do
     context 'when QA submission is missing' do
       it 'returns nil' do
         expect(presenter.qa_status).to be nil
+      end
+    end
+  end
+
+  describe '#uatests_status' do
+    context 'when User Acceptance Tests have passed' do
+      let(:uatests) { Uatests.new(status: 'success') }
+
+      it 'returns :success' do
+        expect(presenter.uatests_status).to eq(:success)
+      end
+    end
+
+    context 'when User Acceptance Tests have failed' do
+      let(:uatests) { Uatests.new(status: 'failed') }
+
+      it 'returns :failure' do
+        expect(presenter.uatests_status).to eq(:failure)
+      end
+    end
+
+    context 'when User Acceptance Tests are missing' do
+      it 'returns nil' do
+        expect(presenter.uatests_status).to be nil
       end
     end
   end

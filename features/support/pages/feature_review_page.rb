@@ -62,6 +62,11 @@ module Pages
       Sections::TableSection.new(page.find('.tickets table')).items
     end
 
+    def uatests
+      verify!
+      Sections::UatestsSection.from_element(page.find('.uatests'))
+    end
+
     def summary_contents
       verify!
       page.all('.summary li').map { |summary_line| Sections::SummarySection.from_element(summary_line) }

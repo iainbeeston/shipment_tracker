@@ -39,6 +39,17 @@ Given 'commit "$version" is deployed by "$name" on server "$server"' do |version
   post_event 'deploy', payload
 end
 
+Given 'User Acceptance Tests at version "$sha" which "$outcome" on server "$server"' do |sha, outcome, server|
+  payload = build(
+    :uat_event,
+    success?: outcome == 'passed',
+    test_suite_version: sha,
+    server: server,
+  ).details
+
+  post_event 'uat', payload
+end
+
 def post_event(type, payload)
   OmniAuth.config.test_mode = true
   OmniAuth.config.mock_auth[:event_token] = OmniAuth::AuthHash.new(

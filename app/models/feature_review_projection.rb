@@ -1,9 +1,11 @@
 class FeatureReviewProjection
-  def initialize(builds_projection:, deploys_projection:, manual_tests_projection:, tickets_projection:)
+  def initialize(builds_projection:, deploys_projection:, manual_tests_projection:, tickets_projection:,
+                 uatests_projection:)
     @builds_projection = builds_projection
     @deploys_projection = deploys_projection
     @manual_tests_projection = manual_tests_projection
     @tickets_projection = tickets_projection
+    @uatests_projection = uatests_projection
 
     @events_queue = []
   end
@@ -14,6 +16,7 @@ class FeatureReviewProjection
       deploys_projection: DeploysProjection.new(apps: apps, uat_url: uat_url),
       manual_tests_projection: ManualTestsProjection.new(apps: apps),
       tickets_projection: FeatureReviewTicketsProjection.new(projection_url: projection_url),
+      uatests_projection: UatestsProjection.new(apps: apps, server: uat_url),
     )
   end
 
@@ -52,6 +55,10 @@ class FeatureReviewProjection
     @manual_tests_projection.qa_submission
   end
 
+  def uatests
+    @uatests_projection.uatests
+  end
+
   private
 
   def apply_to_projections(event)
@@ -59,6 +66,7 @@ class FeatureReviewProjection
     @deploys_projection.apply(event)
     @tickets_projection.apply(event)
     @manual_tests_projection.apply(event)
+    @uatests_projection.apply(event)
   end
 
   def unlocking_event?(event)

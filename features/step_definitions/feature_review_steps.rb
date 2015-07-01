@@ -60,6 +60,11 @@ Then(/^(I should see )?a summary with heading "([^\"]*)" and content$/) do |_, s
   expect(feature_review_page.summary_contents).to match_array(expected_summary)
 end
 
+Then 'I should see a summary that includes' do |summary_table|
+  expected_summary = summary_table.hashes.map { |summary_item| Sections::SummarySection.new(summary_item) }
+  expect(feature_review_page.summary_contents).to include(*expected_summary)
+end
+
 When 'I "$action" the feature with comment "$comment"' do |action, comment|
   feature_review_page.create_qa_submission(
     comment: comment,
@@ -89,4 +94,9 @@ Then 'I should see the QA acceptance' do |table|
   )
 
   expect(feature_review_page.qa_submission).to eq(expected_qa_submission)
+end
+
+Then 'I should see the results of the User Acceptance Tests with heading "$s" and version "$v"' do |s, v|
+  expected_uatests = Sections::UatestsSection.new(status: s, test_suite_version: v)
+  expect(feature_review_page.uatests).to eq(expected_uatests)
 end

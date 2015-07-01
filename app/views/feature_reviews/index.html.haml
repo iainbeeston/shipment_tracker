@@ -19,6 +19,10 @@
           %strong
             - icon(item_status_icon_class(@presenter.qa_status))
             %span.title QA Acceptance
+        %li.list-group-item
+          %strong
+            - icon(item_status_icon_class(@presenter.uatests_status))
+            %span.title User Acceptance Tests
 
   .col-lg-6
     - panel(heading: 'Apps Under Review', klass: 'app-info') do
@@ -103,3 +107,13 @@
             = label_tag('comment', 'Comment', class: 'control-label sr-only')
             = text_area_tag('comment', '', placeholder: 'Comment', class: 'form-control', required: true, disabled: @presenter.locked?, rows: 4)
           = submit_tag('Submit', class: 'btn btn-primary', disabled: @presenter.locked?)
+  .col-lg-6
+    - panel(heading: 'User Acceptance Tests', klass: 'uatests', status: @presenter.uatests_status) do
+      .panel-body
+        - if @presenter.uatests
+          Ran test suite version
+          %span.uat-version= @presenter.uatests.test_suite_version
+        - else
+          Could not find User Acceptance Tests that ran against expected UAT
+          = "(#{@uat_url})" if @uat_url.present?
+          with the app versions that are under review.

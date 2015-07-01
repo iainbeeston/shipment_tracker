@@ -26,6 +26,12 @@ RSpec.describe FeatureReviewProjection do
       approved?: false,
     )
   }
+  let(:uatests_projection) {
+    instance_double(
+      UatestsProjection,
+      uatests: double(:uatests),
+    )
+  }
 
   subject(:projection) {
     FeatureReviewProjection.new(
@@ -33,6 +39,7 @@ RSpec.describe FeatureReviewProjection do
       deploys_projection: deploys_projection,
       manual_tests_projection: manual_tests_projection,
       tickets_projection: tickets_projection,
+      uatests_projection: uatests_projection,
     )
   }
 
@@ -43,6 +50,7 @@ RSpec.describe FeatureReviewProjection do
     expect(deploys_projection).to receive(:apply).with(event)
     expect(manual_tests_projection).to receive(:apply).with(event)
     expect(tickets_projection).to receive(:apply).with(event)
+    expect(uatests_projection).to receive(:apply).with(event)
 
     projection.apply(event)
   end
@@ -59,6 +67,7 @@ RSpec.describe FeatureReviewProjection do
       expect(deploys_projection).to_not receive(:apply)
       expect(manual_tests_projection).to_not receive(:apply)
       expect(tickets_projection).to_not receive(:apply)
+      expect(uatests_projection).to_not receive(:apply)
 
       projection.apply(event)
     end
@@ -73,6 +82,7 @@ RSpec.describe FeatureReviewProjection do
         allow(deploys_projection).to receive(:apply)
         allow(manual_tests_projection).to receive(:apply)
         allow(tickets_projection).to receive(:apply)
+        allow(uatests_projection).to receive(:apply)
       end
 
       it 'stops rejecting events and also applies the previously rejected ones' do
@@ -97,26 +107,32 @@ RSpec.describe FeatureReviewProjection do
   end
 
   describe '#tickets' do
-    it 'delegated to the tickets projection' do
+    it 'delegates to the tickets projection' do
       expect(projection.tickets).to eq(tickets_projection.tickets)
     end
   end
 
   describe '#deploys' do
-    it 'delegated to the deploys projection' do
+    it 'delegates to the deploys projection' do
       expect(projection.deploys).to eq(deploys_projection.deploys)
     end
   end
 
   describe '#builds' do
-    it 'delegated to the builds projection' do
+    it 'delegates to the builds projection' do
       expect(projection.builds).to eq(builds_projection.builds)
     end
   end
 
   describe '#qa_submission' do
-    it 'delegated to the manual tests projection' do
+    it 'delegates to the manual tests projection' do
       expect(projection.qa_submission).to eq(manual_tests_projection.qa_submission)
+    end
+  end
+
+  describe '#uatests' do
+    it 'delegates to the uatests projection' do
+      expect(projection.uatests).to eq(uatests_projection.uatests)
     end
   end
 end

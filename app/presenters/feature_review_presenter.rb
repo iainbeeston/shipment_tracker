@@ -3,7 +3,7 @@ require 'forwardable'
 class FeatureReviewPresenter
   extend Forwardable
 
-  def_delegators :@projection, :tickets, :builds, :deploys, :qa_submission, :locked?
+  def_delegators :@projection, :tickets, :builds, :deploys, :qa_submission, :uatests, :locked?
 
   def initialize(projection)
     @projection = projection
@@ -35,6 +35,16 @@ class FeatureReviewPresenter
     return nil unless @projection.qa_submission
 
     if @projection.qa_submission.status == 'accepted'
+      :success
+    else
+      :failure
+    end
+  end
+
+  def uatests_status
+    return nil unless @projection.uatests
+
+    if @projection.uatests.status == 'success'
       :success
     else
       :failure
