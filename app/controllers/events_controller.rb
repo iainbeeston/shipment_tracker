@@ -1,6 +1,6 @@
 class EventsController < ApplicationController
   def create
-    event_type.create(details: decorate_with_email(request.request_parameters))
+    EventFactory.new.create(params[:type], request.request_parameters, current_user)
 
     redirect_to redirect_path if redirect_path
     self.response_body = 'ok'
@@ -10,23 +10,6 @@ class EventsController < ApplicationController
 
   def redirect_path
     @redirect_path ||= path_from_url(params[:return_to])
-  end
-
-  def decorate_with_email(details)
-    return details unless params[:type] == 'manual_test' && current_user.present?
-    details['email'] = current_user.email
-    details
-  end
-
-  def event_type
-    {
-      'deploy'      => DeployEvent,
-      'circleci'    => CircleCiEvent,
-      'jenkins'     => JenkinsEvent,
-      'jira'        => JiraEvent,
-      'manual_test' => ManualTestEvent,
-      'uat'         => UatEvent,
-    }.fetch(params[:type]) { |type| fail "Unrecognized event type '#{type}'" }
   end
 
   def path_from_url(url_or_path)
