@@ -84,24 +84,22 @@
               %strong= @presenter.qa_submission.email
             at
             %span.qa-time= @presenter.qa_submission.created_at
-          %p.qa-comment= @presenter.qa_submission.comment
+          = simple_format(@presenter.qa_submission.comment, class: 'qa-comment')
         - else
           Not reviewed by QA
       .panel-footer
-        = form_tag(events_path(type: 'manual_test'), method: 'post', class: 'form-inline') do
+        = form_tag(events_path(type: 'manual_test'), method: 'post') do
           = hidden_field_tag(:return_to, @return_to)
           - @apps.each do |app_name, version|
             = hidden_field_tag('apps[][name]', app_name)
             = hidden_field_tag('apps[][version]', version)
-          .radio.qa-accept
-            %label
-              = radio_button_tag 'status', 'success', false, required: true, disabled: @presenter.locked?
-              Accept
-          .radio.qa-reject
-            %label
-              = radio_button_tag 'status', 'failed', false, required: true, disabled: @presenter.locked?
-              Reject
-
-          = label_tag('comment', 'Comment', class: 'control-label sr-only')
-          = text_area_tag('comment', '', placeholder: 'Comment', class: 'form-control', required: true, disabled: @presenter.locked?)
+          %label.radio-inline.qa-accept
+            = radio_button_tag 'status', 'success', false, required: true, disabled: @presenter.locked?
+            Accept
+          %label.radio-inline.qa-reject
+            = radio_button_tag 'status', 'failed', false, required: true, disabled: @presenter.locked?
+            Reject
+          .form-group
+            = label_tag('comment', 'Comment', class: 'control-label sr-only')
+            = text_area_tag('comment', '', placeholder: 'Comment', class: 'form-control', required: true, disabled: @presenter.locked?, rows: 4)
           = submit_tag('Submit', class: 'btn btn-primary', disabled: @presenter.locked?)
