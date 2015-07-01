@@ -16,7 +16,7 @@ RSpec.describe ReleasesController do
     end
 
     it 'requires login' do
-      expect_any_instance_of(ApplicationController).to receive(:require_login).at_least(1).times
+      expect_any_instance_of(ApplicationController).to receive(:require_authentication).at_least(1).times
       get :index
     end
   end
@@ -50,7 +50,7 @@ RSpec.describe ReleasesController do
 
     it 'requires login' do
       allow(projection).to receive(:apply_all)
-      expect_any_instance_of(ApplicationController).to receive(:require_login).at_least(1).times
+      expect_any_instance_of(ApplicationController).to receive(:require_authentication).at_least(1).times
       get :show, id: 'frontend'
     end
   end

@@ -31,7 +31,7 @@ ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
   config.before(:each, skip_login: true) do
-    allow_any_instance_of(ApplicationController).to receive(:require_login)
+    allow_any_instance_of(ApplicationController).to receive(:require_authentication)
   end
 
   config.include Support::Authentication, type: :controller

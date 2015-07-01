@@ -2,27 +2,36 @@ module Authentication
   extend ActiveSupport::Concern
 
   included do
-    before_action :require_login
+    before_action :require_authentication
   end
 
-  def require_login
-    logged_out_strategy unless logged_in?
+  def require_authentication
+    unauthenticated_strategy unless authenticated?
   end
 
-  def logged_in?
-    request.env.fetch('omniauth.auth', {})['uid'] || session[:current_user]
+  def authenticated?
+    omniauth_uid || current_user
   end
 
-  def logged_out_strategy
+  def unauthenticated_strategy
     redirect_to login_url
   end
 
   def current_user
-    OpenStruct.new(setup_current_user)
+    setup_current_user && OpenStruct.new(setup_current_user)
   end
 
   def setup_current_user
-    session[:current_user] ||= request.env.fetch('omniauth.auth', {})['info']
+    session[:current_user] ||= omniauth_info
+  end
+
+  def omniauth_info
+    request.env.fetch('omniauth.auth', {})['info'].present? &&
+      request.env.fetch('omniauth.auth', {})['info']
+  end
+
+  def omniauth_uid
+    request.env.fetch('omniauth.auth', {})['uid']
   end
 
   def teardown_current_user

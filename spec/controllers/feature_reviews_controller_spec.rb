@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe FeatureReviewsController do
   describe 'GET #index', skip_login: true do
     it 'requires login' do
-      expect_any_instance_of(ApplicationController).to receive(:require_login).at_least(1).times
+      expect_any_instance_of(ApplicationController).to receive(:require_authentication).at_least(1).times
       get :index
     end
 

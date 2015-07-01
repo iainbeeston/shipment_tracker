@@ -18,7 +18,7 @@ class EventsController < ActionController::Metal
   end
 
   def decorate_with_email(details)
-    return details unless params[:type] == 'manual_test' && current_user.email.present?
+    return details unless params[:type] == 'manual_test' && current_user.present?
     details['email'] = current_user.email
     details
   end
@@ -41,7 +41,7 @@ class EventsController < ActionController::Metal
     nil
   end
 
-  def logged_out_strategy
+  def unauthenticated_strategy
     self.status = 403
     self.response_body = 'Forbidden'
   end
