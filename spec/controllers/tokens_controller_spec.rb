@@ -26,4 +26,14 @@ RSpec.describe TokensController do
       expect(response).to redirect_to(tokens_path)
     end
   end
+
+  describe 'DELETE #destroy', skip_login: true do
+    it 'revokes a token' do
+      expect(Token).to receive(:revoke).with(123)
+
+      delete :destroy, id: 123
+
+      expect(response).to redirect_to(tokens_path)
+    end
+  end
 end

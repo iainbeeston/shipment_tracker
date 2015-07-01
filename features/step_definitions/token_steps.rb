@@ -15,3 +15,11 @@ Then 'I should see a token for "$source" with a value' do |source|
   expect(token_url.path).to eq("/events/#{source}")
   expect(token_url.query_values['token'].length).to eq(24)
 end
+
+When 'I revoke it' do
+  tokens_page.revoke_last_token
+end
+
+Then 'I should not see any tokens' do
+  expect(tokens_page.tokens).to be_empty
+end

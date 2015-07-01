@@ -4,4 +4,8 @@ class Token < ActiveRecord::Base
   def self.valid?(source, token)
     token.present? && exists?(source: source, value: token)
   end
+
+  def self.revoke(id)
+    find(id).destroy
+  end
 end

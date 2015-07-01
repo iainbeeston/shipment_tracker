@@ -9,4 +9,10 @@ class TokensController < ApplicationController
 
     redirect_to tokens_path
   end
+
+  def destroy
+    Token.revoke(params[:id].to_i)
+
+    redirect_to tokens_path
+  end
 end

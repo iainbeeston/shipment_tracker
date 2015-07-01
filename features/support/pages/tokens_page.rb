@@ -20,6 +20,11 @@ module Pages
       Sections::TableSection.new(page.find('table.tokens')).items
     end
 
+    def revoke_last_token
+      verify!
+      page.first('table.tokens .action-revoke').click
+    end
+
     private
 
     def verify!

@@ -36,4 +36,14 @@ RSpec.describe Token do
       end
     end
   end
+
+  describe '.revoke' do
+    let!(:token) { Token.create(source: 'circleci', value: 'abc123') }
+
+    it 'revokes a token' do
+      Token.revoke(token.id)
+
+      expect(Token.valid?('circleci', 'abc123')).to be false
+    end
+  end
 end
