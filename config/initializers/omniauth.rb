@@ -4,6 +4,7 @@ Rails.configuration.login_url          = '/auth/auth0'
 Rails.configuration.login_callback_url = '/auth/auth0/callback'
 
 Rails.application.config.middleware.use OmniAuth::Builder do
+  provider :developer if Rails.env.development?
   provider(
     :auth0,
     client_id:     ENV.fetch('AUTH0_CLIENT_ID', nil),

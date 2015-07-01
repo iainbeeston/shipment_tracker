@@ -1,5 +1,6 @@
 class SessionsController < ApplicationController
   skip_before_action :require_login
+  skip_before_action :verify_authenticity_token
 
   def auth0_success_callback
     setup_current_user
