@@ -28,13 +28,15 @@ Given 'CircleCi "$outcome" for commit "$version"' do |outcome, version|
 end
 
 Given 'commit "$version" is deployed by "$name" on server "$server"' do |version, name, server|
-  post_event 'deploy', build(
+  payload = build(
     :deploy_event,
     server: server,
     app_name: scenario_context.resolve_app(version),
     version: scenario_context.resolve_version(version),
     deployed_by: name,
   ).details
+
+  post_event 'deploy', payload
 end
 
 def post_event(type, payload)

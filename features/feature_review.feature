@@ -32,11 +32,11 @@ Scenario: Viewing a feature review
   And CircleCi "fails" for commit "#def"
   # Flaky tests, build retriggered.
   And CircleCi "passes" for commit "#def"
-  And commit "#abc" is deployed by "Alice" on server "http://uat.fundingcircle.com"
-  And commit "#old" is deployed by "Bob" on server "http://uat.fundingcircle.com"
-  And commit "#def" is deployed by "Bob" on server "http://other-uat.fundingcircle.com"
-  And commit "#xyz" is deployed by "Wendy" on server "http://uat.fundingcircle.com"
-  And a developer prepares a review for UAT "http://uat.fundingcircle.com" with apps
+  And commit "#abc" is deployed by "Alice" on server "uat.fundingcircle.com"
+  And commit "#old" is deployed by "Bob" on server "uat.fundingcircle.com"
+  And commit "#def" is deployed by "Bob" on server "other-uat.fundingcircle.com"
+  And commit "#xyz" is deployed by "Wendy" on server "uat.fundingcircle.com"
+  And a developer prepares a review for UAT "uat.fundingcircle.com" with apps
     | app_name | version |
     | frontend | #abc    |
     | backend  | #def    |
@@ -67,7 +67,7 @@ Scenario: Viewing a feature review
     | backend  | #old    | no      |
 
 Scenario: QA rejects and approves feature
-  Given a developer prepares a review for UAT "http://uat.fundingcircle.com" with apps
+  Given a developer prepares a review for UAT "uat.fundingcircle.com" with apps
     | app_name | version |
     | frontend | abc     |
     | backend  | def     |
@@ -79,7 +79,6 @@ Scenario: QA rejects and approves feature
     | status  | email                       | comment         |
     | danger  | marcus@shipment-tracker.url | Not good enough |
 
-
   When I "accept" the feature with comment "Superb!"
   Then I should see the QA acceptance
     | status  | email                       | comment |
@@ -90,8 +89,8 @@ Scenario: Feature review locks after the tickets get approved
   Given a ticket "JIRA-124" with summary "A ticket" is started
   And a commit "#abc" by "Alice" is created for app "frontend"
   And CircleCi "passes" for commit "#abc"
-  And commit "#abc" is deployed by "Alice" on server "http://uat.fundingcircle.com"
-  And a developer prepares a review for UAT "http://uat.fundingcircle.com" with apps
+  And commit "#abc" is deployed by "Alice" on server "uat.fundingcircle.com"
+  And a developer prepares a review for UAT "uat.fundingcircle.com" with apps
     | app_name | version |
     | frontend | #abc    |
   And adds the link to a comment for ticket "JIRA-123"
@@ -124,7 +123,7 @@ Scenario: Feature review locks after the tickets get approved
 
   And CircleCi "fails" for commit "#abc"
   And a commit "#xyz" by "David" is created for app "frontend"
-  And commit "#xyz" is deployed by "David" on server "http://uat.fundingcircle.com"
+  And commit "#xyz" is deployed by "David" on server "uat.fundingcircle.com"
   And I "reject" the feature with comment "Shabby"
 
   And I visit the feature review

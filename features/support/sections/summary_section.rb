@@ -14,7 +14,8 @@ module Sections
         'text-warning' => 'n/a',
       }
 
-      status_class = build_element.find('.status')[:class].split.last
+      classes = build_element.find('.status')[:class].split
+      status_class = (classes & status_classes.keys).first
       new(
         title:  build_element.find('.title').text,
         status: status_classes.fetch(status_class),

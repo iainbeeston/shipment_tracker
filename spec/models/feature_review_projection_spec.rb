@@ -1,8 +1,18 @@
 require 'rails_helper'
 
 RSpec.describe FeatureReviewProjection do
-  let(:builds_projection) { instance_double(BuildsProjection, builds: double(:builds)) }
-  let(:deploys_projection) { instance_double(DeploysProjection, deploys: double(:deploys)) }
+  let(:builds_projection) {
+    instance_double(
+      BuildsProjection,
+      builds: double(:builds),
+    )
+  }
+  let(:deploys_projection) {
+    instance_double(
+      DeploysProjection,
+      deploys: double(:deploys),
+    )
+  }
   let(:manual_tests_projection) {
     instance_double(
       ManualTestsProjection,
