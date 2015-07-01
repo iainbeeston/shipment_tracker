@@ -81,11 +81,12 @@ end
 
 Then 'I should see the QA acceptance' do |table|
   qa_acceptance = table.hashes.first
+
   expected_qa_submission = Sections::QaSubmissionSection.new(
+    status: qa_acceptance['status'],
     email: qa_acceptance['email'],
     comment: qa_acceptance['comment'],
   )
 
-  expect(feature_review_page.panel_heading_status('qa-submission')).to eq(qa_acceptance['status'])
   expect(feature_review_page.qa_submission).to eq(expected_qa_submission)
 end
