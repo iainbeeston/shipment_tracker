@@ -56,3 +56,9 @@ body {
   @extend .glyphicon;
   @extend .glyphicon-alert;
 }
+
+#new_token {
+  margin-bottom: 15px;
+
+  label, select, input { margin: 5px; }
+}

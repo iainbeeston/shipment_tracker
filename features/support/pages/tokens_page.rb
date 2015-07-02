@@ -9,9 +9,10 @@ module Pages
       page.visit url_helpers.tokens_path
     end
 
-    def generate_token_for(source)
+    def generate_token_for(source, name)
       verify!
       page.select source, from: 'Source'
+      page.fill_in 'Name', with: name
       page.click_on 'Create Token'
     end
 

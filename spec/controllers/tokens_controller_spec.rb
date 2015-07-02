@@ -27,9 +27,9 @@ RSpec.describe TokensController do
 
   describe 'POST #create', skip_login: true do
     it 'creates a new token' do
-      expect(Token).to receive(:create).with(source: 'circleci')
+      expect(Token).to receive(:create).with(source: 'circleci', name: 'frontend')
 
-      post :create, token: { source: 'circleci' }
+      post :create, token: { source: 'circleci', name: 'frontend' }
 
       expect(response).to redirect_to(tokens_path)
     end

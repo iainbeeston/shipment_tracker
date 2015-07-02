@@ -6,7 +6,7 @@ class TokensController < ApplicationController
   end
 
   def create
-    Token.create(source: params[:token][:source])
+    Token.create(token_params)
 
     redirect_to tokens_path
   end
@@ -15,5 +15,11 @@ class TokensController < ApplicationController
     Token.revoke(params[:id].to_i)
 
     redirect_to tokens_path
+  end
+
+  private
+
+  def token_params
+    params.require(:token).permit(:source, :name)
   end
 end

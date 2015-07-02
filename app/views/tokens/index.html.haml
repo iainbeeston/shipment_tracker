@@ -2,12 +2,15 @@
   .form-group
     = f.label :source
     = f.select :source, @sources, {}, class: 'form-control'
+    = f.label :name
+    = f.text_field :name, class: 'form-control'
     = f.submit 'Create Token', class: 'btn btn-primary'
 
-- table headers: %w(Source URL Actions), classes: 'tokens' do
+- table headers: %w(Source Name URL Actions), classes: 'tokens' do
   - @tokens.each do |token|
     %tr
       %td= token.source
+      %td= token.name
       %td= events_url(type: token.source, token: token.value)
       %td
         = link_to(token, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger action-revoke') do
