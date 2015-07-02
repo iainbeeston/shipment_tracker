@@ -5,7 +5,6 @@ require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
 require 'factory_girl'
 
-require 'support/authentication'
 require 'support/feature_review_url'
 
 # Add additional requires below this line. Rails is not loaded until this point!
@@ -33,8 +32,6 @@ RSpec.configure do |config|
   config.before(:each, skip_login: true) do
     allow_any_instance_of(ApplicationController).to receive(:require_authentication)
   end
-
-  config.include Support::Authentication, type: :controller
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
