@@ -1,4 +1,9 @@
 class EventFactory
+  def initialize(internal_types:, external_types:)
+    @internal_types = internal_types
+    @external_types = external_types
+  end
+
   def create(endpoint, payload, current_user)
     details = decorate_with_email(endpoint, payload, current_user)
     event_type(endpoint).create(details: details)
@@ -16,17 +21,10 @@ class EventFactory
   end
 
   def event_types
-    {
-      'deploy'      => DeployEvent,
-      'circleci'    => CircleCiEvent,
-      'jenkins'     => JenkinsEvent,
-      'jira'        => JiraEvent,
-      'manual_test' => ManualTestEvent,
-      'uat'         => UatEvent,
-    }
+    @internal_types.merge(@external_types)
   end
 
   def internal_event_type?(type)
-    type == 'manual_test'
+    @internal_types.key?(type)
   end
 end

@@ -1,12 +1,27 @@
 class EventsController < ApplicationController
   def create
-    EventFactory.new.create(params[:type], request.request_parameters, current_user)
+    event_factory.create(params[:type], request.request_parameters, current_user)
 
     redirect_to redirect_path if redirect_path
     self.response_body = 'ok'
   end
 
   private
+
+  def event_factory
+    EventFactory.new(
+      external_types: {
+        'circleci' => CircleCiEvent,
+        'deploy'   => DeployEvent,
+        'jenkins'  => JenkinsEvent,
+        'jira'     => JiraEvent,
+        'uat'      => UatEvent,
+      },
+      internal_types: {
+        'manual_test' => ManualTestEvent,
+      },
+    )
+  end
 
   def redirect_path
     @redirect_path ||= path_from_url(params[:return_to])
