@@ -27,6 +27,44 @@ RSpec.describe 'EventsController' do
         expect(response).to be_ok
         expect(response.headers).to have_key('Set-Cookie')
       end
+
+      context 'with a return_to param' do
+        before do
+          allow(event_factory).to receive(:create).with('circleci', {}, user_email)
+        end
+
+        context 'when return_to is a relative path' do
+          it 'redirects to the path' do
+            post '/events/circleci?return_to=/my/projection?with=data'
+
+            expect(response).to redirect_to('/my/projection?with=data')
+          end
+        end
+
+        context 'when return_to is an absolute path' do
+          it 'ignores the domain and just redirects to the path' do
+            post '/events/circleci?return_to=http://evil.com/magic/url?with=query'
+
+            expect(response).to redirect_to('/magic/url?with=query')
+          end
+        end
+
+        context 'when return_to is not a valid path' do
+          it 'does not redirect' do
+            post '/events/circleci?return_to=TOTALLY NOT VALID'
+
+            expect(response).to_not have_http_status(302), 'We should not redirect'
+          end
+        end
+
+        context 'when return_to is blank' do
+          it 'does not redirect' do
+            post '/events/circleci?return_to='
+
+            expect(response).to_not have_http_status(302), 'We should not redirect'
+          end
+        end
+      end
     end
 
     context 'with a valid token in the path' do
