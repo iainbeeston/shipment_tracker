@@ -7,9 +7,13 @@ module Pages
 
     def app_info
       verify!
-      page.all('.app-info li.app').map { |app_info_element|
-        Sections::AppInfoSection.from_element(app_info_element)
-      }
+      Sections::PanelListSection.new(
+        page.find('.app-info.panel'),
+        item_config: {
+          'app_name' => '.name',
+          'version' => '.version',
+        },
+      ).items
     end
 
     def builds
@@ -52,9 +56,15 @@ module Pages
       page.click_link_or_button('Submit')
     end
 
-    def qa_submission
+    def qa_submission_panel
       verify!
-      Sections::QaSubmissionSection.from_element(page.find('.qa-submission'))
+      Sections::PanelListSection.new(
+        page.find('.qa-submission.panel'),
+        item_config: {
+          'comment' => '.qa-comment',
+          'email' => '.qa-email',
+        },
+      )
     end
 
     def tickets
@@ -62,14 +72,25 @@ module Pages
       Sections::TableSection.new(page.find('.tickets table')).items
     end
 
-    def uatest
+    def uatest_panel
       verify!
-      Sections::UatestSection.from_element(page.find('.uatest'))
+      Sections::PanelListSection.new(
+        page.find('.uatest.panel'),
+        item_config: {
+          'test_suite_version' => '.uat-version',
+        },
+      )
     end
 
-    def summary_contents
+    def summary_panel
       verify!
-      page.all('.summary li').map { |summary_line| Sections::SummarySection.from_element(summary_line) }
+      Sections::PanelListSection.new(
+        page.find('.summary'),
+        item_config: {
+          'title' => '.title',
+          'status' => '.status',
+        },
+      )
     end
 
     def locked?

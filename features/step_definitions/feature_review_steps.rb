@@ -13,10 +13,7 @@ end
 
 Then 'I should see the feature review page with the applications:' do |table|
   expected_app_info = table.hashes.map { |hash|
-    Sections::AppInfoSection.new(
-      app_name: hash.fetch('app_name'),
-      version: scenario_context.resolve_version(hash.fetch('version')),
-    )
+    hash.merge('version' => scenario_context.resolve_version(hash.fetch('version')).slice(0..6))
   }
 
   expect(feature_review_page.app_info).to match_array(expected_app_info)
@@ -55,14 +52,18 @@ Then 'I should only see the ticket' do |ticket_table|
 end
 
 Then(/^(I should see )?a summary with heading "([^\"]*)" and content$/) do |_, status, summary_table|
-  expected_summary = summary_table.hashes.map { |summary_item| Sections::SummarySection.new(summary_item) }
-  expect(feature_review_page.panel_heading_status('summary')).to eq(status)
-  expect(feature_review_page.summary_contents).to match_array(expected_summary)
+  expected_summary = summary_table.hashes
+
+  panel = feature_review_page.summary_panel
+  expect(panel.status).to eq(status)
+  expect(panel.items).to match_array(expected_summary)
 end
 
 Then 'I should see a summary that includes' do |summary_table|
-  expected_summary = summary_table.hashes.map { |summary_item| Sections::SummarySection.new(summary_item) }
-  expect(feature_review_page.summary_contents).to include(*expected_summary)
+  expected_summary = summary_table.hashes
+
+  panel = feature_review_page.summary_panel
+  expect(panel.items).to include(*expected_summary)
 end
 
 When 'I "$action" the feature with comment "$comment"' do |action, comment|
@@ -85,18 +86,17 @@ Then 'I should see the QA acceptance with heading "$status"' do |status|
 end
 
 Then 'I should see the QA acceptance' do |table|
-  qa_acceptance = table.hashes.first
+  expected_qa_submission = table.hashes.first
+  status = expected_qa_submission.delete('status')
+  panel = feature_review_page.qa_submission_panel
 
-  expected_qa_submission = Sections::QaSubmissionSection.new(
-    status: qa_acceptance['status'],
-    email: qa_acceptance['email'],
-    comment: qa_acceptance['comment'],
-  )
-
-  expect(feature_review_page.qa_submission).to eq(expected_qa_submission)
+  expect(panel.status).to eq(status)
+  expect(panel.items.first).to eq(expected_qa_submission)
 end
 
 Then 'I should see the results of the User Acceptance Tests with heading "$s" and version "$v"' do |s, v|
-  expected_uatest = Sections::UatestSection.new(status: s, test_suite_version: v)
-  expect(feature_review_page.uatest).to eq(expected_uatest)
+  panel = feature_review_page.uatest_panel
+
+  expect(panel.status).to eq(s)
+  expect(panel.items.first).to eq('test_suite_version' => v)
 end
