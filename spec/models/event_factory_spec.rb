@@ -10,7 +10,7 @@ RSpec.describe EventFactory do
 
   describe '#create' do
     let(:payload) { { 'foo' => 'bar' } }
-    let(:current_user) { double(:current_user, email: 'foo@bar.com') }
+    let(:current_user) { double(:current_user, logged_in?: true, email: 'foo@bar.com') }
 
     let(:created_event) { factory.create(event_type, payload, current_user) }
 
@@ -33,8 +33,16 @@ RSpec.describe EventFactory do
         expect(created_event).to be_an_instance_of(ManualTestEvent)
       end
 
-      it 'stores the payload in the event details' do
+      it 'stores the payload in the event details, including the user email' do
         expect(created_event.details).to eq('foo' => 'bar', 'email' => 'foo@bar.com')
+      end
+
+      context 'when the user is not logged in' do
+        let(:current_user) { instance_double(User, logged_in?: false) }
+
+        it 'omits the email from the payload' do
+          expect(created_event.details).to eq('foo' => 'bar')
+        end
       end
     end
 

@@ -3,7 +3,7 @@ class SessionsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def auth0_success_callback
-    setup_current_user
+    setup_current_user!
     flash[:info] = "Hello #{current_user.first_name || current_user.email}!"
     redirect_to root_path
   end

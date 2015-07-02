@@ -31,7 +31,7 @@ class EventFactory
   private
 
   def decorate_with_email(endpoint, payload, current_user)
-    return payload unless internal_event_type?(endpoint) && current_user.present?
+    return payload unless internal_event_type?(endpoint) && current_user.logged_in?
     payload.merge('email' => current_user.email)
   end
 

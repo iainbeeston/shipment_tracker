@@ -10,7 +10,7 @@ module Authentication
   end
 
   def authenticated?
-    omniauth_uid || current_user
+    omniauth_uid || current_user.logged_in?
   end
 
   def unauthenticated_strategy
@@ -18,10 +18,11 @@ module Authentication
   end
 
   def current_user
-    setup_current_user && OpenStruct.new(setup_current_user)
+    setup_current_user!
+    User.new(session[:current_user])
   end
 
-  def setup_current_user
+  def setup_current_user!
     session[:current_user] ||= omniauth_info
   end
 
