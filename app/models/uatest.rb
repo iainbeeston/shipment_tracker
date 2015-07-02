@@ -1,4 +1,4 @@
-class Uatests
+class Uatest
   include Virtus.value_object
 
   values do

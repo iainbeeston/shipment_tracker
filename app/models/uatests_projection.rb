@@ -1,11 +1,11 @@
 class UatestsProjection
-  attr_reader :uatests
+  attr_reader :uatest
 
   def initialize(apps:, server:)
     @apps = apps
     @server = server
     @versions_on_uats = {}
-    @uatests = nil
+    @uatest = nil
   end
 
   def apply(event)
@@ -15,7 +15,7 @@ class UatestsProjection
       versions_on_uats[event.app_name] = event.version
     when UatEvent
       return unless correct_versions_deployed? && event.server == server
-      @uatests = Uatests.new(
+      @uatest = Uatest.new(
         status: event.status,
         test_suite_version: event.test_suite_version,
       )

@@ -62,9 +62,9 @@ module Pages
       Sections::TableSection.new(page.find('.tickets table')).items
     end
 
-    def uatests
+    def uatest
       verify!
-      Sections::UatestsSection.from_element(page.find('.uatests'))
+      Sections::UatestSection.from_element(page.find('.uatest'))
     end
 
     def summary_contents

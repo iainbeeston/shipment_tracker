@@ -29,7 +29,7 @@ RSpec.describe FeatureReviewProjection do
   let(:uatests_projection) {
     instance_double(
       UatestsProjection,
-      uatests: double(:uatests),
+      uatest: double(:uatest),
     )
   }
   let(:uat_url) { 'http://uat.example.com' }
@@ -184,9 +184,9 @@ RSpec.describe FeatureReviewProjection do
     end
   end
 
-  describe '#uatests' do
+  describe '#uatest' do
     it 'delegates to the uatests projection' do
-      expect(projection.uatests).to eq(uatests_projection.uatests)
+      expect(projection.uatest).to eq(uatests_projection.uatest)
     end
   end
 

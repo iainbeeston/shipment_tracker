@@ -97,6 +97,6 @@ Then 'I should see the QA acceptance' do |table|
 end
 
 Then 'I should see the results of the User Acceptance Tests with heading "$s" and version "$v"' do |s, v|
-  expected_uatests = Sections::UatestsSection.new(status: s, test_suite_version: v)
-  expect(feature_review_page.uatests).to eq(expected_uatests)
+  expected_uatest = Sections::UatestSection.new(status: s, test_suite_version: v)
+  expect(feature_review_page.uatest).to eq(expected_uatest)
 end

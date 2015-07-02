@@ -17,10 +17,10 @@ RSpec.describe UatestsProjection do
       it 'returns the relevant User Acceptance Tests details' do
         projection.apply(build(:uat_event, test_suite_version: 'xyz', success?: true, server: server))
         projection.apply(build(:jira_event))
-        expect(projection.uatests).to eq(Uatests.new(status: 'success', test_suite_version: 'xyz'))
+        expect(projection.uatest).to eq(Uatest.new(status: 'success', test_suite_version: 'xyz'))
 
         projection.apply(build(:uat_event, test_suite_version: 'xyz', success?: false, server: server))
-        expect(projection.uatests).to eq(Uatests.new(status: 'failed', test_suite_version: 'xyz'))
+        expect(projection.uatest).to eq(Uatest.new(status: 'failed', test_suite_version: 'xyz'))
       end
     end
 
@@ -35,7 +35,7 @@ RSpec.describe UatestsProjection do
 
         projection.apply(uat_event)
 
-        expect(projection.uatests).to be nil
+        expect(projection.uatest).to be nil
       end
     end
 
@@ -50,7 +50,7 @@ RSpec.describe UatestsProjection do
 
         projection.apply(uat_event)
 
-        expect(projection.uatests).to be nil
+        expect(projection.uatest).to be nil
       end
     end
 
@@ -62,7 +62,7 @@ RSpec.describe UatestsProjection do
       it 'ignores the UAT event' do
         projection.apply(build(:uat_event, server: server))
 
-        expect(projection.uatests).to be nil
+        expect(projection.uatest).to be nil
       end
     end
   end
@@ -75,7 +75,7 @@ RSpec.describe UatestsProjection do
 
     it 'ignores the UAT event' do
       projection.apply(build(:uat_event, server: 'other.server'))
-      expect(projection.uatests).to be nil
+      expect(projection.uatest).to be nil
     end
   end
 
@@ -86,7 +86,7 @@ RSpec.describe UatestsProjection do
       projection.apply(build(:deploy_event, server: 'other.server', app_name: 'frontend', version: 'zzz'))
       projection.apply(build(:uat_event, server: server))
 
-      expect(projection.uatests).to be_present
+      expect(projection.uatest).to be_present
     end
   end
 end

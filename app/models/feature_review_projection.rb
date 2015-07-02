@@ -62,8 +62,8 @@ class FeatureReviewProjection
     @manual_tests_projection.qa_submission
   end
 
-  def uatests
-    @uatests_projection.uatests
+  def uatest
+    @uatests_projection.uatest
   end
 
   private

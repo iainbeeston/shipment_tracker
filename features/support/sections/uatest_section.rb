@@ -1,5 +1,5 @@
 module Sections
-  class UatestsSection
+  class UatestSection
     include Virtus.value_object
 
     values do
@@ -7,19 +7,19 @@ module Sections
       attribute :test_suite_version, String
     end
 
-    def self.from_element(uatests_element)
+    def self.from_element(uatest_element)
       status_classes = {
         'panel-success' => 'success',
         'panel-danger'  => 'failed',
         'panel-warning' => 'n/a',
       }
 
-      classes = uatests_element[:class].split
+      classes = uatest_element[:class].split
       status_class = (classes & status_classes.keys).first
 
       new(
         status: status_classes.fetch(status_class),
-        test_suite_version: uatests_element.find('.uat-version').text,
+        test_suite_version: uatest_element.find('.uat-version').text,
       )
     end
   end

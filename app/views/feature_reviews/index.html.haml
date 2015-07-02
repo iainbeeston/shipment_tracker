@@ -21,7 +21,7 @@
             %span.title QA Acceptance
         %li.list-group-item
           %strong
-            - icon(item_status_icon_class(@presenter.uatests_status))
+            - icon(item_status_icon_class(@presenter.uatest_status))
             %span.title User Acceptance Tests
 
   .col-lg-6
@@ -108,11 +108,11 @@
             = text_area_tag('comment', '', placeholder: 'Comment', class: 'form-control', required: true, disabled: @presenter.locked?, rows: 4)
           = submit_tag('Submit', class: 'btn btn-primary', disabled: @presenter.locked?)
   .col-lg-6
-    - panel(heading: 'User Acceptance Tests', klass: 'uatests', status: @presenter.uatests_status) do
+    - panel(heading: 'User Acceptance Tests', klass: 'uatest', status: @presenter.uatest_status) do
       .panel-body
-        - if @presenter.uatests
+        - if @presenter.uatest
           Ran test suite version
-          %span.uat-version= @presenter.uatests.test_suite_version
+          %span.uat-version= @presenter.uatest.test_suite_version
         - else
           Could not find User Acceptance Tests that ran against expected UAT
           = "(#{@presenter.uat_url})" if @presenter.uat_url
