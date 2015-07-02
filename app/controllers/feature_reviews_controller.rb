@@ -7,7 +7,7 @@ class FeatureReviewsController < ApplicationController
     @return_to = request.original_fullpath
 
     @apps = apps
-    @uat_url = params[:uat_url]
+    uat_url = params[:uat_url]
 
     if @apps.empty?
       flash[:error] = 'Please specify at least one app'
@@ -16,7 +16,7 @@ class FeatureReviewsController < ApplicationController
 
     projection = FeatureReviewProjection.build(
       apps: @apps,
-      uat_url: @uat_url,
+      uat_url: uat_url,
       projection_url: request.original_url,
     )
     projection.apply_all(Event.in_order_of_creation)

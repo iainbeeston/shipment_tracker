@@ -32,9 +32,9 @@
             %strong.name= name
             %span.version= short_sha(version)
         %li.list-group-item
-          - if @uat_url.present?
+          - if @presenter.uat_url
             Deployed to UAT
-            %strong.uat-url= to_link(@uat_url, target: '_blank')
+            %strong.uat-url= to_link(@presenter.uat_url, target: '_blank')
           - else
             No UAT specified
 
@@ -115,5 +115,5 @@
           %span.uat-version= @presenter.uatests.test_suite_version
         - else
           Could not find User Acceptance Tests that ran against expected UAT
-          = "(#{@uat_url})" if @uat_url.present?
+          = "(#{@presenter.uat_url})" if @presenter.uat_url
           with the app versions that are under review.

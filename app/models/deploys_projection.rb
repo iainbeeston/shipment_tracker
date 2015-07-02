@@ -1,13 +1,13 @@
 class DeploysProjection
-  def initialize(apps:, uat_url:)
+  def initialize(apps:, server:)
     @apps = apps
-    @uat_url = uat_url
+    @server = server
     @deploys_table = {}
   end
 
   def apply(event)
     return unless event.is_a?(DeployEvent)
-    return unless event.server == @uat_url && @apps.key?(event.app_name)
+    return unless event.server == server && app_under_review?(event.app_name)
 
     deploy = Deploy.new(
       app_name: event.app_name,
@@ -16,16 +16,22 @@ class DeploysProjection
       deployed_by: event.deployed_by,
       correct: version_correctness_for_event(event),
     )
-    @deploys_table[event.app_name] = deploy
+    deploys_table[event.app_name] = deploy
   end
 
   def deploys
-    @deploys_table.values
+    deploys_table.values
   end
 
   private
 
+  def app_under_review?(name)
+    apps.key?(name)
+  end
+
+  attr_reader :server, :apps, :deploys_table
+
   def version_correctness_for_event(event)
-    event.version == @apps[event.app_name] ? :yes : :no
+    event.version == apps[event.app_name] ? :yes : :no
   end
 end

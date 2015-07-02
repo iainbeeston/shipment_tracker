@@ -39,3 +39,6 @@ Metrics/AbcSize:
 
 Style/MultilineBlockChain:
   Enabled: false
+
+Metrics/ParameterLists:
+  Max: 6

@@ -1,22 +1,29 @@
+require 'addressable/uri'
+
 class FeatureReviewProjection
+  attr_reader :uat_url
+
   def initialize(builds_projection:, deploys_projection:, manual_tests_projection:, tickets_projection:,
-                 uatests_projection:)
+                 uatests_projection:, uat_url:)
     @builds_projection = builds_projection
     @deploys_projection = deploys_projection
     @manual_tests_projection = manual_tests_projection
     @tickets_projection = tickets_projection
     @uatests_projection = uatests_projection
+    @uat_url = uat_url && Addressable::URI.heuristic_parse(uat_url, scheme: 'http').to_s
 
     @events_queue = []
   end
 
   def self.build(apps:, uat_url:, projection_url:)
+    uat_host = host_from_url(uat_url)
     new(
+      uat_url: uat_url,
       builds_projection: BuildsProjection.new(apps: apps),
-      deploys_projection: DeploysProjection.new(apps: apps, uat_url: uat_url),
+      deploys_projection: DeploysProjection.new(apps: apps, server: uat_host),
       manual_tests_projection: ManualTestsProjection.new(apps: apps),
       tickets_projection: FeatureReviewTicketsProjection.new(projection_url: projection_url),
-      uatests_projection: UatestsProjection.new(apps: apps, server: uat_url),
+      uatests_projection: UatestsProjection.new(apps: apps, server: uat_host),
     )
   end
 
@@ -60,6 +67,11 @@ class FeatureReviewProjection
   end
 
   private
+
+  def self.host_from_url(url)
+    Addressable::URI.heuristic_parse(url, scheme: 'http').host
+  end
+  private_class_method :host_from_url
 
   def apply_to_projections(event)
     @builds_projection.apply(event)
