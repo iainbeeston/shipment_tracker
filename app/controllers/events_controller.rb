@@ -1,9 +1,4 @@
-class EventsController < ActionController::Metal
-  include ActionController::Redirecting
-  include AbstractController::Callbacks
-  include Rails.application.routes.url_helpers
-  include Authentication
-
+class EventsController < ApplicationController
   def create
     event_type.create(details: decorate_with_email(request.request_parameters))
 
