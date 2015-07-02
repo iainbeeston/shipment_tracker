@@ -30,7 +30,6 @@ module ShipmentTracker
     # config.i18n.default_locale = :de
 
     config.action_dispatch.perform_deep_munge = false
-    config.assets.compress = false
 
     config.ssh_private_key = ENV['SSH_PRIVATE_KEY']
     config.ssh_public_key = ENV['SSH_PUBLIC_KEY']
