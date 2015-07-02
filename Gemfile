@@ -10,15 +10,14 @@ gem 'haml-rails'
 gem 'has_secure_token'
 gem 'jquery-rails'
 gem 'newrelic_rpm'
-gem 'omniauth-auth0'
 gem 'omniauth'
+gem 'omniauth-auth0'
 gem 'pg'
 gem 'rack-timeout'
 gem 'rugged', '~> 0.23.0b2' # We need Rugged::Repository#descendant_of?
 gem 'sass-rails'
-gem 'uglifier'
-gem 'unicorn-rails'
 gem 'unicorn'
+gem 'unicorn-rails'
 gem 'virtus'
 
 group :development do
