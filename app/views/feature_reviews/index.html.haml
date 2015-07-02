@@ -92,8 +92,7 @@
         - else
           Not reviewed by QA
       .panel-footer
-        = form_tag(events_path(type: 'manual_test'), method: 'post') do
-          = hidden_field_tag(:return_to, @return_to)
+        = form_tag(events_path(type: 'manual_test', return_to: @return_to), method: 'post') do
           - @apps.each do |app_name, version|
             = hidden_field_tag('apps[][name]', app_name)
             = hidden_field_tag('apps[][version]', version)
