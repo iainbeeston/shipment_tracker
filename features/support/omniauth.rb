@@ -11,7 +11,7 @@ Before('@logged_in') do
     provider: 'auth0',
     uid: '123545',
     info: {
-      first_name: "John",
+      first_name: 'John',
       email: 'john.doe@example.com',
     },
   )

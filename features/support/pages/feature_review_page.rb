@@ -23,7 +23,7 @@ module Pages
         icon_translations: {
           'text-success' => 'success',
           'text-danger'  => 'failed',
-          'text-warning' => 'n/a',
+          'text-warning' => 'warning',
         },
       ).items
     end

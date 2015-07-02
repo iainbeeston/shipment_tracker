@@ -3,12 +3,12 @@ module Sections
     DEFAULT_STATUS_CLASSES = {
       'panel-success' => 'success',
       'panel-danger'  => 'danger',
-      'panel-warning' => 'n/a',
+      'panel-warning' => 'warning',
     }
 
     DEFAULT_ICON_TRANSLATIONS = {
       'icon-success' => 'success',
-      'icon-warning' => 'n/a',
+      'icon-warning' => 'warning',
       'icon-danger' => 'failed',
     }
 

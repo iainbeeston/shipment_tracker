@@ -1,5 +1,5 @@
-Feature: Developer prepares a feature review so that it can be attached to a
-  ticket for a PO to use in acceptance.
+Feature:
+  Developer prepares a Feature Review so that it can be attached to a ticket for a PO to use in acceptance.
 
 Background:
   Given an application called "frontend"
@@ -8,7 +8,7 @@ Background:
   And an application called "irrelevant"
 
 @logged_in
-Scenario: Preparing link for ticket
+Scenario: Preparing a Feature Review
   When I prepare a feature review for:
     | field name | content             |
     | frontend   | abc123456789        |
@@ -68,10 +68,10 @@ Scenario: Viewing a feature review
 
   Then I should see a summary with heading "danger" and content
     | status  | title                 |
-    | n/a     | Test Results          |
+    | warning | Test Results          |
     | failed  | UAT Environment       |
-    | n/a     | QA Acceptance         |
-    | n/a     | User Acceptance Tests |
+    | warning | QA Acceptance         |
+    | warning | User Acceptance Tests |
 
   And I should only see the ticket
     | Key      | Summary       | Status      |
@@ -81,7 +81,7 @@ Scenario: Viewing a feature review
     | Status  | App      | Source   |
     | success | frontend | CircleCi |
     | success | backend  | CircleCi |
-    | n/a     | mobile   |          |
+    | warning | mobile   |          |
 
   And I should see the deploys to UAT with heading "danger" and content
     | App      | Version | Correct |
@@ -128,7 +128,7 @@ Scenario: Feature review locks after the tickets get approved
     | success | Test Results          |
     | success | UAT Environment       |
     | success | QA Acceptance         |
-    | n/a     | User Acceptance Tests |
+    | warning | User Acceptance Tests |
 
   When ticket "JIRA-123" is approved by "carol@fundingcircle.com" at "11:42:24"
 
@@ -141,7 +141,7 @@ Scenario: Feature review locks after the tickets get approved
     | failed  | Test Results          |
     | success | UAT Environment       |
     | success | QA Acceptance         |
-    | n/a     | User Acceptance Tests |
+    | warning | User Acceptance Tests |
 
   And CircleCi "passes" for commit "#abc"
 
@@ -161,7 +161,7 @@ Scenario: Feature review locks after the tickets get approved
     | success | Test Results          |
     | success | UAT Environment       |
     | success | QA Acceptance         |
-    | n/a     | User Acceptance Tests |
+    | warning | User Acceptance Tests |
 
   When ticket "JIRA-123" is rejected
 
@@ -170,8 +170,8 @@ Scenario: Feature review locks after the tickets get approved
   Then I should see that the feature review is not locked
 
   And a summary with heading "danger" and content
-    | status | title                 |
-    | failed | Test Results          |
-    | failed | UAT Environment       |
-    | failed | QA Acceptance         |
-    | n/a    | User Acceptance Tests |
+    | status  | title                 |
+    | failed  | Test Results          |
+    | failed  | UAT Environment       |
+    | failed  | QA Acceptance         |
+    | warning | User Acceptance Tests |
