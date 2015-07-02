@@ -35,6 +35,14 @@ RSpec.describe TokensController do
     end
   end
 
+  describe 'PUT #update', skip_login: true do
+    it 'updates a token given a X-editable payload' do
+      expect(Token).to receive(:update).with(42, 'name' => 'New name')
+
+      put :update, id: 42, name: 'name', value: 'New name', pk: 42, format: :json
+    end
+  end
+
   describe 'DELETE #destroy', skip_login: true do
     it 'revokes a token' do
       expect(Token).to receive(:revoke).with(123)

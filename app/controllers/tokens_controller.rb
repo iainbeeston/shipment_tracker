@@ -11,6 +11,11 @@ class TokensController < ApplicationController
     redirect_to tokens_path
   end
 
+  def update
+    Token.update(params[:id].to_i, params[:name] => params[:value])
+    head :ok
+  end
+
   def destroy
     Token.revoke(params[:id].to_i)
 

@@ -20,5 +20,5 @@ Rails.application.routes.draw do
 
   resources :repository_locations, only: [:index, :create]
 
-  resources :tokens
+  resources :tokens, only: [:index, :create, :update, :destroy]
 end

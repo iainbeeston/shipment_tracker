@@ -5,4 +5,8 @@
 
 $(function() {
   $("[data-toggle=tooltip]").tooltip();
+
+  $.fn.editable.defaults.ajaxOptions = {type: "PUT"};
+  $.fn.editable.defaults.mode = 'inline';
+  $('table.tokens a').editable();
 });
