@@ -15,12 +15,12 @@ RSpec.describe UatestsProjection do
       end
 
       it 'returns the relevant User Acceptance Tests details' do
-        projection.apply(build(:uat_event, test_suite_version: 'xyz', success?: true, server: server))
+        projection.apply(build(:uat_event, test_suite_version: 'xyz', success: true, server: server))
         projection.apply(build(:jira_event))
-        expect(projection.uatest).to eq(Uatest.new(status: 'success', test_suite_version: 'xyz'))
+        expect(projection.uatest).to eq(Uatest.new(success: true, test_suite_version: 'xyz'))
 
-        projection.apply(build(:uat_event, test_suite_version: 'xyz', success?: false, server: server))
-        expect(projection.uatest).to eq(Uatest.new(status: 'failed', test_suite_version: 'xyz'))
+        projection.apply(build(:uat_event, test_suite_version: 'xyz', success: false, server: server))
+        expect(projection.uatest).to eq(Uatest.new(success: false, test_suite_version: 'xyz'))
       end
     end
 

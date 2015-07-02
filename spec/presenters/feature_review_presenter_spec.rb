@@ -136,7 +136,7 @@ RSpec.describe FeatureReviewPresenter do
 
   describe '#uatest_status' do
     context 'when User Acceptance Tests have passed' do
-      let(:uatest) { Uatest.new(status: 'success') }
+      let(:uatest) { Uatest.new(success: true) }
 
       it 'returns :success' do
         expect(presenter.uatest_status).to eq(:success)
@@ -144,7 +144,7 @@ RSpec.describe FeatureReviewPresenter do
     end
 
     context 'when User Acceptance Tests have failed' do
-      let(:uatest) { Uatest.new(status: 'failed') }
+      let(:uatest) { Uatest.new(success: false) }
 
       it 'returns :failure' do
         expect(presenter.uatest_status).to eq(:failure)

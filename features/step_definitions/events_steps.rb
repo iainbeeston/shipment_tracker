@@ -42,7 +42,7 @@ end
 Given 'User Acceptance Tests at version "$sha" which "$outcome" on server "$server"' do |sha, outcome, server|
   payload = build(
     :uat_event,
-    success?: outcome == 'passed',
+    success: outcome == 'passed',
     test_suite_version: sha,
     server: server,
   ).details

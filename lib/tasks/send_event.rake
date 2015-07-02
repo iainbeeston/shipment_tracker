@@ -1,10 +1,10 @@
 namespace :send do
-  # rake "send:uat_event[success, abc123, uat.fundingcircle.com, http://localhost:1201/events/uat?token=123]"
+  # rake "send:uat_event[true, abc123, uat.fundingcircle.com, http://localhost:1201/events/uat?token=123]"
   desc 'Sends a sample UAT event'
-  task :uat_event, [:status, :test_suite_version, :server, :url] do |_, args|
+  task :uat_event, [:success, :test_suite_version, :server, :url] do |_, args|
     send_event(
       args[:url],
-      status: args[:status],
+      success: args[:success] == 'true',
       test_suite_version: args[:test_suite_version],
       server: args[:server],
     )

@@ -7,7 +7,7 @@ class UatEvent < Event
     details.fetch('server')
   end
 
-  def status
-    details.fetch('status')
+  def success
+    details.fetch('success')
   end
 end

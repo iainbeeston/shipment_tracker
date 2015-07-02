@@ -16,7 +16,7 @@ class UatestsProjection
     when UatEvent
       return unless correct_versions_deployed? && event.server == server
       @uatest = Uatest.new(
-        status: event.status,
+        success: event.success,
         test_suite_version: event.test_suite_version,
       )
     end

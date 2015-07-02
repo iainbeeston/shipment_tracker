@@ -44,11 +44,7 @@ class FeatureReviewPresenter
   def uatest_status
     return nil unless @projection.uatest
 
-    if @projection.uatest.status == 'success'
-      :success
-    else
-      :failure
-    end
+    @projection.uatest.success ? :success : :failure
   end
 
   def summary_status
