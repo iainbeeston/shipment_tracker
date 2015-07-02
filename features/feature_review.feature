@@ -1,14 +1,13 @@
-@fake_authentication
 Feature: Developer prepares a feature review so that it can be attached to a
   ticket for a PO to use in acceptance.
 
 Background:
-  Given I am logged in as "marcus@shipment-tracker.url"
   Given an application called "frontend"
   And an application called "backend"
   And an application called "mobile"
   And an application called "irrelevant"
 
+@logged_in
 Scenario: Preparing link for ticket
   When I prepare a feature review for:
     | field name | content             |
@@ -21,6 +20,7 @@ Scenario: Preparing link for ticket
     | backend  | def1234 |
   And I can see the UAT environment "http://www.some.url"
 
+@logged_in
 Scenario: Viewing User Acceptance Tests results on a Feature review
   Given a commit "#abc" by "Alice" is created for app "frontend"
   And a commit "#def" by "Bob" is created for app "backend"
@@ -41,6 +41,7 @@ Scenario: Viewing User Acceptance Tests results on a Feature review
 
   And I should see the results of the User Acceptance Tests with heading "success" and version "abc123"
 
+@logged_in
 Scenario: Viewing a feature review
   Given a ticket "JIRA-123" with summary "Urgent ticket" is started
   And a commit "#abc" by "Alice" is created for app "frontend"
@@ -88,7 +89,8 @@ Scenario: Viewing a feature review
     | backend  | #old    | no      |
 
 Scenario: QA rejects and approves feature
-  Given a developer prepares a review for UAT "uat.fundingcircle.com" with apps
+  Given I am logged in as "foo@bar.com"
+  And a developer prepares a review for UAT "uat.fundingcircle.com" with apps
     | app_name | version |
     | frontend | abc     |
     | backend  | def     |
@@ -97,14 +99,15 @@ Scenario: QA rejects and approves feature
 
   When I "reject" the feature with comment "Not good enough"
   Then I should see the QA acceptance
-    | status  | email                       | comment         |
-    | danger  | marcus@shipment-tracker.url | Not good enough |
+    | status  | email       | comment         |
+    | danger  | foo@bar.com | Not good enough |
 
   When I "accept" the feature with comment "Superb!"
   Then I should see the QA acceptance
-    | status  | email                       | comment |
-    | success | marcus@shipment-tracker.url | Superb! |
+    | status  | email       | comment |
+    | success | foo@bar.com | Superb! |
 
+@logged_in
 Scenario: Feature review locks after the tickets get approved
   Given a ticket "JIRA-123" with summary "A ticket" is started
   Given a ticket "JIRA-124" with summary "A ticket" is started

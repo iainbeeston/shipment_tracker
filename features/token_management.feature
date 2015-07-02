@@ -1,8 +1,5 @@
-@fake_authentication
+@logged_in
 Feature: Token management
-
-Background:
-  Given I am logged in as "marcus@shipment-tracker.url"
 
 Scenario: Generating a token
   When I generate a token for "circleci"

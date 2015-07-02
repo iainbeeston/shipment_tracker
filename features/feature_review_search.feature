@@ -1,9 +1,8 @@
-@fake_authentication
+@logged_in
 Feature: Auditor searches a Feature Review.
 
 Background:
-  Given I am logged in as "marcus@shipment-tracker.url"
-  And an application called "frontend"
+  Given an application called "frontend"
   And a ticket "JIRA-123" with summary "Urgent ticket" is started
   And a commit "#master1" with message "initial commit" is created at "13:01:17"
   And the branch "feature-one" is checked out
