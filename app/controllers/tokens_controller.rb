@@ -2,6 +2,7 @@ class TokensController < ApplicationController
   def index
     @token = Token.new
     @tokens = Token.all
+    @sources = event_factory.supported_external_types
   end
 
   def create

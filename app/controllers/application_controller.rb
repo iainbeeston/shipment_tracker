@@ -9,4 +9,8 @@ class ApplicationController < ActionController::Base
   def git_repository_loader
     @git_repository_loader ||= GitRepositoryLoader.from_rails_config
   end
+
+  def event_factory
+    @event_factory ||= EventFactory.build
+  end
 end

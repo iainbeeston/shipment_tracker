@@ -11,7 +11,7 @@ module Pages
 
     def generate_token_for(source)
       verify!
-      page.fill_in 'Source', with: source
+      page.select source, from: 'Source'
       page.click_on 'Create Token'
     end
 

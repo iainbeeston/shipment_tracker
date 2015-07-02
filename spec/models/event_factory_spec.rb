@@ -46,4 +46,10 @@ RSpec.describe EventFactory do
       end
     end
   end
+
+  describe '#supported_external_types' do
+    it 'returns a list of supported external event types' do
+      expect(factory.supported_external_types).to eq(%w(circleci))
+    end
+  end
 end

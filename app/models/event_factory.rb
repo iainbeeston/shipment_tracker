@@ -4,9 +4,28 @@ class EventFactory
     @external_types = external_types
   end
 
+  def self.build
+    EventFactory.new(
+      external_types: {
+        'circleci' => CircleCiEvent,
+        'deploy'   => DeployEvent,
+        'jenkins'  => JenkinsEvent,
+        'jira'     => JiraEvent,
+        'uat'      => UatEvent,
+      },
+      internal_types: {
+        'manual_test' => ManualTestEvent,
+      },
+    )
+  end
+
   def create(endpoint, payload, current_user)
     details = decorate_with_email(endpoint, payload, current_user)
     event_type(endpoint).create(details: details)
+  end
+
+  def supported_external_types
+    @external_types.keys
   end
 
   private

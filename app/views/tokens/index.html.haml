@@ -1,7 +1,7 @@
 = form_for @token, html: { class: 'form-inline' } do |f|
   .form-group
     = f.label :source
-    = f.text_field :source, class: 'form-control'
+    = f.select :source, @sources, {}, class: 'form-control'
     = f.submit 'Create Token', class: 'btn btn-primary'
 
 - table headers: %w(Source URL Actions), classes: 'tokens' do
