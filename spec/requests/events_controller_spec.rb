@@ -19,7 +19,7 @@ RSpec.describe 'EventsController' do
         expect(event_factory).to receive(:create).with(
           'circleci',
           { 'foo' => 'bar' },
-          an_object_having_attributes(email: user_email),
+          user_email,
         )
 
         post '/events/circleci', foo: 'bar'
@@ -41,7 +41,7 @@ RSpec.describe 'EventsController' do
         expect(event_factory).to receive(:create).with(
           'circleci',
           { 'foo' => 'bar', 'token' => 'the payloads token' },
-          an_object_having_attributes(email: nil)
+          nil
         )
 
         post "/events/circleci?token=#{token}", foo: 'bar', token: 'the payloads token'

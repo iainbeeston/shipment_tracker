@@ -1,6 +1,6 @@
 class EventsController < ApplicationController
   def create
-    event_factory.create(params[:type], request.request_parameters, current_user)
+    event_factory.create(params[:type], request.request_parameters, current_user.email)
 
     redirect_to redirect_path if redirect_path
     self.response_body = 'ok'

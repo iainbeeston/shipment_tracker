@@ -19,8 +19,8 @@ class EventFactory
     )
   end
 
-  def create(endpoint, payload, current_user)
-    details = decorate_with_email(endpoint, payload, current_user)
+  def create(endpoint, payload, user_email)
+    details = decorate_with_email(endpoint, payload, user_email)
     event_type(endpoint).create(details: details)
   end
 
@@ -30,9 +30,9 @@ class EventFactory
 
   private
 
-  def decorate_with_email(endpoint, payload, current_user)
-    return payload unless internal_event_type?(endpoint) && current_user.logged_in?
-    payload.merge('email' => current_user.email)
+  def decorate_with_email(endpoint, payload, email)
+    return payload unless internal_event_type?(endpoint) && email.present?
+    payload.merge('email' => email)
   end
 
   def event_type(endpoint)
