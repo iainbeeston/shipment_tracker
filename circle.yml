@@ -3,4 +3,5 @@ notify:
     - url: http://shipment-tracker.herokuapp.com/events/circleci
 test:
   post:
+    - bundle exec rubocop
     - bundle exec rake codeclimate # send coverage to codeclimate
