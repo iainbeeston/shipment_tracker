@@ -10,6 +10,7 @@ AllCops:
     - Guardfile
     - Gemfile
     - 'hooks/**/*'
+    - 'vendor/bundle/**/*'
 
 Metrics/LineLength:
   Max: 110
