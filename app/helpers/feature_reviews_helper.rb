@@ -1,9 +1,13 @@
 module FeatureReviewsHelper
-  def panel(heading:, status: :info, klass: nil, &block)
-    haml_tag('.panel', class: [klass, panel_class(status)]) do
+  def panel(heading:, klass: nil, **options, &block)
+    status_panel = options.key?(:status)
+    status = options.delete(:status)
+    classes = status_panel ? panel_class(status) : 'panel-info'
+
+    haml_tag('.panel', class: [klass, classes]) do
       haml_tag('.panel-heading') do
         haml_tag('h2') do
-          icon(icon_class(status))
+          icon(icon_class(status)) if status_panel
           haml_concat heading
         end
       end
@@ -40,7 +44,6 @@ module FeatureReviewsHelper
   end
 
   def icon_class(status)
-    return nil if status == :info
     "icon-#{item_class(status)}"
   end
 
@@ -54,8 +57,6 @@ module FeatureReviewsHelper
       'success'
     when :failure, :failed, :no
       'danger'
-    when :info
-      'info'
     else
       'warning'
     end
