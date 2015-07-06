@@ -112,7 +112,7 @@ RSpec.describe FeatureReviewPresenter do
 
   describe '#qa_status' do
     context 'when QA submission is accepted' do
-      let(:qa_submission) { QaSubmission.new(status: 'accepted') }
+      let(:qa_submission) { QaSubmission.new(accepted: true) }
 
       it 'returns :success' do
         expect(presenter.qa_status).to eq(:success)
@@ -120,7 +120,7 @@ RSpec.describe FeatureReviewPresenter do
     end
 
     context 'when QA submission is rejected' do
-      let(:qa_submission) { QaSubmission.new(status: 'rejected') }
+      let(:qa_submission) { QaSubmission.new(accepted: false) }
 
       it 'returns :failure' do
         expect(presenter.qa_status).to eq(:failure)
@@ -162,7 +162,7 @@ RSpec.describe FeatureReviewPresenter do
     context 'when status of deploys, builds, and QA submission are success' do
       let(:builds) { { 'frontend' => Build.new(success: true) } }
       let(:deploys) { [Deploy.new(correct: true)] }
-      let(:qa_submission) { QaSubmission.new(status: 'accepted') }
+      let(:qa_submission) { QaSubmission.new(accepted: true) }
 
       it 'returns :success' do
         expect(presenter.summary_status).to eq(:success)
@@ -172,7 +172,7 @@ RSpec.describe FeatureReviewPresenter do
     context 'when any status of deploys, builds, or QA submission is failed' do
       let(:builds) { { 'frontend' => Build.new(success: true) } }
       let(:deploys) { [Deploy.new(correct: true)] }
-      let(:qa_submission) { QaSubmission.new(status: 'rejected') }
+      let(:qa_submission) { QaSubmission.new(accepted: false) }
 
       it 'returns :failure' do
         expect(presenter.summary_status).to eq(:failure)
@@ -182,7 +182,7 @@ RSpec.describe FeatureReviewPresenter do
     context 'when no status is a failure but at least one is a warning' do
       let(:builds) { { 'frontend' => Build.new } }
       let(:deploys) { [Deploy.new(correct: true)] }
-      let(:qa_submission) { QaSubmission.new(status: 'accepted') }
+      let(:qa_submission) { QaSubmission.new(accepted: true) }
 
       it 'returns nil' do
         expect(presenter.summary_status).to be(nil)

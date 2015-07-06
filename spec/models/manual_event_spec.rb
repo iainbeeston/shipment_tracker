@@ -48,16 +48,16 @@ describe ManualTestEvent do
     end
   end
 
-  describe '#status' do
+  describe '#accepted?' do
     it 'returns the status' do
-      expect(event.status).to eq(status)
+      expect(event.accepted?).to be true
     end
 
-    context 'when there is no comment' do
+    context 'when there is no status' do
       let(:details) { default_details.except('status') }
 
       it 'returns nil' do
-        expect(event.status).to be_nil
+        expect(event.accepted?).to be false
       end
     end
   end

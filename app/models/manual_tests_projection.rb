@@ -11,7 +11,7 @@ class ManualTestsProjection
 
     @qa_submission = QaSubmission.new(
       email: event.email,
-      status: event.status == 'success' ? 'accepted' : 'rejected',
+      accepted: event.accepted?,
       comment: event.comment,
       created_at: event.created_at,
     )

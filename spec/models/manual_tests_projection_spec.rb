@@ -9,7 +9,7 @@ RSpec.describe ManualTestsProjection do
     let(:events) {
       [
         build(:manual_test_event,
-          status: 'success',
+          success?: true,
           email: 'alice@example.com',
           comment: 'LGTM',
           apps: [
@@ -17,7 +17,7 @@ RSpec.describe ManualTestsProjection do
             { name: 'backend', version: 'def' },
           ]),
         build(:manual_test_event,
-          status: 'failed',
+          success?: false,
           email: 'benjamin@example.com',
           comment: 'Nonsense',
           apps: [
@@ -25,7 +25,7 @@ RSpec.describe ManualTestsProjection do
             { name: 'backend', version: 'def' },
           ]),
         build(:manual_test_event,
-          status: 'failed',
+          success?: false,
           email: 'carol@example.com',
           comment: 'Disgusting',
           apps: [
@@ -42,7 +42,7 @@ RSpec.describe ManualTestsProjection do
 
       expect(projection.qa_submission).to eq(
         QaSubmission.new(
-          status: 'rejected',
+          accepted: false,
           email: 'benjamin@example.com',
           comment: 'Nonsense',
         ),
@@ -54,7 +54,7 @@ RSpec.describe ManualTestsProjection do
     let(:events) {
       [
         build(:manual_test_event,
-          status: 'success',
+          success?: true,
           email: 'alice@example.com',
           comment: 'Fabulous',
           apps: [
@@ -71,7 +71,7 @@ RSpec.describe ManualTestsProjection do
 
       expect(projection.qa_submission).to eq(
         QaSubmission.new(
-          status: 'accepted',
+          accepted: true,
           email: 'alice@example.com',
           comment: 'Fabulous',
         ),

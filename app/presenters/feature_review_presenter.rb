@@ -34,7 +34,7 @@ class FeatureReviewPresenter
   def qa_status
     return nil unless @projection.qa_submission
 
-    if @projection.qa_submission.status == 'accepted'
+    if @projection.qa_submission.accepted
       :success
     else
       :failure

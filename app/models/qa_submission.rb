@@ -4,7 +4,7 @@ class QaSubmission
   values do
     attribute :email, String
     attribute :comment, String
-    attribute :status, String
+    attribute :accepted, Boolean
     attribute :created_at, Time
   end
 end

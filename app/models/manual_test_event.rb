@@ -11,7 +11,7 @@ class ManualTestEvent < Event
     details.fetch('comment', '')
   end
 
-  def status
-    details.fetch('status', nil)
+  def accepted?
+    details.fetch('status', nil) == 'success'
   end
 end
