@@ -81,7 +81,7 @@ RSpec.describe FeatureReviewPresenter do
     context 'when all deploys are correct' do
       let(:deploys) do
         [
-          Deploy.new(correct: :yes),
+          Deploy.new(correct: true),
         ]
       end
 
@@ -93,8 +93,8 @@ RSpec.describe FeatureReviewPresenter do
     context 'when any deploy is not correct' do
       let(:deploys) do
         [
-          Deploy.new(correct: :yes),
-          Deploy.new(correct: :no),
+          Deploy.new(correct: true),
+          Deploy.new(correct: false),
         ]
       end
 
@@ -161,7 +161,7 @@ RSpec.describe FeatureReviewPresenter do
   describe '#summary_status' do
     context 'when status of deploys, builds, and QA submission are success' do
       let(:builds) { { 'frontend' => Build.new(status: 'success') } }
-      let(:deploys) { [Deploy.new(correct: :yes)] }
+      let(:deploys) { [Deploy.new(correct: true)] }
       let(:qa_submission) { QaSubmission.new(status: 'accepted') }
 
       it 'returns :success' do
@@ -171,7 +171,7 @@ RSpec.describe FeatureReviewPresenter do
 
     context 'when any status of deploys, builds, or QA submission is failed' do
       let(:builds) { { 'frontend' => Build.new(status: 'success') } }
-      let(:deploys) { [Deploy.new(correct: :yes)] }
+      let(:deploys) { [Deploy.new(correct: true)] }
       let(:qa_submission) { QaSubmission.new(status: 'rejected') }
 
       it 'returns :failure' do
@@ -181,7 +181,7 @@ RSpec.describe FeatureReviewPresenter do
 
     context 'when no status is a failure but at least one is a warning' do
       let(:builds) { { 'frontend' => Build.new } }
-      let(:deploys) { [Deploy.new(correct: :yes)] }
+      let(:deploys) { [Deploy.new(correct: true)] }
       let(:qa_submission) { QaSubmission.new(status: 'accepted') }
 
       it 'returns nil' do

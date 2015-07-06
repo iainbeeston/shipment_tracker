@@ -24,7 +24,7 @@ class FeatureReviewPresenter
   def deploy_status
     return nil if @projection.deploys.empty?
 
-    if @projection.deploys.all? { |d| d.correct == :yes }
+    if @projection.deploys.all?(&:correct)
       :success
     else
       :failure

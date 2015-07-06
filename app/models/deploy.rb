@@ -6,6 +6,6 @@ class Deploy
     attribute :server, String
     attribute :version, String
     attribute :deployed_by, String
-    attribute :correct, Symbol
+    attribute :correct, Boolean
   end
 end

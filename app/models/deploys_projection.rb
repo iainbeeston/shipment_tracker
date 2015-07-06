@@ -32,6 +32,6 @@ class DeploysProjection
   attr_reader :server, :apps, :deploys_table
 
   def version_correctness_for_event(event)
-    event.version == apps[event.app_name] ? :yes : :no
+    event.version == apps[event.app_name]
   end
 end

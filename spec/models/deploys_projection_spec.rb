@@ -42,14 +42,14 @@ RSpec.describe DeploysProjection do
         server: server,
         version: 'abc',
         deployed_by: 'Bob',
-        correct: :yes,
+        correct: true,
       ),
       Deploy.new(
         app_name: 'backend',
         server: server,
         version: 'wrong_version',
         deployed_by: 'Carol',
-        correct: :no,
+        correct: false,
       ),
     ])
   end
