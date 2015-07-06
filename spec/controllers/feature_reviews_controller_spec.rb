@@ -52,7 +52,7 @@ RSpec.describe FeatureReviewsController do
         allow(FeatureReviewPresenter).to receive(:new).with(projection).and_return(presenter)
       end
 
-      it 'shows a report for each application', skip_login: true do
+      it 'shows a report for each application' do
         expect(projection).to receive(:apply_all).with(events)
 
         get :index, apps: all_apps, uat_url: uat_url
