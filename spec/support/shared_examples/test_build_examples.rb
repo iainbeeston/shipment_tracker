@@ -23,7 +23,7 @@ shared_examples 'a test build subclass' do
 
     context 'when invalid' do
       let(:payload) { invalid_payload }
-      it { expect(subject.success).to be nil }
+      it { expect(subject.success).to be false }
     end
   end
 

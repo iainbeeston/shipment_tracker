@@ -6,12 +6,9 @@ class JenkinsEvent < Event
   def success
     status = details
              .fetch('build', {})
-             .fetch('status', 'unknown').downcase
+             .fetch('status', nil)
 
-    {
-      'success' => true,
-      'failure' => false,
-    }[status]
+    status == 'SUCCESS'
   end
 
   def version
