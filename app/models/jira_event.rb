@@ -54,6 +54,6 @@ class JiraEvent < Event
   end
 
   def approved_status?(status)
-    Ticket::APPROVED_STATUSES.include?(status)
+    Rails.application.config.approved_statuses.include?(status)
   end
 end

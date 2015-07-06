@@ -1,8 +1,6 @@
 class Ticket
   include Virtus.value_object
 
-  APPROVED_STATUSES = ['Done', 'Ready for Deployment'].freeze
-
   values do
     attribute :key, String
     attribute :summary, String, default: ''
@@ -12,7 +10,7 @@ class Ticket
   end
 
   def approved?
-    APPROVED_STATUSES.include?(status)
+    Rails.application.config.approved_statuses.include?(status)
   end
 
   def update_attributes(new_attributes)
