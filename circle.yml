@@ -1,5 +1,7 @@
+notify:
+  webhooks:
+    - url: http://shipment-tracker.herokuapp.com/events/circleci
 test:
   post:
     - bundle exec rubocop
     - bundle exec rake codeclimate # send coverage to codeclimate
-    - curl -H 'Accept: application/json' https://circleci.com/api/v1/project/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BUILD_NUM?circle-token=ec2f8c89ade9963628187bd1f79a6abe1cc92e68 | curl -X POST  -H 'Content-Type:application/json' -d @- http://shipment-tracker.herokuapp.com/events/circleci?token=P7sWJ7PVYUfRZnn5UKc8LZdN
