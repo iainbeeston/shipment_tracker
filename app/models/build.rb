@@ -3,7 +3,7 @@ class Build
 
   values do
     attribute :source, String
-    attribute :status, String
+    attribute :success, Boolean
     attribute :version, String
   end
 end

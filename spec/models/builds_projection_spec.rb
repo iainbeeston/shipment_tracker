@@ -20,8 +20,8 @@ RSpec.describe BuildsProjection do
     end
 
     expect(projection.builds).to eq(
-      'frontend' => Build.new(source: 'Jenkins', status: 'success', version: 'abc'),
-      'backend'  => Build.new(source: 'CircleCi', status: 'success', version: 'def'),
+      'frontend' => Build.new(source: 'Jenkins', success: true, version: 'abc'),
+      'backend'  => Build.new(source: 'CircleCi', success: true, version: 'def'),
       'other'    => Build.new,
     )
   end

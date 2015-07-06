@@ -52,13 +52,10 @@ module FeatureReviewsHelper
   end
 
   def item_class(status)
-    return 'success' if status == true
-    return 'danger' if status == false
-
-    case status && status.to_sym
-    when :success
+    case status
+    when true, :success
       'success'
-    when :failure, :failed
+    when false, :failure
       'danger'
     else
       'warning'

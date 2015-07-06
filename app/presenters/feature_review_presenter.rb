@@ -14,9 +14,9 @@ class FeatureReviewPresenter
 
     return nil if builds.empty?
 
-    if builds.all? { |b| b.status == 'success' }
+    if builds.all? { |b| b.success == true }
       :success
-    elsif builds.any? { |b| b.status == 'failed' }
+    elsif builds.any? { |b| b.success == false }
       :failure
     end
   end

@@ -3,12 +3,15 @@ class JenkinsEvent < Event
     'Jenkins'
   end
 
-  def status
+  def success
     status = details
              .fetch('build', {})
              .fetch('status', 'unknown').downcase
 
-    status == 'failure' ? 'failed' : status
+    {
+      'success' => true,
+      'failure' => false,
+    }[status]
   end
 
   def version

@@ -34,8 +34,8 @@ RSpec.describe FeatureReviewPresenter do
     context 'when all builds pass' do
       let(:builds) do
         {
-          'frontend' => Build.new(status: 'success'),
-          'backend'  => Build.new(status: 'success'),
+          'frontend' => Build.new(success: true),
+          'backend'  => Build.new(success: true),
         }
       end
 
@@ -46,7 +46,7 @@ RSpec.describe FeatureReviewPresenter do
       context 'but some builds are missing' do
         let(:builds) do
           {
-            'frontend' => Build.new(status: 'success'),
+            'frontend' => Build.new(success: true),
             'backend'  => Build.new,
           }
         end
@@ -60,8 +60,8 @@ RSpec.describe FeatureReviewPresenter do
     context 'when any of the builds fails' do
       let(:builds) do
         {
-          'frontend' => Build.new(status: 'failed'),
-          'backend'  => Build.new(status: 'success'),
+          'frontend' => Build.new(success: false),
+          'backend'  => Build.new(success: true),
         }
       end
 
@@ -160,7 +160,7 @@ RSpec.describe FeatureReviewPresenter do
 
   describe '#summary_status' do
     context 'when status of deploys, builds, and QA submission are success' do
-      let(:builds) { { 'frontend' => Build.new(status: 'success') } }
+      let(:builds) { { 'frontend' => Build.new(success: true) } }
       let(:deploys) { [Deploy.new(correct: true)] }
       let(:qa_submission) { QaSubmission.new(status: 'accepted') }
 
@@ -170,7 +170,7 @@ RSpec.describe FeatureReviewPresenter do
     end
 
     context 'when any status of deploys, builds, or QA submission is failed' do
-      let(:builds) { { 'frontend' => Build.new(status: 'success') } }
+      let(:builds) { { 'frontend' => Build.new(success: true) } }
       let(:deploys) { [Deploy.new(correct: true)] }
       let(:qa_submission) { QaSubmission.new(status: 'rejected') }
 

@@ -11,7 +11,7 @@ class BuildsProjection
 
     build = Build.new(
       source: event.source,
-      status: event.status,
+      success: event.success,
       version: event.version,
     )
     @builds_table[app] = build

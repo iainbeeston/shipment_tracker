@@ -3,8 +3,15 @@ class CircleCiEvent < Event
     'CircleCi'
   end
 
-  def status
-    details.fetch('payload', {}).fetch('outcome', 'unknown')
+  def success
+    status = details
+             .fetch('payload', {})
+             .fetch('outcome', 'unknown').downcase
+
+    {
+      'success' => true,
+      'failed' => false,
+    }[status]
   end
 
   def version
