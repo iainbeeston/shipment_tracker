@@ -32,22 +32,22 @@ class JiraEvent < Event
   end
 
   def approval?
-    changelog_items.any? { |item|
-      item['field'] == 'status' &&
-        approved_status?(item['toString']) &&
-        !approved_status?(item['fromString'])
-    }
+    status_item &&
+      approved_status?(status_item['toString']) &&
+      !approved_status?(status_item['fromString'])
   end
 
   def unapproval?
-    changelog_items.any? { |item|
-      item['field'] == 'status' &&
-        approved_status?(item['fromString']) &&
-        !approved_status?(item['toString'])
-    }
+    status_item &&
+      approved_status?(status_item['fromString']) &&
+      !approved_status?(status_item['toString'])
   end
 
   private
+
+  def status_item
+    @status_item ||= changelog_items.find { |item| item['field'] == 'status' }
+  end
 
   def changelog_items
     details.fetch('changelog', 'items' => []).fetch('items')
