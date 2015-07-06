@@ -2,6 +2,7 @@
 //= require jquery_ujs
 //= require bootstrap-sprockets
 //= require bootstrap/tooltip
+//= require bootstrap-editable
 
 $(function() {
   $("[data-toggle=tooltip]").tooltip();
