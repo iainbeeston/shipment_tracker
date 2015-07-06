@@ -2,4 +2,4 @@ test:
   post:
     - bundle exec rubocop
     - bundle exec rake codeclimate
-    - "curl -H 'Accept: application/json' https://circleci.com/api/v1/project/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BUILD_NUM?circle-token=$CIRCLE_TOKEN | curl -X POST -H 'Content-Type:application/json' -d @- $SHIPMENT_TRACKER_POST_URL"
+    - "curl --header 'Accept: application/json' https://circleci.com/api/v1/project/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BUILD_NUM?circle-token=$CIRCLE_TOKEN | curl --request POST --header 'Content-Type:application/json' --data @- --fail $SHIPMENT_TRACKER_POST_URL"
