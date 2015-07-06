@@ -8,5 +8,5 @@ $(function() {
 
   $.fn.editable.defaults.ajaxOptions = {type: "PUT"};
   $.fn.editable.defaults.mode = 'inline';
-  $('table.tokens a').editable();
+  $('.js-editable').editable();
 });

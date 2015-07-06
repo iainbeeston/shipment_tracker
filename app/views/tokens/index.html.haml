@@ -11,7 +11,7 @@
     %tr
       %td= token.source_name
       %td
-        %a{href: '#', data: {pk: token.id, name: 'name', type: 'text', url: token_path(token)}}= token.name
+        %a.js-editable{href: '#', data: {pk: token.id, name: 'name', type: 'text', url: token_path(token)}}= token.name
       %td= events_url(type: token.source, token: token.value)
       %td
         = link_to(token, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger action-revoke') do
