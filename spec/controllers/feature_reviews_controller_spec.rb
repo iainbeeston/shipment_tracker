@@ -1,27 +1,30 @@
 require 'rails_helper'
 
 RSpec.describe FeatureReviewsController do
-  describe 'GET #index', skip_login: true do
-    it 'requires login' do
-      expect_any_instance_of(ApplicationController).to receive(:require_authentication).at_least(1).times
-      get :index
+
+  context 'our routing' do
+    it 'matches the feature_review_location'do
+      actual_url = @routes.url_for host: 'www.example.com',
+                                   controller: 'feature_reviews',
+                                   action: 'index',
+                                   apps: { a: '123', b: '456' },
+                                   uat_url: 'http://foo.com'
+
+      feature_review_location = FeatureReviewLocation.new(actual_url)
+      expect(feature_review_location.app_versions).to eq(a: '123', b: '456')
+      expect(feature_review_location.uat_url).to eq('http://foo.com')
     end
+  end
 
-    context 'our routing' do
-      it 'matches the feature_review_location'do
-        actual_url = @routes.url_for host: 'www.example.com',
-                                     controller: 'feature_reviews',
-                                     action: 'index',
-                                     apps: { a: '123', b: '456' },
-                                     uat_url: 'http://foo.com'
-
-        feature_review_location = FeatureReviewLocation.new(actual_url)
-        expect(feature_review_location.app_versions).to eq(a: '123', b: '456')
-        expect(feature_review_location.uat_url).to eq('http://foo.com')
+  describe 'GET #index' do
+    context 'when logged out' do
+      it 'responds with redirect to auth0 provider' do
+        get :index
+        expect(response).to redirect_to('/auth/auth0')
       end
     end
 
-    context 'when apps are submitted' do
+    context 'when apps are submitted', :logged_in do
       let(:projection) { instance_double(FeatureReviewProjection) }
       let(:presenter) { instance_double(FeatureReviewPresenter) }
       let(:events) { [Event.new, Event.new, Event.new] }
@@ -61,8 +64,8 @@ RSpec.describe FeatureReviewsController do
       end
     end
 
-    context 'when no apps are submitted' do
-      it 'shows an error', skip_login: true do
+    context 'when no apps are submitted', :logged_in do
+      it 'shows an error' do
         get :index, apps: { 'frontend' => '', 'backend' => '' }
 
         expect(response).to redirect_to(new_feature_review_path)
@@ -71,7 +74,7 @@ RSpec.describe FeatureReviewsController do
     end
   end
 
-  describe 'GET #search', skip_login: true do
+  describe 'GET #search', :logged_in do
     let(:applications) { %w(frontend backend mobile) }
     let(:events) { [instance_double(Event)] }
 

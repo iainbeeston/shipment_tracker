@@ -6,6 +6,7 @@ require 'rspec/rails'
 require 'factory_girl'
 
 require 'support/feature_review_url'
+require 'support/controller_login'
 
 # Add additional requires below this line. Rails is not loaded until this point!
 
@@ -29,8 +30,9 @@ require 'support/feature_review_url'
 ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
-  config.before(:each, skip_login: true) do
-    allow_any_instance_of(ApplicationController).to receive(:require_authentication)
+  config.include Support::ControllerLogin, type: :controller
+  config.before(:each, :logged_in) do
+    login_with_omniauth
   end
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures

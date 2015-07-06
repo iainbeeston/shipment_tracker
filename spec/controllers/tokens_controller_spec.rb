@@ -7,7 +7,7 @@ RSpec.describe TokensController do
     allow(Token).to receive(:all).and_return(tokens)
   end
 
-  describe 'GET #index', skip_login: true do
+  describe 'GET #index', :logged_in do
     let(:event_type_repository) { instance_double(EventTypeRepository) }
     let(:sources) { double(:sources) }
 
@@ -26,7 +26,7 @@ RSpec.describe TokensController do
     end
   end
 
-  describe 'POST #create', skip_login: true do
+  describe 'POST #create', :logged_in do
     it 'creates a new token' do
       expect(Token).to receive(:create).with(source: 'circleci', name: 'frontend')
 
@@ -36,7 +36,7 @@ RSpec.describe TokensController do
     end
   end
 
-  describe 'PUT #update', skip_login: true do
+  describe 'PUT #update', :logged_in do
     it 'updates a token given a X-editable payload' do
       expect(Token).to receive(:update).with(42, 'name' => 'New name')
 
@@ -44,7 +44,7 @@ RSpec.describe TokensController do
     end
   end
 
-  describe 'DELETE #destroy', skip_login: true do
+  describe 'DELETE #destroy', :logged_in do
     it 'revokes a token' do
       expect(Token).to receive(:revoke).with(123)
 

@@ -1,20 +1,26 @@
 require 'rails_helper'
 
 RSpec.describe RepositoryLocationsController do
+
   describe 'GET #index' do
-    it 'requires login' do
-      expect_any_instance_of(ApplicationController).to receive(:require_authentication).at_least(1).times
-      get :index
+    context 'when logged out' do
+      it 'responds with redirect to auth0 provider' do
+        get :index
+        expect(response).to redirect_to('/auth/auth0')
+      end
     end
   end
 
   describe 'POST #create' do
-    it 'requires login' do
-      expect_any_instance_of(ApplicationController).to receive(:require_authentication).at_least(1).times
-      post :create, repository_location: {
-        'name' => 'shipment_tracker',
-        'uri' => 'https://github.com/FundingCircle/shipment_tracker.git',
-      }
+    context 'when logged out' do
+      it 'redirects to auth0 provider' do
+        post :create, repository_location: {
+          'name' => 'shipment_tracker',
+          'uri' => 'https://github.com/FundingCircle/shipment_tracker.git',
+        }
+
+        expect(response).to redirect_to('/auth/auth0')
+      end
     end
   end
 end
