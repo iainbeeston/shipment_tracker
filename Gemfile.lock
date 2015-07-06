@@ -126,6 +126,7 @@ GEM
     has_secure_token (1.0.0)
       activerecord (>= 3.0)
     hashie (3.4.2)
+    honeybadger (2.1.0)
     html2haml (2.0.0)
       erubis (~> 2.7.0)
       haml (~> 4.0.0)
@@ -330,6 +331,7 @@ DEPENDENCIES
   guard-rubocop
   haml-rails
   has_secure_token
+  honeybadger (~> 2.0)
   jquery-rails
   launchy
   newrelic_rpm
