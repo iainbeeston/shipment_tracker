@@ -5,7 +5,7 @@ RSpec.describe 'EventsController' do
     let(:event_factory) { instance_double(EventFactory) }
 
     before do
-      allow(EventFactory).to receive(:new).and_return(event_factory)
+      allow(EventFactory).to receive(:build).and_return(event_factory)
     end
 
     context 'with a cookie' do

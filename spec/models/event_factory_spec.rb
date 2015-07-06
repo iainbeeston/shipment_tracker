@@ -1,37 +1,34 @@
 require 'rails_helper'
 
 RSpec.describe EventFactory do
-  subject(:factory) {
-    EventFactory.new(
-      external_types: { 'circleci' => CircleCiEvent },
-      internal_types: { 'manual_test' => ManualTestEvent },
-    )
-  }
+  let(:repository) { instance_double(EventTypeRepository) }
+  subject(:factory) { EventFactory.new(repository) }
 
   describe '#create' do
     let(:payload) { { 'foo' => 'bar' } }
     let(:user_email) { 'foo@bar.com' }
+    let(:event_type) {
+      EventType.new(endpoint: 'circleci', event_class: CircleCiEvent)
+    }
 
-    let(:created_event) { factory.create(event_type, payload, user_email) }
+    before do
+      allow(repository).to receive(:find_by_endpoint).with(event_type.endpoint).and_return(event_type)
+    end
 
-    context 'with an external event type' do
-      let(:event_type) { 'circleci' }
+    let(:created_event) { subject.create(event_type.endpoint, payload, user_email) }
 
-      it 'returns an instance of the correct class' do
-        expect(created_event).to be_an_instance_of(CircleCiEvent)
-      end
+    it 'returns an instance of the correct class' do
+      expect(created_event).to be_an_instance_of(CircleCiEvent)
+    end
 
-      it 'stores the payload in the event details' do
-        expect(created_event.details).to eq('foo' => 'bar')
-      end
+    it 'stores the payload in the event details' do
+      expect(created_event.details).to eq('foo' => 'bar')
     end
 
     context 'with an internal event type' do
-      let(:event_type) { 'manual_test' }
-
-      it 'returns an instance of the correct class' do
-        expect(created_event).to be_an_instance_of(ManualTestEvent)
-      end
+      let(:event_type) {
+        EventType.new(endpoint: 'manual_test', event_class: ManualTestEvent, internal: true)
+      }
 
       it 'stores the payload in the event details, including the user email' do
         expect(created_event.details).to eq('foo' => 'bar', 'email' => 'foo@bar.com')
@@ -44,20 +41,6 @@ RSpec.describe EventFactory do
           expect(created_event.details).to eq('foo' => 'bar')
         end
       end
-    end
-
-    context 'with an unrecognized event type' do
-      let(:event_type) { 'unexistent' }
-
-      it 'raises an error' do
-        expect { created_event }.to raise_error("Unrecognized event type 'unexistent'")
-      end
-    end
-  end
-
-  describe '#supported_external_types' do
-    it 'returns a list of supported external event types' do
-      expect(factory.supported_external_types).to eq(%w(circleci))
     end
   end
 end

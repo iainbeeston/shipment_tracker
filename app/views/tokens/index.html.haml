@@ -1,7 +1,7 @@
 = form_for @token, html: { class: 'form-inline' } do |f|
   .form-group
     = f.label :source
-    = f.select :source, @sources, {}, class: 'form-control'
+    = f.select :source, options_from_collection_for_select(@sources, :endpoint, :name), {}, class: 'form-control'
     = f.label :name
     = f.text_field :name, class: 'form-control'
     = f.submit 'Create Token', class: 'btn btn-primary'
@@ -9,7 +9,7 @@
 - table headers: %w(Source Name URL Actions), classes: 'tokens' do
   - @tokens.each do |token|
     %tr
-      %td= token.source
+      %td= token.source_name
       %td
         %a{href: '#', data: {pk: token.id, name: 'name', type: 'text', url: token_path(token)}}= token.name
       %td= events_url(type: token.source, token: token.value)

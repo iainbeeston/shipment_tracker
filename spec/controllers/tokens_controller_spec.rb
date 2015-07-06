@@ -8,11 +8,12 @@ RSpec.describe TokensController do
   end
 
   describe 'GET #index', skip_login: true do
-    let(:sources) { %w(source-one source-two source-three) }
-    let(:event_factory) { instance_double(EventFactory, supported_external_types: sources) }
+    let(:event_type_repository) { instance_double(EventTypeRepository) }
+    let(:sources) { double(:sources) }
 
     before do
-      allow(EventFactory).to receive(:build).and_return(event_factory)
+      allow(EventTypeRepository).to receive(:build).and_return(event_type_repository)
+      allow(event_type_repository).to receive(:external_types).and_return(sources)
     end
 
     it 'shows the list of tokens' do

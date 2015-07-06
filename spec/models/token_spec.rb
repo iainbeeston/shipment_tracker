@@ -46,4 +46,18 @@ RSpec.describe Token do
       expect(Token.valid?('circleci', 'abc123')).to be false
     end
   end
+
+  describe '.source_name' do
+    let(:event_type_repository) { instance_double(EventTypeRepository) }
+    let(:circleci_type) { EventType.new(endpoint: 'circleci', name: 'CircleCI') }
+
+    before do
+      allow(EventTypeRepository).to receive(:build).and_return(event_type_repository)
+      allow(event_type_repository).to receive(:find_by_endpoint).with('circleci').and_return(circleci_type)
+    end
+
+    it 'returns the token source name' do
+      expect(Token.new(source: 'circleci').source_name).to eq('CircleCI')
+    end
+  end
 end

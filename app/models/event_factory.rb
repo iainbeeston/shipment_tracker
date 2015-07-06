@@ -1,49 +1,24 @@
 class EventFactory
-  def initialize(internal_types:, external_types:)
-    @internal_types = internal_types
-    @external_types = external_types
+  def initialize(event_type_repository)
+    @event_type_repository = event_type_repository
   end
 
   def self.build
-    EventFactory.new(
-      external_types: {
-        'circleci' => CircleCiEvent,
-        'deploy'   => DeployEvent,
-        'jenkins'  => JenkinsEvent,
-        'jira'     => JiraEvent,
-        'uat'      => UatEvent,
-      },
-      internal_types: {
-        'manual_test' => ManualTestEvent,
-      },
-    )
+    new(EventTypeRepository.build)
   end
 
   def create(endpoint, payload, user_email)
-    details = decorate_with_email(endpoint, payload, user_email)
-    event_type(endpoint).create(details: details)
-  end
-
-  def supported_external_types
-    @external_types.keys
+    type = event_type_repository.find_by_endpoint(endpoint)
+    details = decorate_with_email(payload, type, user_email)
+    type.event_class.create(details: details)
   end
 
   private
 
-  def decorate_with_email(endpoint, payload, email)
-    return payload unless internal_event_type?(endpoint) && email.present?
+  attr_reader :event_type_repository
+
+  def decorate_with_email(payload, type, email)
+    return payload unless type.internal? && email.present?
     payload.merge('email' => email)
-  end
-
-  def event_type(endpoint)
-    event_types.fetch(endpoint) { |type| fail "Unrecognized event type '#{type}'" }
-  end
-
-  def event_types
-    @internal_types.merge(@external_types)
-  end
-
-  def internal_event_type?(type)
-    @internal_types.key?(type)
   end
 end

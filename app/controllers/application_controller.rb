@@ -13,4 +13,8 @@ class ApplicationController < ActionController::Base
   def event_factory
     @event_factory ||= EventFactory.build
   end
+
+  def event_type_repository
+    @event_type_repository ||= EventTypeRepository.build
+  end
 end

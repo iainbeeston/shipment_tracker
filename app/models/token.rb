@@ -8,4 +8,8 @@ class Token < ActiveRecord::Base
   def self.revoke(id)
     find(id).destroy
   end
+
+  def source_name
+    EventTypeRepository.build.find_by_endpoint(source).name
+  end
 end
