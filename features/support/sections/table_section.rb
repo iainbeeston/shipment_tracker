@@ -6,21 +6,28 @@ module Sections
     end
 
     def items
-      @items ||= begin
-        headers      = table_element.all('thead th').map(&:text)
-        row_elements = table_element.all('tbody tr')
-
-        row_elements.map { |row_element|
-          row_element.all('td').map(&method(:cell_text))
-        }.map { |cells_text|
-          Hash[headers.zip(cells_text)]
-        }
-      end
+      @items ||= rows_cells_text.map { |cells_text|
+        headers.zip(cells_text).to_h
+      }
     end
 
     private
 
     attr_reader :table_element, :icon_translations
+
+    def headers
+      @headers ||= table_element.all('thead th').map(&:text)
+    end
+
+    def row_elements
+      @row_elements ||= table_element.all('tbody tr')
+    end
+
+    def rows_cells_text
+      row_elements.map { |row_element|
+        row_element.all('td').map(&method(:cell_text))
+      }
+    end
 
     def cell_text(cell_element)
       icon_element = cell_element.first('.glyphicon')
