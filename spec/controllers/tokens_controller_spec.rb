@@ -1,6 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe TokensController do
+  context 'when logged out' do
+    let(:token) { { source: 'circleci', name: 'frontend' } }
+
+    it { is_expected.to require_authentication_on(:get, :index) }
+    it { is_expected.to require_authentication_on(:put, :update, id: 123, token: token) }
+    it { is_expected.to require_authentication_on(:post, :create, token: token) }
+    it { is_expected.to require_authentication_on(:delete, :destroy, id: 123) }
+  end
+
   let(:tokens) { [Token.new] }
 
   before do

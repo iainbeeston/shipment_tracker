@@ -7,6 +7,7 @@ require 'factory_girl'
 
 require 'support/feature_review_url'
 require 'support/controller_login'
+require 'support/require_authentication_matcher'
 
 # Add additional requires below this line. Rails is not loaded until this point!
 

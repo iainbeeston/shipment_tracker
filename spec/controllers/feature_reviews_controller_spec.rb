@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe FeatureReviewsController do
-
   context 'our routing' do
     it 'matches the feature_review_location'do
       actual_url = @routes.url_for host: 'www.example.com',
@@ -16,14 +15,13 @@ RSpec.describe FeatureReviewsController do
     end
   end
 
-  describe 'GET #index' do
-    context 'when logged out' do
-      it 'responds with redirect to auth0 provider' do
-        get :index
-        expect(response).to redirect_to('/auth/auth0')
-      end
-    end
+  context 'when logged out' do
+    it { is_expected.to require_authentication_on(:get, :new) }
+    it { is_expected.to require_authentication_on(:get, :index) }
+    it { is_expected.to require_authentication_on(:get, :search) }
+  end
 
+  describe 'GET #index' do
     context 'when apps are submitted', :logged_in do
       let(:projection) { instance_double(FeatureReviewProjection) }
       let(:presenter) { instance_double(FeatureReviewPresenter) }
