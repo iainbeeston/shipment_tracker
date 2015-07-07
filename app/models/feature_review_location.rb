@@ -8,7 +8,8 @@ class FeatureReviewLocation
 
   def self.from_text(text)
     URI.extract(text)
-      .map { |uri| URI.parse(uri) }
+      .map { |uri| parse_uri(uri) }
+      .compact
       .select { |url| url.path == '/feature_reviews' }
       .map { |url| new(url) }
   end
@@ -38,6 +39,12 @@ class FeatureReviewLocation
   end
 
   private
+
+  def self.parse_uri(uri)
+    URI.parse(uri)
+  rescue URI::InvalidURIError
+    nil
+  end
 
   def query_hash
     @query_hash ||= Rack::Utils.parse_nested_query(@url.query)

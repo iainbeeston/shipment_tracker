@@ -5,20 +5,23 @@ RSpec.describe FeatureReviewLocation do
   subject(:instance) { FeatureReviewLocation.new(url) }
 
   describe '.from_text' do
-    subject {
-      FeatureReviewLocation.from_text(
-        <<-EOS
-        blah http://localhost/not_important?apps[junk]=999
-        blah blah #{full_url('other=true&apps[app1]=abc&apps[app2]=def')}
-        EOS
-      )
-    }
-
-    it {
-      is_expected.to match_array([
-        FeatureReviewLocation.new(full_url('other=true&apps[app1]=abc&apps[app2]=def')),
-      ])
-    }
+    context 'when given text that contains links to Feature Reviews' do
+      it 'returns an array of FeatureReviewLocations' do
+        expect(
+          FeatureReviewLocation.from_text(
+            <<-EOS
+            missing path http://localhost/not_important?apps[junk]=999
+            unparsable http://foo.io/path#bad]
+            complex feature review #{full_url('other=true&apps[app1]=abc&apps[app2]=def')}
+            simple feature review #{full_url('apps[app1]=abc')}
+            EOS
+          ),
+        ).to match_array([
+          FeatureReviewLocation.new(full_url('other=true&apps[app1]=abc&apps[app2]=def')),
+          FeatureReviewLocation.new(full_url('apps[app1]=abc')),
+        ])
+      end
+    end
   end
 
   describe '#versions' do
