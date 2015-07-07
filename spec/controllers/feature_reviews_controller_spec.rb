@@ -5,7 +5,7 @@ RSpec.describe FeatureReviewsController do
     it 'matches the feature_review_location'do
       actual_url = @routes.url_for host: 'www.example.com',
                                    controller: 'feature_reviews',
-                                   action: 'index',
+                                   action: 'show',
                                    apps: { a: '123', b: '456' },
                                    uat_url: 'http://foo.com'
 
@@ -17,11 +17,11 @@ RSpec.describe FeatureReviewsController do
 
   context 'when logged out' do
     it { is_expected.to require_authentication_on(:get, :new) }
-    it { is_expected.to require_authentication_on(:get, :index) }
+    it { is_expected.to require_authentication_on(:get, :show) }
     it { is_expected.to require_authentication_on(:get, :search) }
   end
 
-  describe 'GET #index' do
+  describe 'GET #show' do
     context 'when apps are submitted', :logged_in do
       let(:projection) { instance_double(FeatureReviewProjection) }
       let(:presenter) { instance_double(FeatureReviewPresenter) }
@@ -34,7 +34,7 @@ RSpec.describe FeatureReviewsController do
       let(:projection_url) {
         @routes.url_for host: 'www.example.com',
                         controller: 'feature_reviews',
-                        action: 'index',
+                        action: 'show',
                         apps: all_apps,
                         uat_url: uat_url
       }
@@ -56,7 +56,7 @@ RSpec.describe FeatureReviewsController do
       it 'shows a report for each application' do
         expect(projection).to receive(:apply_all).with(events)
 
-        get :index, apps: all_apps, uat_url: uat_url
+        get :show, apps: all_apps, uat_url: uat_url
 
         expect(assigns(:presenter)).to eq(presenter)
       end
@@ -64,9 +64,9 @@ RSpec.describe FeatureReviewsController do
 
     context 'when no apps are submitted', :logged_in do
       it 'shows an error' do
-        get :index, apps: { 'frontend' => '', 'backend' => '' }
+        get :show, apps: { 'frontend' => '', 'backend' => '' }
 
-        expect(response).to redirect_to(new_feature_review_path)
+        expect(response).to redirect_to(new_feature_reviews_path)
         expect(flash[:error]).to include('Please specify at least one app')
       end
     end

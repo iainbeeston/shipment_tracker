@@ -3,7 +3,7 @@ class FeatureReviewsController < ApplicationController
     @app_names = RepositoryLocation.app_names
   end
 
-  def index
+  def show
     @return_to = request.original_fullpath
 
     @apps = apps
@@ -11,7 +11,7 @@ class FeatureReviewsController < ApplicationController
 
     if @apps.empty?
       flash[:error] = 'Please specify at least one app'
-      return redirect_to new_feature_review_path
+      return redirect_to new_feature_reviews_path
     end
 
     projection = FeatureReviewProjection.build(

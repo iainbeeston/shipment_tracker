@@ -11,14 +11,11 @@ Rails.application.routes.draw do
   post 'events/:type', to: 'events#create', as: 'events'
 
   # Projections
-  resources :feature_reviews, only: [:new, :index] do
-    collection do
-      get 'search'
-    end
+  resource :feature_reviews, only: [:new, :show] do
+    get 'search'
   end
+
   resources :releases, only: [:index, :show]
-
   resources :repository_locations, only: [:index, :create]
-
   resources :tokens, only: [:index, :create, :update, :destroy]
 end

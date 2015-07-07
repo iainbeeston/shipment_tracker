@@ -6,7 +6,7 @@ module Pages
     end
 
     def visit
-      page.visit url_helpers.new_feature_review_path
+      page.visit url_helpers.new_feature_reviews_path
     end
 
     def add(field_name:, content:)
