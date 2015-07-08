@@ -1,31 +1,50 @@
 require 'spec_helper'
 require 'feature_review_location'
 
+require 'addressable/uri'
+
 RSpec.describe FeatureReviewLocation do
   subject(:instance) { FeatureReviewLocation.new(url) }
 
   describe '.from_text' do
-    context 'when given text that contains links to Feature Reviews' do
-      it 'returns an array of FeatureReviewLocations' do
-        expect(
-          FeatureReviewLocation.from_text(
-            <<-EOS
-            missing path http://localhost/not_important?apps[junk]=999
-            unparsable http://foo.io/path#bad]
-            complex feature review #{full_url('other=true&apps[app1]=abc&apps[app2]=def')}
-            simple feature review #{full_url('apps[app1]=abc')}
-            EOS
-          ),
-        ).to match_array([
-          FeatureReviewLocation.new(full_url('other=true&apps[app1]=abc&apps[app2]=def')),
-          FeatureReviewLocation.new(full_url('apps[app1]=abc')),
-        ])
+    let(:url1) { full_url('other' => 'true', 'apps[app1]' => 'a', 'apps[app2]' => 'b') }
+    let(:url2) { full_url('apps[app1]' => 'a') }
+
+    let(:text) {
+      <<-EOS
+        complex feature review #{url1}
+        simple feature review #{url2}
+      EOS
+    }
+
+    subject(:feature_review_locations) { FeatureReviewLocation.from_text(text) }
+
+    it 'returns an array of FeatureReviewLocations for each URL in the given text' do
+      expect(feature_review_locations).to match_array([
+        FeatureReviewLocation.new(url1),
+        FeatureReviewLocation.new(url2),
+      ])
+    end
+
+    context 'when a URL has an irrelevant path' do
+      let(:text) { 'irrelevant path http://localhost/not_important?apps[junk]=999' }
+
+      it 'ignores it' do
+        expect(feature_review_locations).to be_empty
+      end
+    end
+
+    context 'when a URL is unparseable' do
+      let(:text) { 'unparseable http://foo.io/path#bad]' }
+
+      it 'ignores it' do
+        expect(feature_review_locations).to be_empty
       end
     end
   end
 
   describe '#versions' do
-    let(:url) { full_url('other=true&apps[app1]=xxx&apps[app2]=yyy') }
+    let(:url) { full_url('other' => 'true', 'apps[app1]' => 'xxx', 'apps[app2]' => 'yyy') }
 
     subject { instance.versions }
 
@@ -33,7 +52,7 @@ RSpec.describe FeatureReviewLocation do
   end
 
   describe '#app_versions' do
-    let(:url) { full_url('other=true&apps[app1]=xxx&apps[app2]=yyy') }
+    let(:url) { full_url('other' => 'true', 'apps[app1]' => 'xxx', 'apps[app2]' => 'yyy') }
 
     subject { instance.app_versions }
 
@@ -42,17 +61,19 @@ RSpec.describe FeatureReviewLocation do
 
   describe '#==' do
     it 'equality is based on fields not identity' do
-      instance = described_class.new(full_url('other=true&apps[app1]=xxx&apps[app2]=yyy'))
+      url = full_url([%w(other true), %w(apps[app1] xxx), %w(apps[app2] yyy)])
+      url_order = full_url([%w(other true), %w(apps[app2] yyy), %w(apps[app1] xxx)])
+      url_missing = full_url('apps[app1]' => 'xxx', 'apps[app2]' => 'yyy')
 
-      expect(described_class.new(full_url('other=true&apps[app1]=xxx&apps[app2]=yyy'))).to eq(instance)
+      expect(described_class.new(url)).to eq(described_class.new(url))
 
-      expect(described_class.new(full_url('apps[app1]=xxx&apps[app2]=yyy'))).to_not eq(instance)
-      expect(described_class.new(full_url('other=true&apps[app2]=yyy&apps[app1]=xxx'))).to_not eq(instance)
+      expect(described_class.new(url_missing)).to_not eq(described_class.new(url))
+      expect(described_class.new(url)).to_not eq(described_class.new(url_order))
     end
   end
 
   describe '#uri' do
-    let(:url) { full_url('other=true&apps[app1]=xxx&apps[app2]=yyy') }
+    let(:url) { full_url('other' => 'true', 'apps[app1]' => 'xxx', 'apps[app2]' => 'yyy') }
 
     subject { instance.url }
 
@@ -60,22 +81,27 @@ RSpec.describe FeatureReviewLocation do
   end
 
   describe '#path' do
-    let(:url) { full_url('other=true&apps[app1]=xxx&apps[app2]=yyy') }
+    let(:url) { full_url([%w(other true), %w(apps[app1] xxx), %w(apps[app2] yyy)]) }
 
     subject { instance.path }
 
-    it { is_expected.to eq('/feature_reviews?other=true&apps[app1]=xxx&apps[app2]=yyy') }
+    it { is_expected.to eq('/feature_reviews?other=true&apps%5Bapp1%5D=xxx&apps%5Bapp2%5D=yyy') }
   end
 
   describe '#uat_url' do
-    let(:url) { full_url('other=true&apps[app1]=xxx&apps[app2]=yyy&uat_url=http%3A%2F%2Ffoo.com') }
+    let(:url) { full_url('apps[app1]' => 'xxx', 'apps[app2]' => 'yyy', 'uat_url' => 'http://foo.com') }
 
     subject { instance.uat_url }
 
     it { is_expected.to eq('http://foo.com') }
   end
 
-  def full_url(query)
-    "http://localhost/feature_reviews?#{query}"
+  def full_url(query_values)
+    Addressable::URI.new(
+      scheme: 'http',
+      host:   'localhost',
+      path:   '/feature_reviews',
+      query_values: query_values,
+    ).to_s
   end
 end
