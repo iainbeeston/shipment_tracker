@@ -14,7 +14,7 @@ class ReleasesController < ApplicationController
   private
 
   def build_projection(events)
-    ReleasesProjection.new(
+    Projections::ReleasesProjection.new(
       per_page: 50,
       git_repository: git_repository,
     ).tap do |projection|

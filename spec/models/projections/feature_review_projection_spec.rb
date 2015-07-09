@@ -1,41 +1,41 @@
 require 'rails_helper'
 
-RSpec.describe FeatureReviewProjection do
+RSpec.describe Projections::FeatureReviewProjection do
   let(:builds_projection) {
     instance_double(
-      BuildsProjection,
+      Projections::BuildsProjection,
       builds: double(:builds),
     )
   }
   let(:deploys_projection) {
     instance_double(
-      DeploysProjection,
+      Projections::DeploysProjection,
       deploys: double(:deploys),
     )
   }
   let(:manual_tests_projection) {
     instance_double(
-      ManualTestsProjection,
+      Projections::ManualTestsProjection,
       qa_submission: double(:qa_submission),
     )
   }
   let(:tickets_projection) {
     instance_double(
-      FeatureReviewTicketsProjection,
+      Projections::FeatureReviewTicketsProjection,
       tickets: double(:tickets),
       approved?: false,
     )
   }
   let(:uatests_projection) {
     instance_double(
-      UatestsProjection,
+      Projections::UatestsProjection,
       uatest: double(:uatest),
     )
   }
   let(:uat_url) { 'http://uat.example.com' }
 
   subject(:projection) {
-    FeatureReviewProjection.new(
+    Projections::FeatureReviewProjection.new(
       uat_url: uat_url,
       builds_projection: builds_projection,
       deploys_projection: deploys_projection,
@@ -58,7 +58,7 @@ RSpec.describe FeatureReviewProjection do
   end
 
   context 'when the tickets projection is approved' do
-    let(:tickets_projection) { instance_double(FeatureReviewTicketsProjection, approved?: true) }
+    let(:tickets_projection) { instance_double(Projections::FeatureReviewTicketsProjection, approved?: true) }
 
     it 'becomes locked' do
       expect(projection).to be_locked
@@ -114,18 +114,18 @@ RSpec.describe FeatureReviewProjection do
 
     shared_examples_for 'a wired up builder' do
       it 'passes the correct values' do
-        allow(BuildsProjection).to receive(:new)
+        allow(Projections::BuildsProjection).to receive(:new)
           .with(apps: apps).and_return(builds_projection)
-        allow(DeploysProjection).to receive(:new)
+        allow(Projections::DeploysProjection).to receive(:new)
           .with(apps: apps, server: server).and_return(deploys_projection)
-        allow(ManualTestsProjection).to receive(:new)
+        allow(Projections::ManualTestsProjection).to receive(:new)
           .with(apps: apps).and_return(manual_tests_projection)
-        allow(FeatureReviewTicketsProjection).to receive(:new)
+        allow(Projections::FeatureReviewTicketsProjection).to receive(:new)
           .with(projection_url: projection_url).and_return(tickets_projection)
-        allow(UatestsProjection).to receive(:new)
+        allow(Projections::UatestsProjection).to receive(:new)
           .with(apps: apps, server: server).and_return(uatests_projection)
 
-        expect(FeatureReviewProjection).to receive(:new).with(
+        expect(Projections::FeatureReviewProjection).to receive(:new).with(
           uat_url: uat_url,
           builds_projection: builds_projection,
           deploys_projection: deploys_projection,
@@ -134,7 +134,8 @@ RSpec.describe FeatureReviewProjection do
           uatests_projection: uatests_projection,
         )
 
-        FeatureReviewProjection.build(apps: apps, uat_url: uat_url, projection_url: projection_url)
+        Projections::FeatureReviewProjection.build(
+          apps: apps, uat_url: uat_url, projection_url: projection_url)
       end
     end
 

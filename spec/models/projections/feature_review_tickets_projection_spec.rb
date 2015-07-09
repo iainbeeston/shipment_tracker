@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-RSpec.describe FeatureReviewTicketsProjection do
+RSpec.describe Projections::FeatureReviewTicketsProjection do
   let(:projection_url) { Support::FeatureReviewUrl.build(app1: 'abc') }
 
-  subject(:projection) { FeatureReviewTicketsProjection.new(projection_url: projection_url) }
+  subject(:projection) { Projections::FeatureReviewTicketsProjection.new(projection_url: projection_url) }
 
   let(:jira_1) { { key: 'JIRA-1', summary: 'Ticket 1' } }
   let(:jira_4) { { key: 'JIRA-4', summary: 'Ticket 4' } }
@@ -52,8 +52,8 @@ RSpec.describe FeatureReviewTicketsProjection do
     let(:url1) { Support::FeatureReviewUrl.build(app1: 'one') }
     let(:url2) { Support::FeatureReviewUrl.build(app2: 'two') }
 
-    subject(:projection1) { FeatureReviewTicketsProjection.new(projection_url: url1) }
-    subject(:projection2) { FeatureReviewTicketsProjection.new(projection_url: url2) }
+    subject(:projection1) { Projections::FeatureReviewTicketsProjection.new(projection_url: url1) }
+    subject(:projection2) { Projections::FeatureReviewTicketsProjection.new(projection_url: url2) }
 
     it 'projects the ticket referenced in the JIRA comments for each projection' do
       events.each do |event|

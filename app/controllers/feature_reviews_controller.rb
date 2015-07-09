@@ -14,7 +14,7 @@ class FeatureReviewsController < ApplicationController
       return redirect_to new_feature_reviews_path
     end
 
-    projection = FeatureReviewProjection.build(
+    projection = Projections::FeatureReviewProjection.build(
       apps: @apps,
       uat_url: uat_url,
       projection_url: request.original_url,
@@ -32,7 +32,7 @@ class FeatureReviewsController < ApplicationController
 
     return unless @version && @application
 
-    projection = FeatureReviewSearchProjection.new(git_repository_for(@application))
+    projection = Projections::FeatureReviewSearchProjection.new(git_repository_for(@application))
     projection.apply_all(Event.in_order_of_creation)
 
     @links = projection.feature_reviews_for(@version)

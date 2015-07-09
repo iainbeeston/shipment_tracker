@@ -25,13 +25,13 @@ RSpec.describe ReleasesController do
     let(:repository) { instance_double(GitRepository) }
     let(:repository_loader) { instance_double(GitRepositoryLoader) }
     let(:releases) { double(:releases) }
-    let(:projection) { instance_double(ReleasesProjection, releases: releases) }
+    let(:projection) { instance_double(Projections::ReleasesProjection, releases: releases) }
     let(:events) { double(:events) }
 
     before do
       allow(GitRepositoryLoader).to receive(:from_rails_config).and_return(repository_loader)
       allow(repository_loader).to receive(:load).with('frontend').and_return(repository)
-      allow(ReleasesProjection).to receive(:new).with(
+      allow(Projections::ReleasesProjection).to receive(:new).with(
         per_page: 50,
         git_repository: repository,
       ).and_return(projection)

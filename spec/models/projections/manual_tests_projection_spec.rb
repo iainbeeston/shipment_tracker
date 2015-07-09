@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-RSpec.describe ManualTestsProjection do
+RSpec.describe Projections::ManualTestsProjection do
   let(:apps) { { 'frontend' => 'abc', 'backend' => 'def' } }
 
-  subject(:projection) { ManualTestsProjection.new(apps: apps) }
+  subject(:projection) { Projections::ManualTestsProjection.new(apps: apps) }
 
   context 'test status is failure' do
     let(:events) {

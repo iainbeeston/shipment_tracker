@@ -9,7 +9,7 @@ RSpec.describe FeatureReviewPresenter do
 
   let(:projection) {
     instance_double(
-      FeatureReviewProjection,
+      Projections::FeatureReviewProjection,
       tickets: tickets,
       builds: builds,
       deploys: deploys,

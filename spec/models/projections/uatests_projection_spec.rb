@@ -1,10 +1,10 @@
 require 'rails_helper'
 
-RSpec.describe UatestsProjection do
+RSpec.describe Projections::UatestsProjection do
   let(:apps) { { 'frontend' => 'abc', 'backend' => 'def' } }
   let(:server) { 'uat.fundingcircle.com' }
 
-  subject(:projection) { UatestsProjection.new(apps: apps, server: server) }
+  subject(:projection) { Projections::UatestsProjection.new(apps: apps, server: server) }
 
   context 'when the server matches' do
     context 'when the app versions match' do

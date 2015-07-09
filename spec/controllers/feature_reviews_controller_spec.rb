@@ -23,7 +23,7 @@ RSpec.describe FeatureReviewsController do
 
   describe 'GET #show' do
     context 'when apps are submitted', :logged_in do
-      let(:projection) { instance_double(FeatureReviewProjection) }
+      let(:projection) { instance_double(Projections::FeatureReviewProjection) }
       let(:presenter) { instance_double(FeatureReviewPresenter) }
       let(:events) { [Event.new, Event.new, Event.new] }
       let(:uat_url) { 'http://uat.fundingcircle.com' }
@@ -42,7 +42,7 @@ RSpec.describe FeatureReviewsController do
       before do
         request.host = 'www.example.com'
 
-        allow(FeatureReviewProjection).to receive(:build).with(
+        allow(Projections::FeatureReviewProjection).to receive(:build).with(
           apps: apps_with_versions,
           uat_url: uat_url,
           projection_url: projection_url,
@@ -76,17 +76,17 @@ RSpec.describe FeatureReviewsController do
     let(:applications) { %w(frontend backend mobile) }
     let(:events) { [instance_double(Event)] }
 
-    let(:projection) { instance_double(FeatureReviewSearchProjection) }
+    let(:projection) { instance_double(Projections::FeatureReviewSearchProjection) }
     let(:git_repository_loader) { instance_double(GitRepositoryLoader) }
-    let(:repository) { instance_double(GitRepository) }
+    let(:repo) { instance_double(GitRepository) }
 
     before do
       allow(RepositoryLocation).to receive(:app_names).and_return(applications)
       allow(GitRepositoryLoader).to receive(:new).and_return(git_repository_loader)
-      allow(FeatureReviewSearchProjection).to receive(:new).with(repository).and_return(projection)
+      allow(Projections::FeatureReviewSearchProjection).to receive(:new).with(repo).and_return(projection)
       allow(Event).to receive(:in_order_of_creation).and_return(events)
 
-      allow(git_repository_loader).to receive(:load).with('frontend').and_return(repository)
+      allow(git_repository_loader).to receive(:load).with('frontend').and_return(repo)
     end
 
     context 'when no search entered' do

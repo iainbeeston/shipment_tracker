@@ -2,15 +2,15 @@ require 'rails_helper'
 require 'support/git_test_repository'
 require 'support/repository_builder'
 
-require 'feature_review_search_projection'
+require 'projections/feature_review_search_projection'
 require 'git_repository'
 
-RSpec.describe FeatureReviewSearchProjection do
+RSpec.describe Projections::FeatureReviewSearchProjection do
   let(:test_git_repo) { Support::RepositoryBuilder.build(git_diagram) }
   let(:rugged_repo) { Rugged::Repository.new(test_git_repo.dir) }
   let(:git_repository) { GitRepository.new(rugged_repo) }
 
-  subject(:projection) { FeatureReviewSearchProjection.new(git_repository) }
+  subject(:projection) { Projections::FeatureReviewSearchProjection.new(git_repository) }
 
   describe '#feature_reviews_for(version)' do
     let(:url_a) { Support::FeatureReviewUrl.build(app1: commit('A')) }

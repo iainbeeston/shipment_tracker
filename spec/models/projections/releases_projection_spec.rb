@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe ReleasesProjection do
+RSpec.describe Projections::ReleasesProjection do
   subject(:projection) {
-    ReleasesProjection.new(
+    Projections::ReleasesProjection.new(
       per_page: 50,
       git_repository: repository,
     )

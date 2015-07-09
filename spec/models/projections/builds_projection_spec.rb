@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe BuildsProjection do
+RSpec.describe Projections::BuildsProjection do
   let(:apps) { { 'frontend' => 'abc', 'backend' => 'def', 'other' => 'xyz' } }
   let(:events) {
     [
@@ -12,7 +12,7 @@ RSpec.describe BuildsProjection do
     ]
   }
 
-  subject(:projection) { BuildsProjection.new(apps: apps) }
+  subject(:projection) { Projections::BuildsProjection.new(apps: apps) }
 
   it 'projects the last build' do
     events.each do |event|

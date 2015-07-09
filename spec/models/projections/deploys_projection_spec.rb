@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe DeploysProjection do
+RSpec.describe Projections::DeploysProjection do
   let(:apps) { { 'frontend' => 'abc', 'backend' => 'def' } }
   let(:server) { 'uat.fundingcircle.com' }
   let(:other_server) { 'other.fundingcircle.com' }
@@ -29,7 +29,7 @@ RSpec.describe DeploysProjection do
     ]
   }
 
-  subject(:projection) { DeploysProjection.new(apps: apps, server: server) }
+  subject(:projection) { Projections::DeploysProjection.new(apps: apps, server: server) }
 
   it 'returns the apps versions deployed on the specified server' do
     events.each do |event|
