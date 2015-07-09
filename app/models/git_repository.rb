@@ -1,8 +1,8 @@
 require 'rugged'
 
 class GitRepository
-  class CommitNotFound < StandardError; end
-  class CommitNotValid < StandardError; end
+  class CommitNotFound < RuntimeError; end
+  class CommitNotValid < RuntimeError; end
 
   def initialize(repository)
     @repository = repository
