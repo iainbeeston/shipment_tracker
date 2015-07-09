@@ -47,5 +47,17 @@ RSpec.describe ReleasesController do
       expect(assigns(:app_name)).to eq('frontend')
       expect(assigns(:releases)).to eq(releases)
     end
+
+    context 'when app id does not exist' do
+      before do
+        allow(repository_loader).to receive(:load).and_raise(GitRepositoryLoader::NotFound)
+      end
+
+      it 'responds with a 404' do
+        get :show, id: 'hokus-pokus'
+
+        expect(response).to be_not_found
+      end
+    end
   end
 end

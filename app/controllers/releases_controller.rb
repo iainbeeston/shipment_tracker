@@ -4,10 +4,11 @@ class ReleasesController < ApplicationController
   end
 
   def show
-    @app_name = app_name
-
     projection = build_projection(Event.in_order_of_creation)
     @releases = projection.releases
+    @app_name = app_name
+  rescue GitRepositoryLoader::NotFound
+    head :not_found
   end
 
   private

@@ -4,6 +4,8 @@ require 'active_support/notifications'
 require 'git_repository'
 
 class GitRepositoryLoader
+  class NotFound < RuntimeError; end
+
   def self.from_rails_config
     config = Rails.configuration
     new(
@@ -23,6 +25,8 @@ class GitRepositoryLoader
 
   def load(repository_name)
     remote_repository = RepositoryLocation.find_by_name(repository_name)
+    fail GitRepositoryLoader::NotFound unless remote_repository
+
     uri = remote_repository.uri
     dir = File.join(cache_dir, "#{remote_repository.id}-#{repository_name}")
 

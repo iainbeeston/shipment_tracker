@@ -22,6 +22,14 @@ RSpec.describe GitRepositoryLoader do
       RepositoryLocation.create(name: 'some_repo', uri: repo_uri)
     end
 
+    context 'when the repository location does not exist' do
+      it 'raises a NotFound exception' do
+        expect {
+          git_repository_loader.load('non-existent-repo')
+        }.to raise_error(GitRepositoryLoader::NotFound)
+      end
+    end
+
     context 'with a file uri' do
       let(:repo_uri) { "file://#{test_git_repo.dir}" }
       let(:test_git_repo) { Support::GitTestRepository.new }
@@ -66,7 +74,7 @@ RSpec.describe GitRepositoryLoader do
         path = git_repository.path
         FileUtils.rm_rf(path)
         Dir.mkdir(path)
-        File.open(File.join(path, 'foo.txt'), 'w') { |f| f.write('foo') }
+        File.open(File.join(path, 'foo.txt'), 'w') do |f| f.write('foo') end
 
         # Reload the git repository
         expect { git_repository_loader.load('some_repo') }.not_to raise_error
