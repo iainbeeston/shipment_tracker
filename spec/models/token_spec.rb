@@ -52,7 +52,7 @@ RSpec.describe Token do
     let(:circleci_type) { EventType.new(endpoint: 'circleci', name: 'CircleCI') }
 
     before do
-      allow(EventTypeRepository).to receive(:build).and_return(event_type_repository)
+      allow(EventTypeRepository).to receive(:from_rails_config).and_return(event_type_repository)
       allow(event_type_repository).to receive(:find_by_endpoint).with('circleci').and_return(circleci_type)
     end
 

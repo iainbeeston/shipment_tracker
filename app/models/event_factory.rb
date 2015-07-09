@@ -3,8 +3,8 @@ class EventFactory
     @event_type_repository = event_type_repository
   end
 
-  def self.build
-    new(EventTypeRepository.build)
+  def self.from_rails_config
+    new(EventTypeRepository.from_rails_config)
   end
 
   def create(endpoint, payload, user_email)

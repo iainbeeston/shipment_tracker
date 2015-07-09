@@ -21,7 +21,7 @@ RSpec.describe TokensController do
     let(:sources) { double(:sources) }
 
     before do
-      allow(EventTypeRepository).to receive(:build).and_return(event_type_repository)
+      allow(EventTypeRepository).to receive(:from_rails_config).and_return(event_type_repository)
       allow(event_type_repository).to receive(:external_types).and_return(sources)
     end
 

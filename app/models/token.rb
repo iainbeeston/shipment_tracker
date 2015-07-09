@@ -10,6 +10,6 @@ class Token < ActiveRecord::Base
   end
 
   def source_name
-    EventTypeRepository.build.find_by_endpoint(source).name
+    EventTypeRepository.from_rails_config.find_by_endpoint(source).name
   end
 end
