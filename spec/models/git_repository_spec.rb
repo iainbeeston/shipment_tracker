@@ -6,6 +6,7 @@ require 'support/repository_builder'
 require 'rugged'
 
 RSpec.describe GitRepository do
+  let(:git_diagram) { '-A' }
   let(:test_git_repo) { Support::RepositoryBuilder.build(git_diagram) }
   let(:rugged_repo) { Rugged::Repository.new(test_git_repo.dir) }
   subject(:repo) { GitRepository.new(rugged_repo) }
@@ -280,6 +281,12 @@ RSpec.describe GitRepository do
       it 'includes the merge commit in the result' do
         is_expected.to contain_exactly(commit('A'), commit('C'))
       end
+    end
+  end
+
+  describe '#path' do
+    it 'returns the rugged repository path' do
+      expect(repo.path).to eq(rugged_repo.path)
     end
   end
 

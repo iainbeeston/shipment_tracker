@@ -87,6 +87,10 @@ class GitRepository
     @repository.lookup(commit_oid).parents.last.oid
   end
 
+  def path
+    @repository.path
+  end
+
   private
 
   attr_reader :repository

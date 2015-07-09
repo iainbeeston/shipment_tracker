@@ -15,7 +15,12 @@ RSpec.describe GitRepositoryLoader do
   end
 
   describe '#load' do
-    let!(:repository_location) { RepositoryLocation.create(name: 'some_repo', uri: repo_uri) }
+    let(:test_git_repo) { Support::GitTestRepository.new }
+    let(:repo_uri) { "file://#{test_git_repo.dir}" }
+
+    before do
+      RepositoryLocation.create(name: 'some_repo', uri: repo_uri)
+    end
 
     context 'with a file uri' do
       let(:repo_uri) { "file://#{test_git_repo.dir}" }
@@ -51,17 +56,20 @@ RSpec.describe GitRepositoryLoader do
 
         git_repository_loader.load('some_repo')
       end
+    end
 
-      context 'when the destination directory is not empty and is not a git repo' do
-        before do
-          dir = File.join(cache_dir, "#{repository_location.id}-some_repo")
-          Dir.mkdir(dir)
-          File.open(File.join(dir, 'foo.txt'), 'w') { |f| f.write('foo') }
-        end
+    context 'when the destination directory is not empty and is not a git repo' do
+      it 'removes the destination directory before cloning' do
+        git_repository = git_repository_loader.load('some_repo')
 
-        it 'removes the destination directory before cloning' do
-          expect { git_repository_loader.load('some_repo') }.not_to raise_error
-        end
+        # Screw up the git repository
+        path = git_repository.path
+        FileUtils.rm_rf(path)
+        Dir.mkdir(path)
+        File.open(File.join(path, 'foo.txt'), 'w') { |f| f.write('foo') }
+
+        # Reload the git repository
+        expect { git_repository_loader.load('some_repo') }.not_to raise_error
       end
     end
 
@@ -119,7 +127,7 @@ RSpec.describe GitRepositoryLoader do
       end
     end
 
-    context 'for an SSH URI' do
+    context 'for an SSH URI with credentials' do
       let(:expected_private_key) { 'PR1V4t3' }
       let(:expected_public_key) { 'PU8L1C' }
       let(:expected_username) { 'fran' }

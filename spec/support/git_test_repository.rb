@@ -19,7 +19,7 @@ module Support
     delegate :checkout, to: :repo
 
     def initialize(dir = Dir.mktmpdir)
-      @dir = dir
+      @dir = File.realpath(dir)
       @repo = Rugged::Repository.init_at(dir)
       @repo.config['user.name'] = 'Unconfigured'
       @repo.config['user.email'] = 'unconfigured@example.com'
