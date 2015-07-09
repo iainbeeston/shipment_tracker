@@ -107,7 +107,7 @@ module Pages
     end
 
     def on_page?
-      page.current_url =~ Regexp.new(Regexp.escape(url_helpers.feature_reviews_path))
+      page.current_url =~ Regexp.new(Regexp.escape(url_helpers.feature_reviews_path + '?'))
     end
   end
 end

@@ -4,14 +4,6 @@ module Projections
   class FeatureReviewProjection
     attr_reader :uat_url, :apps
 
-    extend ActiveModel::Naming
-    include ActiveModel::AttributeMethods
-    include ActiveModel::Validations
-
-    def to_key
-      nil
-    end
-
     def initialize(builds_projection:, deploys_projection:, manual_tests_projection:, tickets_projection:,
                    uatests_projection:, uat_url:)
       @builds_projection = builds_projection

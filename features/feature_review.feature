@@ -9,15 +9,17 @@ Background:
 
 @logged_in
 Scenario: Preparing a Feature Review
+  Given a commit "#abc" by "Alice" is created for app "frontend"
+  And a commit "#def" by "Bob" is created for app "backend"
   When I prepare a feature review for:
-    | field name | content             |
-    | frontend   | abc123456789        |
-    | backend    | def123456789        |
-    | uat_url    | http://www.some.url |
+    | field name      | content             |
+    | frontend        | #abc                |
+    | backend         | #def                |
+    | UAT environment | http://www.some.url |
   Then I should see the feature review page with the applications:
     | app_name | version |
-    | frontend | abc1234 |
-    | backend  | def1234 |
+    | frontend | #abc    |
+    | backend  | #def    |
   And I can see the UAT environment "http://www.some.url"
 
 @logged_in

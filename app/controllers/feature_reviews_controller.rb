@@ -1,6 +1,17 @@
 class FeatureReviewsController < ApplicationController
   def new
     @app_names = RepositoryLocation.app_names
+    @feature_review_form = feature_review_form
+  end
+
+  def create
+    @feature_review_form = feature_review_form
+    if @feature_review_form.valid?
+      redirect_to @feature_review_form.url
+    else
+      @app_names = RepositoryLocation.app_names
+      render :new
+    end
   end
 
   def show
@@ -40,6 +51,15 @@ class FeatureReviewsController < ApplicationController
   end
 
   private
+
+  def feature_review_form
+    form_input = params.fetch(:forms_feature_review_form, {})
+    Forms::FeatureReviewForm.new(
+      apps: form_input[:apps],
+      uat_url: form_input[:uat_url],
+      git_repository_loader: git_repository_loader,
+    )
+  end
 
   def apps
     params.fetch(:apps, {}).select { |_name, version| version.present? }

@@ -18,11 +18,92 @@ RSpec.describe FeatureReviewsController do
   context 'when logged out' do
     it { is_expected.to require_authentication_on(:get, :new) }
     it { is_expected.to require_authentication_on(:get, :show) }
+    it { is_expected.to require_authentication_on(:post, :create) }
     it { is_expected.to require_authentication_on(:get, :search) }
   end
 
-  describe 'GET #show' do
-    context 'when apps are submitted', :logged_in do
+  describe 'GET #new', :logged_in do
+    let(:feature_review_form) { instance_double(Forms::FeatureReviewForm) }
+
+    before do
+      allow(RepositoryLocation).to receive(:app_names).and_return(%w(frontend backend))
+      allow(Forms::FeatureReviewForm).to receive(:new).with(
+        hash_including(
+          apps: nil,
+          uat_url: nil,
+        ),
+      ).and_return(feature_review_form)
+    end
+
+    it 'renders the form' do
+      get :new
+      is_expected.to render_template('new')
+      expect(assigns(:feature_review_form)).to eq(feature_review_form)
+      expect(assigns(:app_names)).to eq(%w(frontend backend))
+    end
+  end
+
+  describe 'POST #create', :logged_in do
+    let(:git_repository_loader) { instance_double(GitRepositoryLoader) }
+    let(:feature_review_form) { instance_double(Forms::FeatureReviewForm) }
+    let(:repo) { instance_double(GitRepository) }
+
+    before do
+      allow(Forms::FeatureReviewForm).to receive(:new).with(
+        apps: { frontend: 'abc' },
+        uat_url: 'http://uat.example.com',
+        git_repository_loader: git_repository_loader,
+      ).and_return(feature_review_form)
+      allow(GitRepositoryLoader).to receive(:new).and_return(git_repository_loader)
+    end
+
+    context 'when the params are invalid' do
+      it 'renders the new page' do
+        allow(Forms::FeatureReviewForm).to receive(:new).and_return(feature_review_form)
+        allow(feature_review_form).to receive(:valid?).and_return(false)
+
+        post :create
+
+        is_expected.to render_template('new')
+        expect(assigns(:feature_review_form)).to eql(feature_review_form)
+      end
+    end
+
+    context 'when the feature review form is invalid' do
+      before do
+        allow(feature_review_form).to receive(:valid?).and_return(false)
+        allow(RepositoryLocation).to receive(:app_names).and_return(%w(frontend backend))
+      end
+
+      it 'renders the new page' do
+        post :create, forms_feature_review_form: {
+          apps: { frontend: 'abc' }, uat_url: 'http://uat.example.com'
+        }
+
+        is_expected.to render_template('new')
+        expect(assigns(:feature_review_form)).to eql(feature_review_form)
+        expect(assigns(:app_names)).to eql(%w(frontend backend))
+      end
+    end
+
+    context 'when the feature review form is valid' do
+      before do
+        allow(feature_review_form).to receive(:valid?).and_return(true)
+        allow(feature_review_form).to receive(:url).and_return('/the/url')
+      end
+
+      it 'redirects to #show' do
+        post :create, forms_feature_review_form: {
+          apps: { frontend: 'abc' }, uat_url: 'http://uat.example.com'
+        }
+
+        is_expected.to redirect_to('/the/url')
+      end
+    end
+  end
+
+  describe 'GET #show', :logged_in do
+    context 'when apps are submitted' do
       let(:projection) { instance_double(Projections::FeatureReviewProjection) }
       let(:presenter) { instance_double(FeatureReviewPresenter) }
       let(:events) { [Event.new, Event.new, Event.new] }
@@ -62,7 +143,7 @@ RSpec.describe FeatureReviewsController do
       end
     end
 
-    context 'when no apps are submitted', :logged_in do
+    context 'when no apps are submitted' do
       it 'shows an error' do
         get :show, apps: { 'frontend' => '', 'backend' => '' }
 

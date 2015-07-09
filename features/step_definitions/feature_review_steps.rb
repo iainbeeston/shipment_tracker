@@ -4,7 +4,7 @@ Given 'I prepare a feature review for:' do |table|
   table.hashes.each do |row|
     prepare_feature_review_page.add(
       field_name: row.fetch('field name'),
-      content: row.fetch('content'),
+      content: scenario_context.resolve_version(row.fetch('content')),
     )
   end
 

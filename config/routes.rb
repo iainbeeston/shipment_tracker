@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   post 'events/:type', to: 'events#create', as: 'events'
 
   # Projections
-  resource :feature_reviews, only: [:new, :show] do
+  resource :feature_reviews, only: [:new, :show, :create] do
     get 'search'
   end
 

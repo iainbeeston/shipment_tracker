@@ -4,7 +4,7 @@ module Support
       new.build(*args)
     end
 
-    def initialize(host = 'http://www.example.com')
+    def initialize(host = 'http://test.host')
       @host = URI.parse(host)
     end
 
