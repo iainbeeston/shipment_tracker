@@ -19,12 +19,12 @@ end
 
 Given 'CircleCi "$outcome" for commit "$version"' do |outcome, version|
   payload = build(
-    :circle_ci_event,
+    :circle_ci_manual_webhook_event,
     success?: outcome == 'passes',
     version: scenario_context.resolve_version(version),
   ).details
 
-  post_event 'circleci', payload
+  post_event 'circleci-manual', payload
 end
 
 Given 'commit "$version" is deployed by "$name" on server "$server"' do |version, name, server|
