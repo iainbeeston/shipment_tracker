@@ -7,6 +7,18 @@ Rails.application.load_tasks
 
 task default: [:spec, :cucumber, :rubocop]
 
+Rake::Task['spec'].clear
+desc 'Run all specs in spec directory (excluding plugin specs)'
+RSpec::Core::RakeTask.new(spec: 'spec:prepare') do |task|
+  task.exclude_pattern = 'spec/performance/**/*.rb'
+end
+
+Rake::Task['spec:performance'].clear
+desc 'Run all the performance specs'
+RSpec::Core::RakeTask.new('spec:performance') do |task|
+  task.pattern = 'spec/performance/**/*.rb'
+end
+
 task :codeclimate do
   require 'simplecov'
   require 'codeclimate-test-reporter'

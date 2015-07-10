@@ -25,4 +25,7 @@
 # Ignore SimpleCov's coverage directory
 /coverage
 
+# Ignore Performance test results
+/performance
+
 .env.development
