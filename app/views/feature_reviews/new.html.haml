@@ -1,9 +1,9 @@
 %h1 Prepare feature for review
 
 = form_for(@feature_review_form, url: feature_reviews_path, html: { class: 'form-horizontal' }) do |f|
-  %ul
+  %ul.list-group
     - @feature_review_form.errors.full_messages.each do |error|
-      %li= error
+      %li.list-group-item.list-group-item-danger= error
 
   .row
     .col-md-6
