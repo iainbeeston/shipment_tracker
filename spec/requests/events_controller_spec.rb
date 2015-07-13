@@ -12,7 +12,7 @@ RSpec.describe 'EventsController' do
       let(:user_email) { 'alice@fundingcircle.com' }
 
       before do
-        login_with_auth0
+        login_with_omniauth(email: user_email)
       end
 
       it 'saves the event' do
@@ -113,21 +113,5 @@ RSpec.describe 'EventsController' do
         expect(response).to be_forbidden
       end
     end
-  end
-
-  private
-
-  def login_with_auth0
-    OmniAuth.config.test_mode = true
-    OmniAuth.config.mock_auth[:auth0] = {
-      'uid' => 'xzy',
-      'info' => {
-        'email' => user_email,
-        'first_name' => 'Alice',
-      },
-    }
-    get Rails.configuration.login_callback_url
-  ensure
-    OmniAuth.config.test_mode = false
   end
 end
