@@ -1,4 +1,6 @@
 require 'rails_helper'
+require 'support/git_test_repository'
+require 'support/repository_builder'
 
 require 'benchmark'
 require 'fileutils'
@@ -40,9 +42,7 @@ RSpec.describe 'Projection performance', type: :request do
 
   def progression(start: 10_000, points: 10, factor: 2, &block)
     (points - 1).times.reduce([start]) { |a, _e| a << a.last * factor }.each do |count|
-      DatabaseCleaner.cleaning do
-        block.call(count)
-      end
+      block.call(count)
     end
   end
 
@@ -55,17 +55,65 @@ RSpec.describe 'Projection performance', type: :request do
     it 'measures the request time' do
       csv(name: 'feature_review', headers: ['Count', 'Time to Run']) do |file|
         progression do |event_count|
-          create :jira_event, comment_body: "Here you go: #{feature_review_url}"
-          create :circle_ci_event, version: apps['frontend']
-          apps.each do |name, version|
-            create :deploy_event, server: server, app_name: name, version: version
-          end
-          create :manual_test_event, apps: apps.map { |name, version| { name: name, version: version } }
-          create :uat_event, server: server
+          DatabaseCleaner.cleaning do
+            create :jira_event, comment_body: "Here you go: #{feature_review_url}"
+            create :circle_ci_event, version: apps['frontend']
+            apps.each do |name, version|
+              create :deploy_event, server: server, app_name: name, version: version
+            end
+            create :manual_test_event, apps: apps.map { |name, version| { name: name, version: version } }
+            create :uat_event, server: server
 
-          file << benchmark(event_count) do
-            get(feature_review_path)
+            file << benchmark(event_count) do
+              get(feature_review_path)
+            end
           end
+        end
+      end
+    end
+  end
+
+  describe 'Releases' do
+    let(:repo_name) { 'repo' }
+    let(:test_git_repo) { Support::GitTestRepository.new }
+    let(:repository_builder) { Support::RepositoryBuilder.new(test_git_repo) }
+
+    let(:git_diagram) do
+      <<-'EOS'
+           o-A-B
+          /     \
+        -o---o---C---o
+      EOS
+    end
+
+    before do
+      RepositoryLocation.create(name: repo_name, uri: "file://#{test_git_repo.dir}")
+      puts test_git_repo.dir
+    end
+
+    def add_branches(count)
+      count.times do
+        repository_builder.build(git_diagram)
+        version = test_git_repo.commit_for_pretend_version('B')
+        feature_review_url = Support::FeatureReviewUrl.build(frontend: version)
+        create :jira_event, comment_body: "Here you go: #{feature_review_url}"
+      end
+    end
+
+    it 'measures the request time' do
+      points = 90
+      increment = 50
+      csv(name: 'releases', headers: ['Commit Count', 'Event Count', 'Time to Run']) do |file|
+        points.times do
+          add_branches(increment)
+
+          time = Benchmark.realtime do
+            get(release_path(repo_name))
+          end
+
+          results = [test_git_repo.total_commits, Event.count, time]
+          file << results
+          puts results.inspect
         end
       end
     end
