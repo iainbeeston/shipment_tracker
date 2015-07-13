@@ -2,19 +2,10 @@ require 'rugged'
 require 'active_support/inflector/transliterate'
 
 module Support
-  class GitTestCommit
-    attr_reader :version, :pretend_version
-
-    def initialize(version, pretend_version)
-      @version = version
-      @pretend_version = pretend_version
-    end
-  end
-
   class GitTestRepository
     include ActiveSupport::Inflector
 
-    attr_reader :dir
+    attr_reader :dir, :total_commits
 
     delegate :checkout, to: :repo
 
@@ -24,6 +15,8 @@ module Support
       @repo.config['user.name'] = 'Unconfigured'
       @repo.config['user.email'] = 'unconfigured@example.com'
       @now = Time.at(0)
+      @total_commits = 0
+      @commits = {}
     end
 
     def create_commit(author_name: 'Alice', pretend_version: nil, message: 'A new commit', time: nil)
@@ -42,9 +35,8 @@ module Support
         message: message,
         author_name: author_name,
         time: time,
-      ).tap do |commit|
-        commits.push GitTestCommit.new(commit.oid, pretend_version)
-      end
+        pretend_version: pretend_version,
+      )
     end
 
     def create_branch(branch_name)
@@ -68,25 +60,23 @@ module Support
         author_name: author_name,
         time: time,
         parents: [master_tip_oid, branch_tip_oid],
-      ).tap do |commit|
-        commits.push GitTestCommit.new(commit.oid, pretend_version)
-      end
+        pretend_version: pretend_version,
+      )
     end
 
     def commit_for_pretend_version(pretend_version)
-      commit = commits.find { |c| c.pretend_version == pretend_version }
-      commit && commit.version
+      commits[pretend_version]
     end
 
-    def commits
-      @commits ||= []
+    def commit?(version)
+      repo.exists?(version)
     end
 
     private
 
-    attr_reader :repo
+    attr_reader :repo, :commits
 
-    def create_rugged_commit(tree_oid:, message:, author_name:, time:, parents: nil)
+    def create_rugged_commit(tree_oid:, message:, author_name:, time:, pretend_version:, parents: nil)
       parents ||= repo.empty? ? [] : [repo.head.target].compact
 
       commit_oid = Rugged::Commit.create(
@@ -99,7 +89,8 @@ module Support
         update_ref: 'HEAD',
       )
 
-      repo.lookup(commit_oid)
+      @commits[pretend_version] = commit_oid if pretend_version
+      @total_commits += 1
     end
 
     def author(author_name, time)

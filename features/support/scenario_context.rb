@@ -110,7 +110,7 @@ module Support
     end
 
     def app_for_version(version)
-      @repos.find { |_app_name, repo| repo.commits.map(&:version).include?(version) }.first
+      @repos.find { |_app_name, repo| repo.commit?(version) }.first
     end
 
     def build(*args)

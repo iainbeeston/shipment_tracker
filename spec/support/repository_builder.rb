@@ -1,5 +1,7 @@
 require 'support/git_test_repository'
 
+require 'securerandom'
+
 module Support
   class RepositoryBuilder
     def self.build(git_ascii_graph)
@@ -57,15 +59,17 @@ Support::RepositoryBuilder.add_example(
         -o---o---C---o
       EOS
   proc do |repo|
+    branch_name = "branch-#{SecureRandom.hex(10)}"
+
     repo.create_commit
-    repo.create_branch('branch')
-    repo.checkout_branch('branch')
+    repo.create_branch(branch_name)
+    repo.checkout_branch(branch_name)
     repo.create_commit
     repo.create_commit(pretend_version: 'A')
     repo.create_commit(pretend_version: 'B')
     repo.checkout_branch('master')
     repo.create_commit
-    repo.merge_branch(branch_name: 'branch', pretend_version: 'C')
+    repo.merge_branch(branch_name: branch_name, pretend_version: 'C')
     repo.create_commit
   end,
 )
@@ -94,9 +98,11 @@ Support::RepositoryBuilder.add_example(
         -o-----o
       EOS
   proc do |repo|
+    branch_name = "branch-#{SecureRandom.hex(10)}"
+
     repo.create_commit
-    repo.create_branch('branch')
-    repo.checkout_branch('branch')
+    repo.create_branch(branch_name)
+    repo.checkout_branch(branch_name)
     repo.create_commit
     repo.create_commit(pretend_version: 'A')
     repo.create_commit
@@ -112,16 +118,18 @@ Support::RepositoryBuilder.add_example(
         -o----o----o
       EOS
   proc do |repo|
+    branch_name = "branch-#{SecureRandom.hex(10)}"
+
     repo.create_commit
-    repo.create_branch('branch')
-    repo.checkout_branch('branch')
+    repo.create_branch(branch_name)
+    repo.checkout_branch(branch_name)
     repo.create_commit(pretend_version: 'A')
     repo.create_commit(pretend_version: 'B')
     repo.create_commit(pretend_version: 'C')
     repo.create_commit
     repo.checkout_branch('master')
     repo.create_commit
-    repo.merge_branch(branch_name: 'branch')
+    repo.merge_branch(branch_name: branch_name)
   end,
 )
 
@@ -132,14 +140,16 @@ Support::RepositoryBuilder.add_example(
         -o--o--C
       EOS
   proc do |repo|
+    branch_name = "branch-#{SecureRandom.hex(10)}"
+
     repo.create_commit
-    repo.create_branch('branch')
-    repo.checkout_branch('branch')
+    repo.create_branch(branch_name)
+    repo.checkout_branch(branch_name)
     repo.create_commit(pretend_version: 'A')
     repo.create_commit(pretend_version: 'B')
     repo.checkout_branch('master')
     repo.create_commit
-    repo.merge_branch(branch_name: 'branch', pretend_version: 'C')
+    repo.merge_branch(branch_name: branch_name, pretend_version: 'C')
   end,
 )
 
@@ -160,13 +170,15 @@ Support::RepositoryBuilder.add_example(
     -o-----C---D
   EOS
   proc do |repo|
+    branch_name = "branch-#{SecureRandom.hex(10)}"
+
     repo.create_commit
-    repo.create_branch('branch')
-    repo.checkout_branch('branch')
+    repo.create_branch(branch_name)
+    repo.checkout_branch(branch_name)
     repo.create_commit(pretend_version: 'A')
     repo.create_commit(pretend_version: 'B')
     repo.checkout_branch('master')
-    repo.merge_branch(branch_name: 'branch', pretend_version: 'C')
+    repo.merge_branch(branch_name: branch_name, pretend_version: 'C')
     repo.create_commit(pretend_version: 'D')
   end,
 )
