@@ -70,7 +70,7 @@ module Projections
     private
 
     def self.host_from_url(url)
-      Addressable::URI.heuristic_parse(url, scheme: 'http').host
+      Addressable::URI.heuristic_parse(url, scheme: 'http').try(:host)
     end
     private_class_method :host_from_url
 

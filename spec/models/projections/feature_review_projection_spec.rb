@@ -159,6 +159,12 @@ RSpec.describe Projections::FeatureReviewProjection do
 
       it_behaves_like 'a wired up builder'
     end
+
+    context 'when the uat_url is nil' do
+      let(:uat_url) { nil }
+      let(:server) { nil }
+      it_behaves_like 'a wired up builder'
+    end
   end
 
   describe '#tickets' do
