@@ -39,9 +39,18 @@ RSpec.describe Forms::FeatureReviewForm do
   end
 
   describe '#apps' do
-    let(:apps) { { 'app1' => 'a', 'app2' => 'b', 'app3' => '' } }
-    it 'returns the apps with empty ones filtered out' do
-      expect(feature_review_form.apps).to eql('app1' => 'a', 'app2' => 'b')
+    context 'when there are no app versions' do
+      let(:apps) { nil }
+      it 'return an empty hash' do
+        expect(feature_review_form.apps).to eql({})
+      end
+    end
+
+    context 'when there are no app versions' do
+      let(:apps) { { 'app1' => 'a', 'app2' => 'b', 'app3' => '' } }
+      it 'returns the apps with empty ones filtered out' do
+        expect(feature_review_form.apps).to eql('app1' => 'a', 'app2' => 'b')
+      end
     end
   end
 

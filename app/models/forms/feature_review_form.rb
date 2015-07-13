@@ -36,6 +36,7 @@ module Forms
     end
 
     def apps
+      return {} unless @apps
       @apps.select { |_app_name, version| version.present? }
     end
 
