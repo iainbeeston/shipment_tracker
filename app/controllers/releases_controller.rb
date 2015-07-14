@@ -8,7 +8,7 @@ class ReleasesController < ApplicationController
     @releases = projection.releases
     @app_name = app_name
   rescue GitRepositoryLoader::NotFound
-    head :not_found
+    render text: 'Repository not found', status: :not_found
   end
 
   private
