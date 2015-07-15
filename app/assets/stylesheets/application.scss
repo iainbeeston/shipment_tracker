@@ -7,6 +7,10 @@ body {
   font-family: verdana, sans-serif;
 }
 
+h1.title {
+  margin-bottom: 32px;
+}
+
 .panel {
   margin-top: 10px;
 
@@ -27,10 +31,6 @@ body {
   .qa-reject {
     margin-bottom: 12px;
   }
-}
-
-#search-form {
-  margin: 40px 0;
 }
 
 .glyphicon {
