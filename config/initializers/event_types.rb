@@ -1,4 +1,3 @@
-# rubocop:disable Metrics/LineLength
 Rails.application.config.event_types = [
   # Waiting on CircleCI to support SNI on SSL webhooks
   # EventType.new(name: 'CircleCI (webhook)', endpoint: 'circleci', event_class: CircleCiEvent),
@@ -9,4 +8,3 @@ Rails.application.config.event_types = [
   EventType.new(name: 'UAT', endpoint: 'uat', event_class: UatEvent),
   EventType.new(name: 'Manual test', endpoint: 'manual_test', event_class: ManualTestEvent, internal: true),
 ]
-# rubocop:enable Metrics/LineLength
