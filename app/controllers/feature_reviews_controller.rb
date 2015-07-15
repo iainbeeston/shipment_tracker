@@ -43,10 +43,13 @@ class FeatureReviewsController < ApplicationController
 
     return unless @version && @application
 
-    projection = Projections::FeatureReviewSearchProjection.new(git_repository_for(@application))
+    projection = Projections::FeatureReviewSearchProjection.new(
+      git_repository: git_repository_for(@application),
+      version: @version,
+    )
     projection.apply_all(Event.in_order_of_creation)
 
-    @links = projection.feature_reviews_for(@version)
+    @links = projection.feature_reviews
     flash[:error] = 'No Feature Reviews found.' if @links.empty?
   end
 

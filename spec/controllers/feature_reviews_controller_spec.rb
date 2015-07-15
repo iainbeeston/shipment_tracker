@@ -164,13 +164,18 @@ RSpec.describe FeatureReviewsController do
     before do
       allow(RepositoryLocation).to receive(:app_names).and_return(applications)
       allow(GitRepositoryLoader).to receive(:new).and_return(git_repository_loader)
-      allow(Projections::FeatureReviewSearchProjection).to receive(:new).with(repo).and_return(projection)
+      allow(Projections::FeatureReviewSearchProjection).to receive(:new).with(
+        git_repository: repo,
+        version: version,
+      ).and_return(projection)
       allow(Event).to receive(:in_order_of_creation).and_return(events)
 
       allow(git_repository_loader).to receive(:load).with('frontend').and_return(repo)
     end
 
     context 'when no search entered' do
+      let(:version) { nil }
+
       it 'it assigns links as empty' do
         get :search
         expect(assigns(:links)).to be_empty
@@ -180,12 +185,13 @@ RSpec.describe FeatureReviewsController do
 
     context 'when search query submitted' do
       let(:expected_links) { ['/somelink'] }
+      let(:version) { 'abc123' }
 
       it 'assigns links for found Feature Reviews' do
         expect(projection).to receive(:apply_all).with(events).ordered
-        expect(projection).to receive(:feature_reviews_for).with('abc123').and_return(expected_links).ordered
+        expect(projection).to receive(:feature_reviews).and_return(expected_links).ordered
 
-        get :search, version: 'abc123', application: 'frontend'
+        get :search, version: version, application: 'frontend'
 
         expect(assigns(:links)).to eq(expected_links)
         expect(assigns(:applications)).to eq(applications)

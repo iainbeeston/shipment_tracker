@@ -10,41 +10,11 @@ RSpec.describe Projections::FeatureReviewSearchProjection do
   let(:rugged_repo) { Rugged::Repository.new(test_git_repo.dir) }
   let(:git_repository) { GitRepository.new(rugged_repo) }
 
-  subject(:projection) { Projections::FeatureReviewSearchProjection.new(git_repository) }
-
   describe '#feature_reviews_for(version)' do
     let(:url_a) { Support::FeatureReviewUrl.build(app1: commit('A')) }
     let(:url_b) { Support::FeatureReviewUrl.build(app1: commit('B')) }
     let(:url_c) { Support::FeatureReviewUrl.build(app1: commit('C')) }
     let(:url_d) { Support::FeatureReviewUrl.build(app1: commit('D')) }
-
-    let(:feature_reviews_urls) { [] }
-
-    def test(commit_name, expected)
-      actual = projection.feature_reviews_for(commit(commit_name))
-      expect(actual).to(
-        match_array(expected),
-        <<-EOS
-With commits:
-  A = #{commit('A')}
-  B = #{commit('B')}
-  C = #{commit('C')}
-  D = #{commit('D')}
-
-And feature_review_urls:
-  #{feature_reviews_urls.join("\n  ")}
-
-In tree:
-
-  #{git_diagram.strip_heredoc.gsub("\n", "\n  ")}
-Expected #{commit_name} to return:
-  #{expected.join("\n  ")},
-
-Actually got:
-  #{actual.join("\n  ")}
-EOS
-      )
-    end
 
     let(:git_diagram) do
       <<-'EOS'
@@ -54,23 +24,30 @@ EOS
       EOS
     end
 
-    before do
-      projection.apply_all feature_reviews_urls.map { |url|
-        build(:jira_event, comment_body: "Here you go: #{url}")
-      }
+    let(:events) { feature_reviews_urls.map { |url| build(:jira_event, comment_body: "Check: #{url}") } }
+
+    def projection_for(version)
+      Projections::FeatureReviewSearchProjection.new(
+        git_repository: git_repository,
+        version: commit(version),
+      ).tap do |projection|
+        projection.apply_all(events)
+      end
     end
 
     context 'when a feature review exists for A' do
       let(:feature_reviews_urls) { [url_a] }
 
-      it do
-        aggregate_failures 'testing each permutation' do
+      it 'assigns that feature review to A only' do
+        aggregate_failures do
           {
             'A' => [url_a],
             'B' => [],
             'C' => [],
             'D' => [],
-          }.each(&method(:test))
+          }.each do |commit_name, expected_urls|
+            expect(projection_for(commit_name).feature_reviews).to eq(expected_urls)
+          end
         end
       end
     end
@@ -78,14 +55,16 @@ EOS
     context 'when a feature review exists for B' do
       let(:feature_reviews_urls) { [url_b] }
 
-      it do
-        aggregate_failures 'testing each permutation' do
+      it 'assigns that feature review to A, B & C' do
+        aggregate_failures do
           {
             'A' => [url_b],
             'B' => [url_b],
             'C' => [url_b],
             'D' => [],
-          }.each(&method(:test))
+          }.each do |commit_name, expected_urls|
+            expect(projection_for(commit_name).feature_reviews).to eq(expected_urls)
+          end
         end
       end
     end
@@ -93,14 +72,16 @@ EOS
     context 'when a feature review exists for C' do
       let(:feature_reviews_urls) { [url_c] }
 
-      it do
-        aggregate_failures 'testing each permutation' do
+      it 'assigns that feature review to A, B & C' do
+        aggregate_failures do
           {
             'A' => [url_c],
             'B' => [url_c],
             'C' => [url_c],
             'D' => [],
-          }.each(&method(:test))
+          }.each do |commit_name, expected_urls|
+            expect(projection_for(commit_name).feature_reviews).to eq(expected_urls)
+          end
         end
       end
     end
@@ -108,38 +89,48 @@ EOS
     context 'when a feature review exists for A, B and D' do
       let(:feature_reviews_urls) { [url_a, url_b, url_d] }
 
-      it do
-        aggregate_failures 'testing each permutation' do
+      it 'assigns that feature reviews correctly' do
+        aggregate_failures do
           {
             'A' => [url_a, url_b],
             'B' => [url_b],
             'C' => [url_b],
             'D' => [url_d],
-          }.each(&method(:test))
+          }.each do |commit_name, expected_urls|
+            expect(projection_for(commit_name).feature_reviews).to eq(expected_urls)
+          end
         end
       end
     end
 
     context 'when searching for a non existent commit' do
-      let(:commit_id) { 'def' }
-      let(:feature_reviews_urls) { [Support::FeatureReviewUrl.build(app1: commit_id)] }
+      let(:version) { 'foo' }
+      let(:feature_reviews_url) { Support::FeatureReviewUrl.build(app1: version) }
 
-      it 'does not return a URL' do
-        expect(projection.feature_reviews_for(commit_id)).to be_empty
+      subject(:projection) do
+        Projections::FeatureReviewSearchProjection.new(
+          git_repository: git_repository,
+          version: version,
+        )
       end
-    end
 
-    context 'when given an irrelevant jira event' do
       it 'does not return a URL' do
-        projection.apply_all([build(:jira_event, comment_body: nil)])
-        expect(projection.feature_reviews_for('random_string')).to be_empty
+        projection.apply_all([build(:jira_event, comment_body: feature_reviews_url)])
+        expect(projection.feature_reviews).to be_empty
       end
     end
 
     context 'when given non jira events' do
+      subject(:projection) do
+        Projections::FeatureReviewSearchProjection.new(
+          git_repository: git_repository,
+          version: 'foo',
+        )
+      end
+
       it 'does not blow up' do
         projection.apply_all([build(:circle_ci_event)])
-        expect { projection.feature_reviews_for('1') }.to_not raise_error
+        expect { projection.feature_reviews }.to_not raise_error
       end
     end
   end

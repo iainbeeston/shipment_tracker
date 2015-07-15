@@ -1,7 +1,8 @@
 module Projections
   class FeatureReviewSearchProjection
-    def initialize(git_repository)
+    def initialize(git_repository:, version:)
       @git_repository = git_repository
+      @version = version
       @feature_review_locations = Set.new
     end
 
@@ -14,7 +15,7 @@ module Projections
       add_feature_review_locations(FeatureReviewLocation.from_text(event.comment))
     end
 
-    def feature_reviews_for(version)
+    def feature_reviews
       return [] unless git_repository.exists?(version)
 
       resolved_version = resolve(version)
@@ -24,7 +25,7 @@ module Projections
 
     private
 
-    attr_reader :feature_review_locations, :git_repository
+    attr_reader :feature_review_locations, :git_repository, :version
 
     def resolve(version)
       return version unless git_repository.merge?(version)
