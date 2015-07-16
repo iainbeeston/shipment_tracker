@@ -1,9 +1,11 @@
 module Projections
   class FeatureReviewSearchProjection
+    attr_reader :feature_reviews
+
     def initialize(git_repository:, version:)
       @git_repository = git_repository
-      @version = version
-      @feature_review_locations = Set.new
+      @versions = resolve_versions(version)
+      @feature_reviews = Set.new
     end
 
     def apply_all(events)
@@ -12,28 +14,30 @@ module Projections
 
     def apply(event)
       return unless event.is_a?(JiraEvent) && event.issue?
-      add_feature_review_locations(FeatureReviewLocation.from_text(event.comment))
-    end
-
-    def feature_reviews
-      return [] unless git_repository.exists?(version)
-
-      resolved_version = resolve(version)
-      versions = [resolved_version] + child_versions(resolved_version)
-      feature_review_locations.select { |location| (location.versions & versions).any? }.map(&:url)
+      relevant_urls = FeatureReviewLocation.from_text(event.comment).select { |location|
+        (location.versions & versions).any?
+      }.map(&:url)
+      add_feature_reviews(relevant_urls)
     end
 
     private
 
-    attr_reader :feature_review_locations, :git_repository, :version
+    attr_reader :git_repository, :versions
 
     def resolve(version)
       return version unless git_repository.merge?(version)
       git_repository.branch_parent(version)
     end
 
-    def add_feature_review_locations(locations)
-      @feature_review_locations.merge(locations)
+    def resolve_versions(version)
+      return [] unless git_repository.exists?(version)
+
+      resolved_version = resolve(version)
+      [resolved_version] + child_versions(resolved_version)
+    end
+
+    def add_feature_reviews(feature_reviews)
+      @feature_reviews.merge(feature_reviews)
     end
 
     def child_versions(version)

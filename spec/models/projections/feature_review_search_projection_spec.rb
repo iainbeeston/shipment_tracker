@@ -46,7 +46,7 @@ RSpec.describe Projections::FeatureReviewSearchProjection do
             'C' => [],
             'D' => [],
           }.each do |commit_name, expected_urls|
-            expect(projection_for(commit_name).feature_reviews).to eq(expected_urls)
+            expect(projection_for(commit_name).feature_reviews).to match_array(expected_urls)
           end
         end
       end
@@ -63,7 +63,7 @@ RSpec.describe Projections::FeatureReviewSearchProjection do
             'C' => [url_b],
             'D' => [],
           }.each do |commit_name, expected_urls|
-            expect(projection_for(commit_name).feature_reviews).to eq(expected_urls)
+            expect(projection_for(commit_name).feature_reviews).to match_array(expected_urls)
           end
         end
       end
@@ -80,7 +80,7 @@ RSpec.describe Projections::FeatureReviewSearchProjection do
             'C' => [url_c],
             'D' => [],
           }.each do |commit_name, expected_urls|
-            expect(projection_for(commit_name).feature_reviews).to eq(expected_urls)
+            expect(projection_for(commit_name).feature_reviews).to match_array(expected_urls)
           end
         end
       end
@@ -97,7 +97,7 @@ RSpec.describe Projections::FeatureReviewSearchProjection do
             'C' => [url_b],
             'D' => [url_d],
           }.each do |commit_name, expected_urls|
-            expect(projection_for(commit_name).feature_reviews).to eq(expected_urls)
+            expect(projection_for(commit_name).feature_reviews).to match_array(expected_urls)
           end
         end
       end
