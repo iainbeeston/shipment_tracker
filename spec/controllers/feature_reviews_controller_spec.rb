@@ -155,7 +155,6 @@ RSpec.describe FeatureReviewsController do
 
   describe 'GET #search', :logged_in do
     let(:applications) { %w(frontend backend mobile) }
-    let(:events) { [instance_double(Event)] }
 
     let(:version_resolver) { instance_double(VersionResolver) }
     let(:projection) { instance_double(Projections::FeatureReviewSearchProjection) }
@@ -168,10 +167,9 @@ RSpec.describe FeatureReviewsController do
       allow(version_resolver).to receive(:related_versions).with(version).and_return(related_versions)
       allow(RepositoryLocation).to receive(:app_names).and_return(applications)
       allow(GitRepositoryLoader).to receive(:new).and_return(git_repository_loader)
-      allow(Projections::FeatureReviewSearchProjection).to receive(:new).with(
+      allow(Projections::FeatureReviewSearchProjection).to receive(:load).with(
         versions: related_versions,
       ).and_return(projection)
-      allow(Event).to receive(:in_order_of_creation).and_return(events)
 
       allow(git_repository_loader).to receive(:load).with('frontend').and_return(repo)
     end
@@ -191,7 +189,6 @@ RSpec.describe FeatureReviewsController do
       let(:version) { 'abc123' }
 
       it 'assigns links for found Feature Reviews' do
-        expect(projection).to receive(:apply_all).with(events).ordered
         expect(projection).to receive(:feature_reviews).and_return(expected_links).ordered
 
         get :search, version: version, application: 'frontend'

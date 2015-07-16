@@ -31,6 +31,7 @@ require 'support/require_authentication_matcher'
 ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
+  config.include Support::FeatureReviewUrl::Helpers
   config.include Support::Login::Controller, type: :controller
   config.include Support::Login::Request, type: :request
   config.before(:each, :logged_in) do

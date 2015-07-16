@@ -23,9 +23,32 @@ RSpec.describe Projections::FeatureReviewSearchProjection do
     end
   end
 
-  private
+  describe '#load' do
+    let(:versions) { %w(abc def 123) }
+    let(:feature_review_urls) { %w(http://foo http://bar) }
+    let(:recent_events) { [Event.new] }
+    let(:repository) { instance_double(Repositories::FeatureReviewRepository) }
 
-  def url_for(apps)
-    Support::FeatureReviewUrl.new.build(apps)
+    let(:expected_projection) { instance_double(Projections::FeatureReviewSearchProjection) }
+
+    it 'inflates the projection and feeds it remaining events' do
+      allow(repository).to receive(:feature_reviews_for).with(versions).and_return(feature_review_urls)
+      allow(repository).to receive(:last_id).and_return(123)
+
+      allow(Event).to receive(:after_id).with(123).and_return(recent_events)
+
+      allow(Projections::FeatureReviewSearchProjection).to receive(:new)
+        .with(versions: versions, feature_reviews: feature_review_urls)
+        .and_return(expected_projection)
+
+      expect(expected_projection).to receive(:apply_all).with(recent_events)
+
+      loaded_projection = Projections::FeatureReviewSearchProjection.load(
+        versions: versions,
+        repository: repository,
+      )
+
+      expect(loaded_projection).to equal(expected_projection)
+    end
   end
 end
