@@ -157,16 +157,19 @@ RSpec.describe FeatureReviewsController do
     let(:applications) { %w(frontend backend mobile) }
     let(:events) { [instance_double(Event)] }
 
+    let(:version_resolver) { instance_double(VersionResolver) }
     let(:projection) { instance_double(Projections::FeatureReviewSearchProjection) }
     let(:git_repository_loader) { instance_double(GitRepositoryLoader) }
     let(:repo) { instance_double(GitRepository) }
+    let(:related_versions) { %w(abc def ghi) }
 
     before do
+      allow(VersionResolver).to receive(:new).with(repo).and_return(version_resolver)
+      allow(version_resolver).to receive(:related_versions).with(version).and_return(related_versions)
       allow(RepositoryLocation).to receive(:app_names).and_return(applications)
       allow(GitRepositoryLoader).to receive(:new).and_return(git_repository_loader)
       allow(Projections::FeatureReviewSearchProjection).to receive(:new).with(
-        git_repository: repo,
-        version: version,
+        versions: related_versions,
       ).and_return(projection)
       allow(Event).to receive(:in_order_of_creation).and_return(events)
 

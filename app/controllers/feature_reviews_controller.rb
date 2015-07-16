@@ -43,10 +43,8 @@ class FeatureReviewsController < ApplicationController
 
     return unless @version && @application
 
-    projection = Projections::FeatureReviewSearchProjection.new(
-      git_repository: git_repository_for(@application),
-      version: @version,
-    )
+    versions = VersionResolver.new(git_repository_for(@application)).related_versions(@version)
+    projection = Projections::FeatureReviewSearchProjection.new(versions: versions)
     projection.apply_all(Event.in_order_of_creation)
 
     @links = projection.feature_reviews

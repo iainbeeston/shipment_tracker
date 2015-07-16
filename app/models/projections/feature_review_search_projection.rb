@@ -2,9 +2,8 @@ module Projections
   class FeatureReviewSearchProjection
     attr_reader :feature_reviews
 
-    def initialize(git_repository:, version:)
-      @git_repository = git_repository
-      @versions = resolve_versions(version)
+    def initialize(versions:)
+      @versions = versions
       @feature_reviews = Set.new
     end
 
@@ -22,26 +21,10 @@ module Projections
 
     private
 
-    attr_reader :git_repository, :versions
-
-    def resolve(version)
-      return version unless git_repository.merge?(version)
-      git_repository.branch_parent(version)
-    end
-
-    def resolve_versions(version)
-      return [] unless git_repository.exists?(version)
-
-      resolved_version = resolve(version)
-      [resolved_version] + child_versions(resolved_version)
-    end
+    attr_reader :versions
 
     def add_feature_reviews(feature_reviews)
       @feature_reviews.merge(feature_reviews)
-    end
-
-    def child_versions(version)
-      git_repository.get_descendant_commits_of_branch(version).map(&:id)
     end
   end
 end
