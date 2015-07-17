@@ -7,7 +7,7 @@ module Projections
         versions: versions,
         feature_reviews: repository.feature_reviews_for(versions),
       ).tap do |projection|
-        projection.apply_all(Event.after_id(repository.last_id))
+        projection.apply_all(repository.new_events)
       end
     end
 

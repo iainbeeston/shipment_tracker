@@ -9,6 +9,18 @@ module Repositories
       store.where('versions && ARRAY[?]::varchar[]', versions).pluck(:url).to_set
     end
 
+    def new_events
+      Event.after_id(last_id)
+    end
+
+    def update
+      apply_all(new_events)
+    end
+
+    private
+
+    attr_reader :count, :store
+
     def last_id
       count.find_by_snapshot_name(snapshot_name).try(:event_id) || 0
     end
@@ -27,10 +39,6 @@ module Repositories
         update_count last_id
       end
     end
-
-    private
-
-    attr_reader :count, :store
 
     def locations(text)
       FeatureReviewLocation.from_text(text).map { |location|

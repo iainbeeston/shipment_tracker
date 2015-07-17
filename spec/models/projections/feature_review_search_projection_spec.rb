@@ -33,9 +33,7 @@ RSpec.describe Projections::FeatureReviewSearchProjection do
 
     it 'inflates the projection and feeds it remaining events' do
       allow(repository).to receive(:feature_reviews_for).with(versions).and_return(feature_review_urls)
-      allow(repository).to receive(:last_id).and_return(123)
-
-      allow(Event).to receive(:after_id).with(123).and_return(recent_events)
+      allow(repository).to receive(:new_events).and_return(recent_events)
 
       allow(Projections::FeatureReviewSearchProjection).to receive(:new)
         .with(versions: versions, feature_reviews: feature_review_urls)
