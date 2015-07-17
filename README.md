@@ -63,6 +63,20 @@ You can also use Foreman to start the server and use settings from Heroku:
 bin/boot_with_heroku_settings
 ```
 
+### Enabling periodic snapshots
+
+In order to stay performant, Shipment Tracker needs to regularly record snapshots. This can be setup using the
+[`whenever` gem](https://github.com/javan/whenever) or, if you're on Heroku, using the
+[Heroku Scheduler](https://devcenter.heroku.com/articles/scheduler).
+
+Just make sure the following command runs every few minutes:
+
+```
+rake jobs:update_events
+```
+
+*Warning:* If you're application is deployed on multiple servers, make sure the recurring task runs only on one server.
+
 ## License
 
 Copyright © 2015 Funding Circle Ltd.
