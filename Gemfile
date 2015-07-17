@@ -22,6 +22,7 @@ gem 'uglifier'
 gem 'unicorn'
 gem 'unicorn-rails'
 gem 'virtus'
+gem 'whenever'
 
 group :development do
   gem 'guard-cucumber'
