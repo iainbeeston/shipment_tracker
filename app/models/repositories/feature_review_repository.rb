@@ -15,14 +15,16 @@ module Repositories
 
     def apply_all(events)
       ActiveRecord::Base.transaction do
+        last_id = 0
         events.each do |event|
+          last_id = event.id
           next unless event.is_a?(JiraEvent) && event.issue?
 
           locations(event.comment).each do |location|
             store.create(location)
           end
         end
-        update_count events.last.id
+        update_count last_id
       end
     end
 
