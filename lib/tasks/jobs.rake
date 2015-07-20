@@ -31,4 +31,16 @@ namespace :jobs do
     puts 'Running update'
     Repositories::FeatureReviewRepository.new.update
   end
+
+  desc 'Update git cache'
+  task update_git: :environment do
+    manage_pid pid_path_for('jobs_update_git')
+
+    puts 'Running git update '
+    git_repository_loader = GitRepositoryLoader.from_rails_config
+    RepositoryLocation.app_names.each do |repository_name|
+      puts "Fetching #{repository_name}"
+      git_repository_loader.load(repository_name)
+    end
+  end
 end
