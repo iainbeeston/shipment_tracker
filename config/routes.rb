@@ -18,4 +18,6 @@ Rails.application.routes.draw do
   resources :releases, only: [:index, :show]
   resources :repository_locations, only: [:index, :create]
   resources :tokens, only: [:index, :create, :update, :destroy]
+
+  resources :github_notifications, only: [:create]
 end
