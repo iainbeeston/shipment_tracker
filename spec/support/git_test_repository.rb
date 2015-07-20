@@ -72,6 +72,10 @@ module Support
       repo.exists?(version)
     end
 
+    def head_oid
+      repo.head.target_id
+    end
+
     private
 
     attr_reader :repo, :commits

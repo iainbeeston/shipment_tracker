@@ -17,10 +17,7 @@ RSpec.describe GitRepositoryLoader do
   describe '#load' do
     let(:test_git_repo) { Support::GitTestRepository.new }
     let(:repo_uri) { "file://#{test_git_repo.dir}" }
-
-    before do
-      RepositoryLocation.create(name: 'some_repo', uri: repo_uri)
-    end
+    let!(:repository_location) { RepositoryLocation.create(name: 'some_repo', uri: repo_uri) }
 
     context 'when the repository location does not exist' do
       it 'raises a NotFound exception' do
@@ -36,25 +33,47 @@ RSpec.describe GitRepositoryLoader do
 
       before do
         test_git_repo.create_commit
+        repository_location.update(remote_head: test_git_repo.head_oid)
       end
 
       it 'returns a GitRepository' do
         expect(git_repository_loader.load('some_repo')).to be_a(GitRepository)
       end
 
-      it 'should only clone once' do
-        expect(Rugged::Repository).to receive(:clone_at).once.and_call_original
+      context 'when the repository has not been cloned yet' do
+        it 'should clone it' do
+          expect(Rugged::Repository).to receive(:clone_at).once.and_call_original
 
-        git_repository_loader.load('some_repo')
-        git_repository_loader.load('some_repo')
+          git_repository_loader.load('some_repo')
+        end
       end
 
-      it 'should always fetch when repository already cloned' do
-        git_repository_loader.load('some_repo')
+      context 'when the repository has already been cloned' do
+        before do
+          git_repository_loader.load('some_repo')
+        end
 
-        expect_any_instance_of(Rugged::Repository).to receive(:fetch).once.and_call_original
+        context 'if the local copy is up-to-date' do
+          it 'should do nothing' do
+            expect(Rugged::Repository).to_not receive(:clone_at)
+            expect_any_instance_of(Rugged::Repository).to_not receive(:fetch)
 
-        git_repository_loader.load('some_repo')
+            git_repository_loader.load('some_repo')
+          end
+        end
+
+        context 'if the local copy is not up-to-date' do
+          before do
+            create_remote_commit
+          end
+
+          it 'should fetch it' do
+            expect(Rugged::Repository).to_not receive(:clone_at)
+            expect_any_instance_of(Rugged::Repository).to receive(:fetch).once.and_call_original
+
+            git_repository_loader.load('some_repo')
+          end
+        end
       end
 
       it 'should not use credentials' do
@@ -179,5 +198,10 @@ RSpec.describe GitRepositoryLoader do
         expect(File.exist?(private_key_file)).to be(false), 'The privatekey file should be cleaned up'
       end
     end
+  end
+
+  def create_remote_commit
+    test_git_repo.create_commit
+    repository_location.update(remote_head: test_git_repo.head_oid)
   end
 end

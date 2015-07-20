@@ -41,7 +41,7 @@ class GitRepositoryLoader
     dir = repository_dir_name(repository_location)
     Rugged::Repository.new(dir, options).tap do |r|
       instrument('fetch') do
-        r.fetch('origin', options)
+        r.fetch('origin', options) unless up_to_date?(repository_location, r)
       end
     end
   rescue Rugged::OSError, Rugged::RepositoryError, Rugged::InvalidError
@@ -62,6 +62,10 @@ class GitRepositoryLoader
     else
       block.call({})
     end
+  end
+
+  def up_to_date?(repository_location, rugged_repository)
+    repository_location.remote_head == rugged_repository.head.target_id
   end
 
   def create_temporary_file(key)

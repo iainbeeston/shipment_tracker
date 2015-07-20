@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150716164920) do
+ActiveRecord::Schema.define(version: 20150720105357) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,8 +36,9 @@ ActiveRecord::Schema.define(version: 20150716164920) do
   create_table "repository_locations", force: :cascade do |t|
     t.string   "uri"
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.string   "remote_head"
   end
 
   add_index "repository_locations", ["name"], name: "index_repository_locations_on_name", unique: true, using: :btree
