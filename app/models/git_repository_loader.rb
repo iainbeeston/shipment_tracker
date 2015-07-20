@@ -24,14 +24,11 @@ class GitRepositoryLoader
   end
 
   def load(repository_name)
-    remote_repository = RepositoryLocation.find_by_name(repository_name)
-    fail GitRepositoryLoader::NotFound unless remote_repository
+    repository_location = RepositoryLocation.find_by_name(repository_name)
+    fail GitRepositoryLoader::NotFound unless repository_location
 
-    uri = remote_repository.uri
-    dir = File.join(cache_dir, "#{remote_repository.id}-#{repository_name}")
-
-    options_for(uri) do |options|
-      repository = updated_rugged_repository(uri, dir, options)
+    options_for(repository_location.uri) do |options|
+      repository = updated_rugged_repository(repository_location, options)
       GitRepository.new(repository)
     end
   end
@@ -40,7 +37,8 @@ class GitRepositoryLoader
 
   attr_reader :cache_dir, :ssh_user, :ssh_private_key, :ssh_public_key
 
-  def updated_rugged_repository(uri, dir, options)
+  def updated_rugged_repository(repository_location, options)
+    dir = repository_dir_name(repository_location)
     Rugged::Repository.new(dir, options).tap do |r|
       instrument('fetch') do
         r.fetch('origin', options)
@@ -49,8 +47,12 @@ class GitRepositoryLoader
   rescue Rugged::OSError, Rugged::RepositoryError, Rugged::InvalidError
     FileUtils.rmtree(dir)
     instrument('clone') do
-      Rugged::Repository.clone_at(uri, dir, options)
+      Rugged::Repository.clone_at(repository_location.uri, dir, options)
     end
+  end
+
+  def repository_dir_name(repository_location)
+    File.join(cache_dir, "#{repository_location.id}-#{repository_location.name}")
   end
 
   def options_for(uri, &block)
