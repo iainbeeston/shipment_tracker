@@ -75,7 +75,7 @@ Just make sure the following command runs every few minutes:
 rake jobs:update_events
 ```
 
-*Warning:* If you're application is deployed on multiple servers, make sure the recurring task runs only on one server.
+*Warning:* If your application is deployed on multiple servers, make sure the recurring task runs only on one server.
 
 ### Enabling periodic git fetching
 
@@ -86,7 +86,7 @@ sure the following command runs every few minutes (see previous paragraph on how
 rake jobs:update_git
 ```
 
-*Warning:* If you're application is deployed on multiple servers, make sure the recurring task runs on every server.
+*Warning:* If your application is deployed on multiple servers, make sure the recurring task runs on every server.
 
 ## License
 
