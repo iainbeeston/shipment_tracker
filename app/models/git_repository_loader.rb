@@ -16,7 +16,7 @@ class GitRepositoryLoader
     )
   end
 
-  def initialize(ssh_private_key:, ssh_public_key:, ssh_user:, cache_dir: Dir.tmpdir)
+  def initialize(ssh_private_key: nil, ssh_public_key: nil, ssh_user: nil, cache_dir: Dir.tmpdir)
     @ssh_private_key = ssh_private_key
     @ssh_public_key = ssh_public_key
     @ssh_user = ssh_user

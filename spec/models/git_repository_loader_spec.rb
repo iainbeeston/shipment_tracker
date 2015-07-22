@@ -4,18 +4,8 @@ require 'support/git_test_repository'
 
 RSpec.describe GitRepositoryLoader do
   let(:cache_dir) { Dir.mktmpdir }
-  let(:ssh_private_key) { 'PR1V4t3' }
-  let(:ssh_public_key) { 'PU8L1C' }
-  let(:ssh_user) { 'alice' }
 
-  subject(:git_repository_loader) {
-    GitRepositoryLoader.new(
-      cache_dir: cache_dir,
-      ssh_private_key: ssh_private_key,
-      ssh_public_key: ssh_public_key,
-      ssh_user: ssh_user,
-    )
-  }
+  subject(:git_repository_loader) { GitRepositoryLoader.new(cache_dir: cache_dir) }
 
   describe '#load' do
     let(:test_git_repo) { Support::GitTestRepository.new }
@@ -104,6 +94,18 @@ RSpec.describe GitRepositoryLoader do
 
     context 'with an SSH URI' do
       let(:repo_uri) { 'ssh://example.com/some_repo.git' }
+      let(:ssh_private_key) { 'PR1V4t3' }
+      let(:ssh_public_key) { 'PU8L1C' }
+      let(:ssh_user) { 'alice' }
+
+      subject(:git_repository_loader) {
+        GitRepositoryLoader.new(
+          cache_dir: cache_dir,
+          ssh_private_key: ssh_private_key,
+          ssh_public_key: ssh_public_key,
+          ssh_user: ssh_user,
+        )
+      }
 
       it 'uses the correct credentials' do
         private_key_file = nil
