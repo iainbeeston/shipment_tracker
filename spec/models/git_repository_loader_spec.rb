@@ -31,7 +31,7 @@ RSpec.describe GitRepositoryLoader do
 
     context 'when the repository has not been cloned yet' do
       it 'should clone it' do
-        expect(Rugged::Repository).to receive(:clone_at).once.and_call_original
+        expect(Rugged::Repository).to receive(:clone_at).once
 
         git_repository_loader.load('some_repo')
       end
@@ -58,7 +58,7 @@ RSpec.describe GitRepositoryLoader do
 
         it 'should fetch the repository' do
           expect(Rugged::Repository).to_not receive(:clone_at)
-          expect_any_instance_of(Rugged::Repository).to receive(:fetch).once.and_call_original
+          expect_any_instance_of(Rugged::Repository).to receive(:fetch).once
 
           git_repository_loader.load('some_repo')
         end
