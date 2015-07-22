@@ -1,15 +1,15 @@
-- title 'Event Tokens'
+- title 'API Tokens'
 
 %p
-  Events need to be authenticated for Shipment Tracker to accept them.
+  API calls need to be authenticated for Shipment Tracker to accept them.
   This is done through a token in the endpoint URL.
 
 %p
-  On this page you can create tokens for new events and give them a descriptive name.
+  On this page you can create tokens and give them a descriptive name.
   Names can be edited by clicking on them.
 
 %p
-  When a token is no longer needed, it can be revoked by clicking on the x next to it.
+  When a token is no longer needed, it can be revoked (deleted) by clicking on the x next to it. 
 
 = form_for @token, html: { class: 'form-inline' } do |f|
   .form-group
