@@ -63,6 +63,18 @@ RSpec.describe GitRepositoryLoader do
           git_repository_loader.load('some_repo')
         end
       end
+
+      context 'when the local copy HEAD points to a ref that does not exist' do
+        before do
+          allow_any_instance_of(Rugged::Repository).to receive(:head).and_raise(Rugged::ReferenceError)
+        end
+
+        it 'clones the repo instead of fetching it to continue the update' do
+          expect(Rugged::Repository).to receive(:clone_at).once
+
+          git_repository_loader.load('some_repo')
+        end
+      end
     end
 
     context 'when the destination directory is not empty and is not a git repo' do

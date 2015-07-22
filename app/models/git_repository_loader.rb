@@ -44,7 +44,7 @@ class GitRepositoryLoader
         r.fetch('origin', options) unless up_to_date?(repository_location, r)
       end
     end
-  rescue Rugged::OSError, Rugged::RepositoryError, Rugged::InvalidError
+  rescue Rugged::OSError, Rugged::RepositoryError, Rugged::InvalidError, Rugged::ReferenceError => error
     Rails.logger.warn "Exception while updating rugged repository: #{error.message}"
     FileUtils.rmtree(dir)
     instrument('clone') do
