@@ -28,21 +28,21 @@ namespace :jobs do
   task update_events: :environment do
     manage_pid pid_path_for('jobs_update_events')
 
-    puts "Running events update at #{Time.current}"
+    puts "[#{Time.current}] Running update_events"
     Repositories::FeatureReviewRepository.new.update
-    puts "Completed events update at #{Time.current}"
+    puts "[#{Time.current}] Completed update_events"
   end
 
   desc 'Update git cache'
   task update_git: :environment do
     manage_pid pid_path_for('jobs_update_git')
 
-    puts "Running git update at #{Time.current}"
+    puts "[#{Time.current}] Running update_git"
     git_repository_loader = GitRepositoryLoader.from_rails_config
     RepositoryLocation.app_names.each do |repository_name|
-      puts "Fetching #{repository_name}"
+      puts "[#{Time.current}] Updating #{repository_name}"
       git_repository_loader.load(repository_name)
     end
-    puts "Completed git update at #{Time.current}"
+    puts "[#{Time.current}] Completed update_git"
   end
 end
