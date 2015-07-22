@@ -14,7 +14,7 @@ RSpec.describe 'GithubNotificationsController' do
       it 'updates the corresponsing RepositoryLocation' do
         expect(RepositoryLocation).to receive(:update_from_github_notification).with(payload)
 
-        post "/github_notifications", payload
+        post '/github_notifications', payload
 
         expect(response).to be_ok
       end
