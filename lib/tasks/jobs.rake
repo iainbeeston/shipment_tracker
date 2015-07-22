@@ -30,6 +30,7 @@ namespace :jobs do
 
     puts "Running events update at #{Time.current}"
     Repositories::FeatureReviewRepository.new.update
+    puts "Completed events update at #{Time.current}"
   end
 
   desc 'Update git cache'
@@ -42,5 +43,6 @@ namespace :jobs do
       puts "Fetching #{repository_name}"
       git_repository_loader.load(repository_name)
     end
+    puts "Completed git update at #{Time.current}"
   end
 end
