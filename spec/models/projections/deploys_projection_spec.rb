@@ -6,11 +6,11 @@ RSpec.describe Projections::DeploysProjection do
   let(:other_server) { 'other.fundingcircle.com' }
   let(:events) {
     [
-      build(:deploy_event, app_name: 'frontend',
+      build(:deploy_event, app_name: 'Frontend',
                            server: server,
                            version: 'old_version',
                            deployed_by: 'Alice'),
-      build(:deploy_event, app_name: 'frontend',
+      build(:deploy_event, app_name: 'Frontend',
                            server: server,
                            version: 'abc',
                            deployed_by: 'Bob'),

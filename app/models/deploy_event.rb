@@ -1,6 +1,6 @@
 class DeployEvent < Event
   def app_name
-    details['app_name']
+    details['app_name'].downcase
   end
 
   def server
