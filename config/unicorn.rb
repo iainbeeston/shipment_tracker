@@ -1,5 +1,5 @@
 worker_processes Integer(ENV['WEB_CONCURRENCY'] || 1)
-timeout 15
+timeout 27
 preload_app true
 
 unless ENV['PROTECT_STDOUT'] == 'true'
