@@ -23,7 +23,7 @@ RSpec.describe Projections::FeatureReviewSearchProjection do
     end
   end
 
-  describe '#load' do
+  describe '.load' do
     let(:versions) { %w(abc def 123) }
     let(:feature_review_urls) { %w(http://foo http://bar) }
     let(:recent_events) { [Event.new] }
