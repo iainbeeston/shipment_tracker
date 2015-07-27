@@ -4,18 +4,6 @@ module Projections
   class FeatureReviewProjection
     attr_reader :uat_url, :apps
 
-    def initialize(builds_projection:, deploys_projection:, manual_tests_projection:, tickets_projection:,
-                   uatests_projection:, uat_url:)
-      @builds_projection = builds_projection
-      @deploys_projection = deploys_projection
-      @manual_tests_projection = manual_tests_projection
-      @tickets_projection = tickets_projection
-      @uatests_projection = uatests_projection
-      @uat_url = uat_url && Addressable::URI.heuristic_parse(uat_url, scheme: 'http').to_s
-
-      @events_queue = []
-    end
-
     def self.build(apps:, uat_url:, projection_url:)
       uat_host = host_from_url(uat_url)
       new(
@@ -26,6 +14,18 @@ module Projections
         tickets_projection: Projections::FeatureReviewTicketsProjection.new(projection_url: projection_url),
         uatests_projection: Projections::UatestsProjection.new(apps: apps, server: uat_host),
       )
+    end
+
+    def initialize(builds_projection:, deploys_projection:, manual_tests_projection:, tickets_projection:,
+                   uatests_projection:, uat_url:)
+      @builds_projection = builds_projection
+      @deploys_projection = deploys_projection
+      @manual_tests_projection = manual_tests_projection
+      @tickets_projection = tickets_projection
+      @uatests_projection = uatests_projection
+      @uat_url = uat_url && Addressable::URI.heuristic_parse(uat_url, scheme: 'http').to_s
+
+      @events_queue = []
     end
 
     def apply_all(events)
