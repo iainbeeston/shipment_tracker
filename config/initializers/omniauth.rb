@@ -1,4 +1,4 @@
-require 'omniauth/strategies/event_token'
+require 'omniauth/strategies/api_token'
 
 Rails.configuration.login_url          = '/auth/auth0'
 Rails.configuration.login_callback_url = '/auth/auth0/callback'
@@ -14,5 +14,6 @@ Rails.application.config.middleware.use OmniAuth::Builder do
     request_path:  Rails.configuration.login_url,
     callback_path: Rails.configuration.login_callback_url,
   )
-  provider(:event_token, event_prefix: '/events')
+  provider(:api_token, prefix: '/events')
+  provider(:api_token, prefix: '/github_notifications')
 end

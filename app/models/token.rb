@@ -9,7 +9,16 @@ class Token < ActiveRecord::Base
     find(id).destroy
   end
 
+  def self.sources
+    EventTypeRepository.from_rails_config.external_types +
+      [OpenStruct.new(endpoint: 'github_notifications', name: 'Github Notifications')]
+  end
+
   def source_name
-    EventTypeRepository.from_rails_config.find_by_endpoint(source).name
+    if source == 'github_notifications'
+      'Github Notifications'
+    else
+      EventTypeRepository.from_rails_config.find_by_endpoint(source).name
+    end
   end
 end

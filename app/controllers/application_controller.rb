@@ -13,8 +13,4 @@ class ApplicationController < ActionController::Base
   def event_factory
     @event_factory ||= EventFactory.from_rails_config
   end
-
-  def event_type_repository
-    @event_type_repository ||= EventTypeRepository.from_rails_config
-  end
 end

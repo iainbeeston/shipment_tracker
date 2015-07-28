@@ -2,7 +2,7 @@ class TokensController < ApplicationController
   def index
     @token = Token.new
     @tokens = Token.all
-    @sources = event_type_repository.external_types
+    @sources = Token.sources
   end
 
   def create

@@ -2,14 +2,18 @@ require 'omniauth'
 
 module OmniAuth
   module Strategies
-    class EventToken
+    class ApiToken
       include OmniAuth::Strategy
 
-      option :event_prefix
+      option :prefix
 
       uid do
         token = (callback_uri.query_values || {})['token']
-        source = current_path.sub(%r{^#{options[:event_prefix]}/}, '')
+        if options[:prefix] == '/events'
+          source = current_path.sub(%r{^#{options[:prefix]}/}, '')
+        else
+          source = current_path.sub(%r{^/}, '')
+        end
         source if Token.valid?(source, token)
       end
 
@@ -18,7 +22,7 @@ module OmniAuth
       end
 
       def on_callback_path?
-        current_path.starts_with? options[:event_prefix]
+        current_path.starts_with? options[:prefix]
       end
     end
   end
