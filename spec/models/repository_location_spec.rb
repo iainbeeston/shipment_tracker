@@ -53,5 +53,18 @@ RSpec.describe RepositoryLocation do
         expect { RepositoryLocation.update_from_github_notification(github_payload) }.to_not raise_error
       end
     end
+    context 'when payload does not have a repository key' do
+      let(:github_payload) {
+        JSON.parse(<<-END)
+          {
+            "before": "abc123",
+            "after": "def456"
+          }
+        END
+      }
+      it 'fails silently' do
+        expect { RepositoryLocation.update_from_github_notification(github_payload) }.to_not raise_error
+      end
+    end
   end
 end

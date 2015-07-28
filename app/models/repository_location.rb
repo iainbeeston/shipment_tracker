@@ -4,13 +4,14 @@ class RepositoryLocation < ActiveRecord::Base
   end
 
   def self.update_from_github_notification(payload)
-    repository_location = find_by_github_ssh_url(payload['repository']['ssh_url'])
+    ssh_url = payload.fetch('repository', {}).fetch('ssh_url', nil)
+    repository_location = find_by_github_ssh_url(ssh_url)
     return unless repository_location
     repository_location.update(remote_head: payload['after'])
   end
 
   def self.find_by_github_ssh_url(url)
-    path = Addressable::URI.parse(url).path
+    path = Addressable::URI.parse(url).try(:path)
     find_by('uri LIKE ?', "%#{path}")
   end
   private_class_method :find_by_github_ssh_url
