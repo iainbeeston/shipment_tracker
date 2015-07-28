@@ -1,5 +1,7 @@
+require 'forwardable'
+
 module Projections
-  class FeatureReviewTicketsProjection
+  class TicketsProjection
     def initialize(projection_url:)
       @projection_url = projection_url
       @tickets_table = {}
@@ -22,10 +24,6 @@ module Projections
       @tickets_table.values
     end
 
-    def approved?
-      tickets.present? && tickets.all?(&:approved?)
-    end
-
     private
 
     def matches_projection_url?(comment)
@@ -37,5 +35,18 @@ module Projections
     def extract_path(url_string)
       Addressable::URI.parse(url_string).normalize.request_uri
     end
+  end
+
+  class LockingTicketsProjection
+    extend Forwardable
+
+    def initialize(feature_review_location)
+      @projection = LockingProjectionWrapper.new(
+        TicketsProjection.new(projection_url: feature_review_location.url),
+        feature_review_location.url,
+      )
+    end
+
+    def_delegators :@projection, :tickets, :apply, :locked?
   end
 end

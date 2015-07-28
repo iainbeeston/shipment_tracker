@@ -2,23 +2,20 @@ require 'addressable/uri'
 
 module Projections
   class FeatureReviewProjection
-    attr_reader :uat_url, :apps
-
     def self.build(projection_url)
       feature_review_location = FeatureReviewLocation.new(projection_url)
-      uat_host = feature_review_location.uat_host
-      apps = feature_review_location.app_versions
-
       new(
         uat_url: feature_review_location.uat_url,
-        apps: apps,
-        builds_projection: Projections::BuildsProjection.new(apps: apps),
-        deploys_projection: Projections::DeploysProjection.new(apps: apps, server: uat_host),
-        manual_tests_projection: Projections::ManualTestsProjection.new(apps: apps),
-        tickets_projection: Projections::FeatureReviewTicketsProjection.new(projection_url: projection_url),
-        uatests_projection: Projections::UatestsProjection.new(apps: apps, server: uat_host),
+        apps: feature_review_location.app_versions,
+        builds_projection: LockingBuildsProjection.new(feature_review_location),
+        deploys_projection: LockingDeploysProjection.new(feature_review_location),
+        manual_tests_projection: LockingManualTestsProjection.new(feature_review_location),
+        tickets_projection: LockingTicketsProjection.new(feature_review_location),
+        uatests_projection: LockingUatestsProjection.new(feature_review_location),
       )
     end
+
+    attr_reader :uat_url, :apps
 
     def initialize(builds_projection:, deploys_projection:, manual_tests_projection:, tickets_projection:,
                    uatests_projection:, uat_url:, apps:)
@@ -29,8 +26,6 @@ module Projections
       @uatests_projection = uatests_projection
       @uat_url = uat_url
       @apps = apps
-
-      @events_queue = []
     end
 
     def apply_all(events)
@@ -39,17 +34,14 @@ module Projections
       end
     end
 
-    def locked?
-      @tickets_projection.approved?
+    def apply(event)
+      projections.each do |projection|
+        projection.apply(event)
+      end
     end
 
-    def apply(event)
-      if locked? && !unlocking_event?(event)
-        queue_event(event)
-      else
-        apply_queued_events_to_projections
-        apply_to_projections(event)
-      end
+    def locked?
+      @tickets_projection.locked?
     end
 
     def deploys
@@ -73,27 +65,6 @@ module Projections
     end
 
     private
-
-    def apply_to_projections(event)
-      projections.each do |projection|
-        projection.apply(event)
-      end
-    end
-
-    def unlocking_event?(event)
-      event.is_a?(JiraEvent) && event.unapproval?
-    end
-
-    def queue_event(event)
-      @events_queue << event
-    end
-
-    def apply_queued_events_to_projections
-      @events_queue.each do |queued_event|
-        apply_to_projections(queued_event)
-      end
-      @events_queue = []
-    end
 
     def projections
       [

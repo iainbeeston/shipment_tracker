@@ -1,3 +1,5 @@
+require 'forwardable'
+
 module Projections
   class DeploysProjection
     def initialize(apps:, server:)
@@ -35,5 +37,21 @@ module Projections
     def version_correctness_for_event(event)
       event.version == apps[event.app_name]
     end
+  end
+
+  class LockingDeploysProjection
+    extend Forwardable
+
+    def initialize(feature_review_location)
+      @projection = LockingProjectionWrapper.new(
+        DeploysProjection.new(
+          apps: feature_review_location.app_versions,
+          server: feature_review_location.uat_host,
+        ),
+        feature_review_location.url,
+      )
+    end
+
+    def_delegators :@projection, :deploys, :apply
   end
 end

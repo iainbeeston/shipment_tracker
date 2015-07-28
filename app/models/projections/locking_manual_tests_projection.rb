@@ -1,3 +1,5 @@
+require 'forwardable'
+
 module Projections
   class ManualTestsProjection
     attr_reader :qa_submission
@@ -23,5 +25,18 @@ module Projections
     def apps_hash(apps_list)
       apps_list.map { |app| app.values_at('name', 'version') }.to_h
     end
+  end
+
+  class LockingManualTestsProjection
+    extend Forwardable
+
+    def initialize(feature_review_location)
+      @projection = LockingProjectionWrapper.new(
+        ManualTestsProjection.new(apps: feature_review_location.app_versions),
+        feature_review_location.url,
+      )
+    end
+
+    def_delegators :@projection, :apply, :qa_submission
   end
 end

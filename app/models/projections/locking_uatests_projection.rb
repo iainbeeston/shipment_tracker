@@ -1,3 +1,5 @@
+require 'forwardable'
+
 module Projections
   class UatestsProjection
     attr_reader :uatest
@@ -32,5 +34,21 @@ module Projections
         versions_on_uats[app_name] == expected_version
       }
     end
+  end
+
+  class LockingUatestsProjection
+    extend Forwardable
+
+    def initialize(feature_review_location)
+      @projection = LockingProjectionWrapper.new(
+        UatestsProjection.new(
+          apps: feature_review_location.app_versions,
+          server: feature_review_location.uat_host,
+        ),
+        feature_review_location.url,
+      )
+    end
+
+    def_delegators :@projection, :uatest, :apply
   end
 end

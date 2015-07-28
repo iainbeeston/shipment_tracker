@@ -1,3 +1,5 @@
+require 'forwardable'
+
 module Projections
   class BuildsProjection
     def initialize(apps:)
@@ -31,5 +33,18 @@ module Projections
     def apps_hash_with_value(apps, value)
       apps.map { |key, _| [key, value] }.to_h
     end
+  end
+
+  class LockingBuildsProjection
+    extend Forwardable
+
+    def initialize(feature_review_location)
+      @projection = LockingProjectionWrapper.new(
+        BuildsProjection.new(apps: feature_review_location.app_versions),
+        feature_review_location.url,
+      )
+    end
+
+    def_delegators :@projection, :apply, :builds
   end
 end
