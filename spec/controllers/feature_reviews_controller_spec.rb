@@ -10,7 +10,7 @@ RSpec.describe FeatureReviewsController do
                                    uat_url: 'http://foo.com'
 
       feature_review_location = FeatureReviewLocation.new(actual_url)
-      expect(feature_review_location.app_versions).to eq(a: '123', b: '456')
+      expect(feature_review_location.app_versions).to eq('a' => '123', 'b' => '456')
       expect(feature_review_location.uat_url).to eq('http://foo.com')
     end
   end
@@ -123,11 +123,11 @@ RSpec.describe FeatureReviewsController do
       before do
         request.host = 'www.example.com'
 
-        allow(Projections::FeatureReviewProjection).to receive(:build).with(
-          apps: apps_with_versions,
-          uat_url: uat_url,
-          projection_url: projection_url,
-        ).and_return(projection)
+        allow(Projections::FeatureReviewProjection).to receive(:build)
+          .with(projection_url)
+          .and_return(projection)
+
+        allow(projection).to receive(:apps).and_return(apps_with_versions)
 
         allow(Event).to receive(:in_order_of_creation).and_return(events)
 

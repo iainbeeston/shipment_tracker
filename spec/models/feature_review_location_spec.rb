@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 require 'feature_review_location'
 
 require 'addressable/uri'
@@ -52,23 +52,53 @@ RSpec.describe FeatureReviewLocation do
   end
 
   describe '#app_versions' do
-    let(:url) { full_url('other' => 'true', 'apps[app1]' => 'xxx', 'apps[app2]' => 'yyy') }
+    let(:url) {
+      full_url(
+        'other' => 'true',
+        'apps[app1]' => 'xxx',
+        'apps[app2]' => 'yyy',
+        'apps[app3]' => '',
+      )
+    }
 
     subject { instance.app_versions }
 
-    it { is_expected.to eq(app1: 'xxx', app2: 'yyy') }
+    it { is_expected.to eq('app1' => 'xxx', 'app2' => 'yyy') }
   end
 
   describe '#==' do
     it 'equality is based on fields not identity' do
-      url = full_url([%w(other true), %w(apps[app1] xxx), %w(apps[app2] yyy)])
-      url_order = full_url([%w(other true), %w(apps[app2] yyy), %w(apps[app1] xxx)])
-      url_missing = full_url('apps[app1]' => 'xxx', 'apps[app2]' => 'yyy')
+      url_args = [%w(apps[app1] xxx), %w(apps[app2] yyy), %w(uat_url http://uat.com)]
+      url = full_url(url_args)
 
-      expect(described_class.new(url)).to eq(described_class.new(url))
+      same = {
+        order:       full_url(url_args.reverse),
+        extra_app:   full_url(url_args.concat([['apps[app3]', '']])),
+        extra_param: full_url(url_args.concat([%w(irrelevant value)])),
+        no_scheme:   full_url([%w(apps[app1] xxx), %w(apps[app2] yyy), %w(uat_url uat.com)]),
+      }
 
-      expect(described_class.new(url_missing)).to_not eq(described_class.new(url))
-      expect(described_class.new(url)).to_not eq(described_class.new(url_order))
+      different = {
+        different_version: full_url([%w(apps[app1] abc), %w(apps[app2] yyy), %w(uat_url http://uat.com)]),
+        different_uat_url: full_url([%w(apps[app1] abc), %w(apps[app2] yyy), %w(uat_url http://foobar.com)]),
+        different_no_uat:  full_url([%w(apps[app1] abc), %w(apps[app2] yyy)]),
+      }
+
+      aggregate_failures do
+        same.each do |name, same_url|
+          expect(FeatureReviewLocation.new(url)).to(
+            eq(FeatureReviewLocation.new(same_url)),
+            "#{name} did not match when it should have",
+          )
+        end
+
+        different.each do |name, different_url|
+          expect(FeatureReviewLocation.new(url)).to_not(
+            eq(FeatureReviewLocation.new(different_url)),
+            "#{name} matched when it should not have",
+          )
+        end
+      end
     end
   end
 
@@ -88,12 +118,40 @@ RSpec.describe FeatureReviewLocation do
     it { is_expected.to eq('/feature_reviews?other=true&apps%5Bapp1%5D=xxx&apps%5Bapp2%5D=yyy') }
   end
 
+  describe '#uat_host' do
+    let(:url) { full_url('uat_url' => 'http://foo.com') }
+
+    subject { instance.uat_host }
+
+    it { is_expected.to eq('foo.com') }
+
+    context 'when scheme is missing' do
+      let(:url) { full_url('uat_url' => 'foo.com') }
+      it { is_expected.to eq('foo.com') }
+    end
+
+    context 'when uat_url is missing' do
+      let(:url) { full_url('uat_url' => '') }
+      it { is_expected.to be_nil }
+    end
+  end
+
   describe '#uat_url' do
     let(:url) { full_url('apps[app1]' => 'xxx', 'apps[app2]' => 'yyy', 'uat_url' => 'http://foo.com') }
 
     subject { instance.uat_url }
 
     it { is_expected.to eq('http://foo.com') }
+
+    context 'when scheme is missing' do
+      let(:url) { full_url('uat_url' => 'foo.com') }
+      it { is_expected.to eq('http://foo.com') }
+    end
+
+    context 'when uat_url is missing' do
+      let(:url) { full_url('uat_url' => '') }
+      it { is_expected.to be_nil }
+    end
   end
 
   def full_url(query_values)

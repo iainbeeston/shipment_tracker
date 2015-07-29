@@ -4,10 +4,14 @@ module Projections
   class FeatureReviewProjection
     attr_reader :uat_url, :apps
 
-    def self.build(apps:, uat_url:, projection_url:)
-      uat_host = host_from_url(uat_url)
+    def self.build(projection_url)
+      feature_review_location = FeatureReviewLocation.new(projection_url)
+      uat_host = feature_review_location.uat_host
+      apps = feature_review_location.app_versions
+
       new(
-        uat_url: uat_url,
+        uat_url: feature_review_location.uat_url,
+        apps: apps,
         builds_projection: Projections::BuildsProjection.new(apps: apps),
         deploys_projection: Projections::DeploysProjection.new(apps: apps, server: uat_host),
         manual_tests_projection: Projections::ManualTestsProjection.new(apps: apps),
@@ -16,19 +20,15 @@ module Projections
       )
     end
 
-    def self.host_from_url(url)
-      Addressable::URI.heuristic_parse(url, scheme: 'http').try(:host)
-    end
-    private_class_method :host_from_url
-
     def initialize(builds_projection:, deploys_projection:, manual_tests_projection:, tickets_projection:,
-                   uatests_projection:, uat_url:)
+                   uatests_projection:, uat_url:, apps:)
       @builds_projection = builds_projection
       @deploys_projection = deploys_projection
       @manual_tests_projection = manual_tests_projection
       @tickets_projection = tickets_projection
       @uatests_projection = uatests_projection
-      @uat_url = uat_url && Addressable::URI.heuristic_parse(uat_url, scheme: 'http').to_s
+      @uat_url = uat_url
+      @apps = apps
 
       @events_queue = []
     end

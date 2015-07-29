@@ -17,19 +17,13 @@ class FeatureReviewsController < ApplicationController
   def show
     @return_to = request.original_fullpath
 
-    @apps = apps
-    uat_url = params[:uat_url]
+    projection = Projections::FeatureReviewProjection.build(request.original_url)
 
-    if @apps.empty?
+    if projection.apps.empty?
       flash[:error] = 'Please specify at least one app'
       return redirect_to new_feature_reviews_path
     end
 
-    projection = Projections::FeatureReviewProjection.build(
-      apps: @apps,
-      uat_url: uat_url,
-      projection_url: request.original_url,
-    )
     projection.apply_all(Event.in_order_of_creation)
 
     @presenter = FeatureReviewPresenter.new(projection)
@@ -58,10 +52,6 @@ class FeatureReviewsController < ApplicationController
       uat_url: form_input[:uat_url],
       git_repository_loader: git_repository_loader,
     )
-  end
-
-  def apps
-    params.fetch(:apps, {}).select { |_name, version| version.present? }
   end
 
   def git_repository_for(app_name)

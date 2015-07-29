@@ -33,10 +33,12 @@ RSpec.describe Projections::FeatureReviewProjection do
     )
   }
   let(:uat_url) { 'http://uat.example.com' }
+  let(:apps) { { 'a' => 'xxx' } }
 
   subject(:projection) {
     Projections::FeatureReviewProjection.new(
       uat_url: uat_url,
+      apps: apps,
       builds_projection: builds_projection,
       deploys_projection: deploys_projection,
       manual_tests_projection: manual_tests_projection,
@@ -109,24 +111,30 @@ RSpec.describe Projections::FeatureReviewProjection do
   end
 
   describe '.build' do
-    let(:apps) { { 'app1' => 'abc' } }
-    let(:projection_url) { 'http://shipment-tracker.example.com/feature_reviews?app1=abc' }
+    let(:projection_url) {
+      "http://shipment-tracker.example.com/feature_reviews?apps[app1]=abc&uat_url=#{uat_url}"
+    }
+
+    let(:expected_uat_url) { uat_url }
+    let(:expected_apps) { { 'app1' => 'abc' } }
+    let(:expected_server) { 'foo.example.com' }
 
     shared_examples_for 'a wired up builder' do
       it 'passes the correct values' do
         allow(Projections::BuildsProjection).to receive(:new)
-          .with(apps: apps).and_return(builds_projection)
+          .with(apps: expected_apps).and_return(builds_projection)
         allow(Projections::DeploysProjection).to receive(:new)
-          .with(apps: apps, server: server).and_return(deploys_projection)
+          .with(apps: expected_apps, server: expected_server).and_return(deploys_projection)
         allow(Projections::ManualTestsProjection).to receive(:new)
-          .with(apps: apps).and_return(manual_tests_projection)
+          .with(apps: expected_apps).and_return(manual_tests_projection)
         allow(Projections::FeatureReviewTicketsProjection).to receive(:new)
           .with(projection_url: projection_url).and_return(tickets_projection)
         allow(Projections::UatestsProjection).to receive(:new)
-          .with(apps: apps, server: server).and_return(uatests_projection)
+          .with(apps: expected_apps, server: expected_server).and_return(uatests_projection)
 
         expect(Projections::FeatureReviewProjection).to receive(:new).with(
-          uat_url: uat_url,
+          uat_url: expected_uat_url,
+          apps: expected_apps,
           builds_projection: builds_projection,
           deploys_projection: deploys_projection,
           manual_tests_projection: manual_tests_projection,
@@ -134,35 +142,37 @@ RSpec.describe Projections::FeatureReviewProjection do
           uatests_projection: uatests_projection,
         )
 
-        Projections::FeatureReviewProjection.build(
-          apps: apps, uat_url: uat_url, projection_url: projection_url)
+        Projections::FeatureReviewProjection.build(projection_url)
       end
     end
 
     context 'when uat_url is a url' do
       let(:uat_url) { 'http://uat.example.com/some/path' }
-      let(:server) { 'uat.example.com' }
+      let(:expected_server) { 'uat.example.com' }
 
       it_behaves_like 'a wired up builder'
     end
 
     context 'when uat_url is a domain' do
       let(:uat_url) { 'uat.example.com' }
-      let(:server) { 'uat.example.com' }
+
+      let(:expected_server) { 'uat.example.com' }
+      let(:expected_uat_url) { 'http://uat.example.com' }
 
       it_behaves_like 'a wired up builder'
     end
 
     context 'when uat_url is missing scheme' do
       let(:uat_url) { 'uat.example.com/foo/bar' }
-      let(:server) { 'uat.example.com' }
+      let(:expected_server) { 'uat.example.com' }
+      let(:expected_uat_url) { 'http://uat.example.com/foo/bar' }
 
       it_behaves_like 'a wired up builder'
     end
 
     context 'when the uat_url is nil' do
       let(:uat_url) { nil }
-      let(:server) { nil }
+      let(:expected_server) { nil }
       it_behaves_like 'a wired up builder'
     end
   end
@@ -176,6 +186,12 @@ RSpec.describe Projections::FeatureReviewProjection do
   describe '#deploys' do
     it 'delegates to the deploys projection' do
       expect(projection.deploys).to eq(deploys_projection.deploys)
+    end
+  end
+
+  describe '#apps' do
+    it 'returns the apps from the url' do
+      expect(projection.apps).to eq(apps)
     end
   end
 
@@ -198,26 +214,7 @@ RSpec.describe Projections::FeatureReviewProjection do
   end
 
   describe '#uat_url' do
-    subject { projection.uat_url }
-
-    context 'when not given a domain' do
-      let(:uat_url) { nil }
-      it { is_expected.to be nil }
-    end
-
-    context 'when given a domain' do
-      let(:uat_url) { 'https://uat.example.com' }
-      it { is_expected.to eq('https://uat.example.com') }
-    end
-
-    context 'when given a URL with no scheme' do
-      let(:uat_url) { 'uat.example.com' }
-      it { is_expected.to eq('http://uat.example.com') }
-    end
-
-    context 'when given a URL' do
-      let(:uat_url) { 'http://uat.example.com/bish/bosh' }
-      it { is_expected.to eq('http://uat.example.com/bish/bosh') }
-    end
+    let(:uat_url) { 'https://uat.example.com' }
+    it { expect(projection.uat_url).to eq('https://uat.example.com') }
   end
 end
