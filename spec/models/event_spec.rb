@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Event do
+RSpec.describe Event do
   describe '.in_order_of_creation' do
     it 'returns all Events in insertion order' do
       first = create(:circle_ci_event)

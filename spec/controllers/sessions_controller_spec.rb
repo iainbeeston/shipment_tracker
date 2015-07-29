@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe SessionsController do
+RSpec.describe SessionsController do
   describe '#get :auth0_success_callback' do
     before do
       request.env['omniauth.auth'] = omniauth_response

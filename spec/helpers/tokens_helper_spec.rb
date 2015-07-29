@@ -7,7 +7,7 @@ RSpec.describe TokensHelper do
     let(:expected_url) { events_url(type: source, token: token) }
 
     it 'returns the event url for source with token' do
-      helper.token_link(source: source, token: token).should eq(expected_url)
+      expect(helper.token_link(source: source, token: token)).to eq(expected_url)
     end
 
     context 'when the source is github_notifications' do
@@ -15,7 +15,7 @@ RSpec.describe TokensHelper do
       let(:expected_url) { github_notifications_url(token: token) }
 
       it 'returns the event url for source with token' do
-        helper.token_link(source: source, token: token).should eq(expected_url)
+        expect(helper.token_link(source: source, token: token)).to eq(expected_url)
       end
     end
   end
