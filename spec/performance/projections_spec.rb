@@ -90,7 +90,7 @@ RSpec.describe 'Projection performance', type: :request do
           apps.each do |name, version|
             create :deploy_event, server: server, app_name: name, version: version
           end
-          create :manual_test_event, apps: apps.map { |name, version| { name: name, version: version } }
+          create :manual_test_event, apps: apps
           create :uat_event, server: server
 
           file << benchmark(event_count) do

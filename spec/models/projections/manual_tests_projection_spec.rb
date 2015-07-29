@@ -12,26 +12,26 @@ RSpec.describe Projections::ManualTestsProjection do
           success?: true,
           email: 'alice@example.com',
           comment: 'LGTM',
-          apps: [
-            { name: 'frontend', version: 'abc' },
-            { name: 'backend', version: 'def' },
-          ]),
+          apps: {
+            'frontend' => 'abc',
+            'backend' => 'def',
+          }),
         build(:manual_test_event,
           success?: false,
           email: 'benjamin@example.com',
           comment: 'Nonsense',
-          apps: [
-            { name: 'frontend', version: 'abc' },
-            { name: 'backend', version: 'def' },
-          ]),
+          apps: {
+            'frontend' => 'abc',
+            'backend' => 'def',
+          }),
         build(:manual_test_event,
           success?: false,
           email: 'carol@example.com',
           comment: 'Disgusting',
-          apps: [
-            { name: 'frontend', version: 'abc' },
-            { name: 'backend', version: 'ghi' },
-          ]),
+          apps: {
+            'frontend' => 'abc',
+            'backend' => 'ghi',
+          }),
       ]
     }
 
@@ -57,10 +57,10 @@ RSpec.describe Projections::ManualTestsProjection do
           success?: true,
           email: 'alice@example.com',
           comment: 'Fabulous',
-          apps: [
-            { name: 'frontend', version: 'abc' },
-            { name: 'backend', version: 'def' },
-          ]),
+          apps: {
+            'frontend' => 'abc',
+            'backend' => 'def',
+          }),
       ]
     }
 

@@ -5,7 +5,7 @@ FactoryGirl.define do
       success? true
       email 'alice@example.com'
       comment 'LGTM'
-      apps [{ name: 'frontend', version: 'abc' }]
+      apps('frontend' => 'abc')
     end
 
     details {
@@ -13,7 +13,7 @@ FactoryGirl.define do
         status: success? ? 'success' : 'failed',
         email: email,
         comment: comment,
-        apps: apps,
+        apps: apps.map { |name, version| { name: name, version: version } },
       }
     }
 
