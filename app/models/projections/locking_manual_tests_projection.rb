@@ -4,8 +4,9 @@ module Projections
   class ManualTestsProjection
     attr_reader :qa_submission
 
-    def initialize(apps:)
+    def initialize(apps:, qa_submission: nil)
       @apps = apps
+      @qa_submission = qa_submission
     end
 
     def apply(event)
@@ -18,6 +19,10 @@ module Projections
         comment: event.comment,
         created_at: event.created_at,
       )
+    end
+
+    def clone
+      self.class.new(apps: @apps.clone, qa_submission: @qa_submission.try(:clone))
     end
 
     private

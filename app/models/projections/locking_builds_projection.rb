@@ -2,9 +2,9 @@ require 'forwardable'
 
 module Projections
   class BuildsProjection
-    def initialize(apps:)
+    def initialize(apps:, builds_table: nil)
       @apps = apps
-      @builds_table = apps_hash_with_value(@apps, Build.new)
+      @builds_table = builds_table || apps_hash_with_value(@apps, Build.new)
     end
 
     def apply(event)
@@ -22,6 +22,10 @@ module Projections
 
     def builds
       @builds_table
+    end
+
+    def clone
+      self.class.new(apps: @apps.clone, builds_table: @builds_table.clone)
     end
 
     private

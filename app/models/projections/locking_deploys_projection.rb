@@ -2,10 +2,10 @@ require 'forwardable'
 
 module Projections
   class DeploysProjection
-    def initialize(apps:, server:)
+    def initialize(apps:, server:, deploys_table: {})
       @apps = apps
       @server = server
-      @deploys_table = {}
+      @deploys_table = deploys_table
     end
 
     def apply(event)
@@ -24,6 +24,10 @@ module Projections
 
     def deploys
       deploys_table.values
+    end
+
+    def clone
+      self.class.new(apps: @apps.clone, server: @server.clone, deploys_table: @deploys_table.clone)
     end
 
     private

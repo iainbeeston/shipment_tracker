@@ -4,11 +4,11 @@ module Projections
   class UatestsProjection
     attr_reader :uatest
 
-    def initialize(apps:, server:)
+    def initialize(apps:, server:, versions_on_uats: {}, uatest: nil)
       @apps = apps
       @server = server
-      @versions_on_uats = {}
-      @uatest = nil
+      @versions_on_uats = versions_on_uats
+      @uatest = uatest
     end
 
     def apply(event)
@@ -23,6 +23,15 @@ module Projections
           test_suite_version: event.test_suite_version,
         )
       end
+    end
+
+    def clone
+      self.class.new(
+        apps: @apps.clone,
+        server: @server.clone,
+        versions_on_uats: @versions_on_uats.clone,
+        uatest: @uatest,
+      )
     end
 
     private

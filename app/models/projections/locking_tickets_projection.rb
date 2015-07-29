@@ -2,9 +2,9 @@ require 'forwardable'
 
 module Projections
   class TicketsProjection
-    def initialize(projection_url:)
+    def initialize(projection_url:, tickets_table: {})
       @projection_url = projection_url
-      @tickets_table = {}
+      @tickets_table = tickets_table
     end
 
     def apply(event)
@@ -22,6 +22,10 @@ module Projections
 
     def tickets
       @tickets_table.values
+    end
+
+    def clone
+      self.class.new(projection_url: @projection_url.clone, tickets_table: @tickets_table.clone)
     end
 
     private
