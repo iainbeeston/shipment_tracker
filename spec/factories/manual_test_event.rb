@@ -2,7 +2,7 @@
 FactoryGirl.define do
   factory :manual_test_event do
     transient do
-      success? true
+      accepted true
       email 'alice@example.com'
       comment 'LGTM'
       apps('frontend' => 'abc')
@@ -10,7 +10,7 @@ FactoryGirl.define do
 
     details {
       {
-        status: success? ? 'success' : 'failed',
+        status: accepted ? 'success' : 'failed',
         email: email,
         comment: comment,
         apps: apps.map { |name, version| { name: name, version: version } },

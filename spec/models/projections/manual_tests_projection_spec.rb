@@ -9,7 +9,7 @@ RSpec.describe Projections::ManualTestsProjection do
     let(:events) {
       [
         build(:manual_test_event,
-          success?: true,
+          accepted: true,
           email: 'alice@example.com',
           comment: 'LGTM',
           apps: {
@@ -17,7 +17,7 @@ RSpec.describe Projections::ManualTestsProjection do
             'backend' => 'def',
           }),
         build(:manual_test_event,
-          success?: false,
+          accepted: false,
           email: 'benjamin@example.com',
           comment: 'Nonsense',
           apps: {
@@ -25,7 +25,7 @@ RSpec.describe Projections::ManualTestsProjection do
             'backend' => 'def',
           }),
         build(:manual_test_event,
-          success?: false,
+          accepted: false,
           email: 'carol@example.com',
           comment: 'Disgusting',
           apps: {
@@ -54,7 +54,7 @@ RSpec.describe Projections::ManualTestsProjection do
     let(:events) {
       [
         build(:manual_test_event,
-          success?: true,
+          accepted: true,
           email: 'alice@example.com',
           comment: 'Fabulous',
           apps: {
