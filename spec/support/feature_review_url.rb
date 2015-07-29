@@ -1,8 +1,8 @@
 module Support
   class FeatureReviewUrl
     module Helpers
-      def url_for(apps)
-        Support::FeatureReviewUrl.new.build(apps)
+      def feature_review_url(*args)
+        Support::FeatureReviewUrl.build(*args)
       end
     end
 

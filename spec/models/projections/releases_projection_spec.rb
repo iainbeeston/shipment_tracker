@@ -77,8 +77,4 @@ RSpec.describe Projections::ReleasesProjection do
   def feature_review_path(apps)
     URI.parse(feature_review_url(apps)).request_uri
   end
-
-  def feature_review_url(apps)
-    Support::FeatureReviewUrl.build(apps)
-  end
 end

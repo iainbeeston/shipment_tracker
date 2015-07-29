@@ -5,9 +5,9 @@ RSpec.describe Projections::FeatureReviewSearchProjection do
   describe '#feature_reviews' do
     it 'returns the feature review urls which match the versions' do
       events = [
-        build(:jira_event, comment_body: "Here you go: #{url_for(frontend: 'abc', backend: 'def')}"),
-        build(:jira_event, comment_body: "Here you go: #{url_for(frontend: 'ghi', backend: 'klm')}"),
-        build(:jira_event, comment_body: "Here you go: #{url_for(frontend: 'ghi', backend: 'nop')}"),
+        build(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'abc', backend: 'def')}"),
+        build(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'ghi', backend: 'klm')}"),
+        build(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'ghi', backend: 'nop')}"),
       ]
 
       results = Projections::FeatureReviewSearchProjection.new(
@@ -17,8 +17,8 @@ RSpec.describe Projections::FeatureReviewSearchProjection do
       }.feature_reviews
 
       expect(results).to match_array([
-        url_for(frontend: 'abc', backend: 'def'),
-        url_for(frontend: 'ghi', backend: 'nop'),
+        feature_review_url(frontend: 'abc', backend: 'def'),
+        feature_review_url(frontend: 'ghi', backend: 'nop'),
       ])
     end
   end

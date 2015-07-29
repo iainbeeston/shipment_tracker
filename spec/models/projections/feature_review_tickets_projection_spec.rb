@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Projections::FeatureReviewTicketsProjection do
-  let(:projection_url) { Support::FeatureReviewUrl.build(app1: 'abc') }
+  let(:projection_url) { feature_review_url(app1: 'abc') }
 
   subject(:projection) { Projections::FeatureReviewTicketsProjection.new(projection_url: projection_url) }
 
@@ -49,8 +49,8 @@ RSpec.describe Projections::FeatureReviewTicketsProjection do
         build(:jira_event, key: 'JIRA-1', comment_body: "Review again #{url2}"),
       ]
     }
-    let(:url1) { Support::FeatureReviewUrl.build(app1: 'one') }
-    let(:url2) { Support::FeatureReviewUrl.build(app2: 'two') }
+    let(:url1) { feature_review_url(app1: 'one') }
+    let(:url2) { feature_review_url(app2: 'two') }
 
     subject(:projection1) { Projections::FeatureReviewTicketsProjection.new(projection_url: url1) }
     subject(:projection2) { Projections::FeatureReviewTicketsProjection.new(projection_url: url2) }

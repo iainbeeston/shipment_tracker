@@ -79,7 +79,7 @@ RSpec.describe 'Projection performance', type: :request do
   describe 'Feature Review' do
     let(:apps) { { 'frontend' => 'abc', 'backend' => 'def' } }
     let(:server) { 'uat.fc.com' }
-    let(:feature_review_url) { Support::FeatureReviewUrl.build(apps, server) }
+    let(:feature_review_url) { feature_review_url(apps, server) }
     let(:feature_review_path) { URI.parse(feature_review_url).request_uri }
 
     it 'measures the request time' do
@@ -104,7 +104,7 @@ RSpec.describe 'Projection performance', type: :request do
   describe 'Feature Review Search' do
     let(:apps) { { 'frontend' => version, 'backend' => 'def' } }
     let(:server) { 'uat.fc.com' }
-    let(:feature_review_url) { Support::FeatureReviewUrl.build(apps, server) }
+    let(:feature_review_url) { feature_review_url(apps, server) }
 
     let(:repo_name) { 'frontend' }
     let(:test_git_repo) { Support::GitTestRepository.new }
@@ -173,7 +173,7 @@ RSpec.describe 'Projection performance', type: :request do
       count.times do
         repository_builder.build(git_diagram)
         version = test_git_repo.commit_for_pretend_version('B')
-        feature_review_url = Support::FeatureReviewUrl.build(frontend: version)
+        feature_review_url = feature_review_url(frontend: version)
         create :jira_event, comment_body: "Here you go: #{feature_review_url}"
       end
     end

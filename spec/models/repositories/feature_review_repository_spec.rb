@@ -23,20 +23,20 @@ RSpec.describe Repositories::FeatureReviewRepository do
     end
 
     it 'updates the #feature_reviews_for' do
-      create(:jira_event, comment_body: "Here you go: #{url_for(frontend: 'abc', backend: 'NON1')}")
-      create(:jira_event, comment_body: "Here you go: #{url_for(frontend: 'NON2', backend: 'def')}")
-      create(:jira_event, comment_body: "Here you go: #{url_for(frontend: 'NON2', backend: 'NON3')}")
-      create(:jira_event, comment_body: "Here you go: #{url_for(frontend: 'ghi',  backend: 'NON3')} "\
-                                        "and: #{url_for(frontend: 'NON4', backend: 'NON5')}")
+      create(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'abc', backend: 'NON1')}")
+      create(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'NON2', backend: 'def')}")
+      create(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'NON2', backend: 'NON3')}")
+      create(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'ghi',  backend: 'NON3')} "\
+                                        "and: #{feature_review_url(frontend: 'NON4', backend: 'NON5')}")
 
       expect(repository.feature_reviews_for(%w(abc def ghi))).to eq(Set.new)
 
       repository.update
 
       expect(repository.feature_reviews_for(%w(abc def ghi))).to contain_exactly(
-        url_for(frontend: 'abc', backend: 'NON1'),
-        url_for(frontend: 'NON2', backend: 'def'),
-        url_for(frontend: 'ghi', backend: 'NON3'),
+        feature_review_url(frontend: 'abc', backend: 'NON1'),
+        feature_review_url(frontend: 'NON2', backend: 'def'),
+        feature_review_url(frontend: 'ghi', backend: 'NON3'),
       )
     end
   end
