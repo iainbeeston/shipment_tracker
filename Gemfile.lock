@@ -119,8 +119,6 @@ GEM
     json (1.8.3)
     jwt (1.5.1)
     kgio (2.9.3)
-    launchy (2.4.3)
-      addressable (~> 2.3)
     libv8 (3.16.14.11)
     loofah (2.0.2)
       nokogiri (>= 1.5.9)
@@ -290,7 +288,6 @@ DEPENDENCIES
   has_secure_token
   honeybadger (~> 2.0)
   jquery-rails
-  launchy
   newrelic_rpm
   omniauth
   omniauth-auth0
