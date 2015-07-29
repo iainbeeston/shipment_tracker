@@ -16,6 +16,11 @@ module Projections
       )
     end
 
+    def self.host_from_url(url)
+      Addressable::URI.heuristic_parse(url, scheme: 'http').try(:host)
+    end
+    private_class_method :host_from_url
+
     def initialize(builds_projection:, deploys_projection:, manual_tests_projection:, tickets_projection:,
                    uatests_projection:, uat_url:)
       @builds_projection = builds_projection
@@ -69,17 +74,10 @@ module Projections
 
     private
 
-    def self.host_from_url(url)
-      Addressable::URI.heuristic_parse(url, scheme: 'http').try(:host)
-    end
-    private_class_method :host_from_url
-
     def apply_to_projections(event)
-      @builds_projection.apply(event)
-      @deploys_projection.apply(event)
-      @tickets_projection.apply(event)
-      @manual_tests_projection.apply(event)
-      @uatests_projection.apply(event)
+      projections.each do |projection|
+        projection.apply(event)
+      end
     end
 
     def unlocking_event?(event)
@@ -95,6 +93,16 @@ module Projections
         apply_to_projections(queued_event)
       end
       @events_queue = []
+    end
+
+    def projections
+      [
+        @builds_projection,
+        @deploys_projection,
+        @tickets_projection,
+        @manual_tests_projection,
+        @uatests_projection,
+      ]
     end
   end
 end
