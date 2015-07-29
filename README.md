@@ -29,12 +29,6 @@ Set up Git hooks, for running tests and linters before pushing to master.
 rake git:setup_hooks
 ```
 
-You can use Guard during development to run rspec, cucumber, and rubocop when it detects any changes.
-
-```
-bundle exec guard
-```
-
 ### Enabling access to repositories via SSH
 
 Ensure that `libssh2` is installed and the `rugged` gem is reinstalled. On OSX:

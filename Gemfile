@@ -25,18 +25,13 @@ gem 'virtus'
 gem 'whenever'
 
 group :development do
-  gem 'guard-cucumber'
-  gem 'guard-rspec'
-  gem 'guard-rubocop'
-  gem 'guard'
-  gem 'pry-rails'
   gem 'spring'
-  gem 'terminal-notifier-guard'
 end
 
 group :development, :test do
   gem 'rspec-rails'
   gem 'rubocop'
+  gem 'pry', require: false
 end
 
 group :production do
