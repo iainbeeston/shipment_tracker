@@ -15,7 +15,7 @@ gem 'omniauth'
 gem 'omniauth-auth0'
 gem 'pg'
 gem 'rack-timeout'
-gem 'rugged', '~> 0.23.0b4' # We need Rugged::Repository#descendant_of?
+gem 'rugged', '~> 0.23.0'
 gem 'sass-rails'
 gem 'therubyracer'
 gem 'uglifier'
