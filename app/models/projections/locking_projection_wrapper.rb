@@ -1,10 +1,10 @@
 module Projections
   class LockingProjectionWrapper
-    def initialize(projection, projection_url)
+    def initialize(projection:, projection_url:, projection_locked: nil)
       @projection_url = projection_url
 
       @projection = projection
-      @projection_locked = nil
+      @projection_locked = projection_locked
 
       @locks = {}
     end

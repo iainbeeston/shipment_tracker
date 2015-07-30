@@ -46,8 +46,8 @@ module Projections
 
     def initialize(feature_review_location)
       @projection = LockingProjectionWrapper.new(
-        TicketsProjection.new(projection_url: feature_review_location.url),
-        feature_review_location.url,
+        projection: TicketsProjection.new(projection_url: feature_review_location.url),
+        projection_url: feature_review_location.url,
       )
     end
 

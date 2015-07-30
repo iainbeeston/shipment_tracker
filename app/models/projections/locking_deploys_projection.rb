@@ -48,11 +48,11 @@ module Projections
 
     def initialize(feature_review_location)
       @projection = LockingProjectionWrapper.new(
-        DeploysProjection.new(
+        projection: DeploysProjection.new(
           apps: feature_review_location.app_versions,
           server: feature_review_location.uat_host,
         ),
-        feature_review_location.url,
+        projection_url: feature_review_location.url,
       )
     end
 
