@@ -1,7 +1,4 @@
-- title do
-  - if @presenter.locked?
-    - icon('icon-lock', tooltip: 'Feature Review is locked (all tickets done)')
-  Feature Review
+- title 'Feature Review'
 
 .row
   .col-lg-6
@@ -97,15 +94,15 @@
             = hidden_field_tag('apps[][name]', app_name)
             = hidden_field_tag('apps[][version]', version)
           %label.radio-inline.qa-accept
-            = radio_button_tag 'status', 'success', false, required: true, disabled: @presenter.locked?
+            = radio_button_tag 'status', 'success', false, required: true
             Accept
           %label.radio-inline.qa-reject
-            = radio_button_tag 'status', 'failed', false, required: true, disabled: @presenter.locked?
+            = radio_button_tag 'status', 'failed', false, required: true
             Reject
           .form-group
             = label_tag('comment', 'Comment', class: 'control-label sr-only')
-            = text_area_tag('comment', '', placeholder: 'Comment', class: 'form-control', required: true, disabled: @presenter.locked?, rows: 4)
-          = submit_tag('Submit', class: 'btn btn-primary', disabled: @presenter.locked?)
+            = text_area_tag('comment', '', placeholder: 'Comment', class: 'form-control', required: true, rows: 4)
+          = submit_tag('Submit', class: 'btn btn-primary')
   .col-lg-6
     - panel(heading: 'User Acceptance Tests', klass: 'uatest', status: @presenter.uatest_status) do
       .panel-body

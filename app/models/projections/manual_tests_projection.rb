@@ -21,27 +21,10 @@ module Projections
       )
     end
 
-    def clone
-      self.class.new(apps: @apps.clone, qa_submission: @qa_submission.try(:clone))
-    end
-
     private
 
     def apps_hash(apps_list)
       apps_list.map { |app| app.values_at('name', 'version') }.to_h
     end
-  end
-
-  class LockingManualTestsProjection
-    extend Forwardable
-
-    def initialize(feature_review_location)
-      @projection = LockingProjectionWrapper.new(
-        projection: ManualTestsProjection.new(apps: feature_review_location.app_versions),
-        projection_url: feature_review_location.url,
-      )
-    end
-
-    def_delegators :@projection, :apply, :qa_submission
   end
 end

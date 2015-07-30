@@ -1,24 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Projections::FeatureReviewProjection do
-  let(:builds_projection) {
-    instance_double(Projections::LockingBuildsProjection, builds: double(:builds))
-  }
-
-  let(:deploys_projection) {
-    instance_double(Projections::LockingDeploysProjection, deploys: double(:deploys))
-  }
-
+  let(:builds_projection) { instance_double(Projections::BuildsProjection, builds: double(:builds)) }
+  let(:deploys_projection) { instance_double(Projections::DeploysProjection, deploys: double(:deploys)) }
+  let(:tickets_projection) { instance_double(Projections::TicketsProjection, tickets: double(:tickets)) }
+  let(:uatests_projection) { instance_double(Projections::UatestsProjection, uatest: double(:uatest)) }
   let(:manual_tests_projection) {
-    instance_double(Projections::LockingManualTestsProjection, qa_submission: double(:qa_submission))
-  }
-
-  let(:tickets_projection) {
-    instance_double(Projections::LockingTicketsProjection, tickets: double(:tickets))
-  }
-
-  let(:uatests_projection) {
-    instance_double(Projections::LockingUatestsProjection, uatest: double(:uatest))
+    instance_double(Projections::ManualTestsProjection, qa_submission: double(:qa_submission))
   }
 
   let(:uat_url) { 'http://uat.example.com' }
@@ -49,27 +37,26 @@ RSpec.describe Projections::FeatureReviewProjection do
   end
 
   describe '.build' do
-    let(:projection_url) {
-      "http://shipment-tracker.example.com/feature_reviews?apps[app1]=abc&uat_url=#{uat_url}"
-    }
+    let(:uat_host) { 'foo.com' }
+    let(:uat_url) { "http://#{uat_host}" }
 
-    let(:feature_review_location) { FeatureReviewLocation.new(projection_url) }
+    let(:projection_url) { feature_review_url(apps, uat_url) }
 
     it 'passes the correct values' do
-      expect(Projections::LockingBuildsProjection).to receive(:new)
-        .with(feature_review_location).and_return(builds_projection)
-      expect(Projections::LockingDeploysProjection).to receive(:new)
-        .with(feature_review_location).and_return(deploys_projection)
-      expect(Projections::LockingManualTestsProjection).to receive(:new)
-        .with(feature_review_location).and_return(manual_tests_projection)
-      expect(Projections::LockingTicketsProjection).to receive(:new)
-        .with(feature_review_location).and_return(tickets_projection)
-      allow(Projections::LockingUatestsProjection).to receive(:new)
-        .with(feature_review_location).and_return(uatests_projection)
+      expect(Projections::BuildsProjection).to receive(:new)
+        .with(apps: apps).and_return(builds_projection)
+      expect(Projections::DeploysProjection).to receive(:new)
+        .with(apps: apps, server: uat_host).and_return(deploys_projection)
+      expect(Projections::ManualTestsProjection).to receive(:new)
+        .with(apps: apps).and_return(manual_tests_projection)
+      expect(Projections::TicketsProjection).to receive(:new)
+        .with(projection_url: projection_url).and_return(tickets_projection)
+      allow(Projections::UatestsProjection).to receive(:new)
+        .with(apps: apps, server: uat_host).and_return(uatests_projection)
 
       expect(Projections::FeatureReviewProjection).to receive(:new).with(
-        uat_url: feature_review_location.uat_url,
-        apps: feature_review_location.app_versions,
+        uat_url: uat_url,
+        apps: apps,
         builds_projection: builds_projection,
         deploys_projection: deploys_projection,
         manual_tests_projection: manual_tests_projection,

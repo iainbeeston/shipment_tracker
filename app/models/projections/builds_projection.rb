@@ -24,10 +24,6 @@ module Projections
       @builds_table
     end
 
-    def clone
-      self.class.new(apps: @apps.clone, builds_table: @builds_table.clone)
-    end
-
     private
 
     def versions
@@ -37,18 +33,5 @@ module Projections
     def apps_hash_with_value(apps, value)
       apps.map { |key, _| [key, value] }.to_h
     end
-  end
-
-  class LockingBuildsProjection
-    extend Forwardable
-
-    def initialize(feature_review_location)
-      @projection = LockingProjectionWrapper.new(
-        projection: BuildsProjection.new(apps: feature_review_location.app_versions),
-        projection_url: feature_review_location.url,
-      )
-    end
-
-    def_delegators :@projection, :apply, :builds
   end
 end

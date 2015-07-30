@@ -37,12 +37,6 @@ h1.title {
   font-size: 0.8em;
 }
 
-.icon-lock {
-  @extend .glyphicon;
-  @extend .glyphicon-lock;
-  color: #AAA;
-}
-
 .icon-success {
   @extend .glyphicon;
   @extend .glyphicon-ok;

@@ -25,15 +25,6 @@ module Projections
       end
     end
 
-    def clone
-      self.class.new(
-        apps: @apps.clone,
-        server: @server.clone,
-        versions_on_uats: @versions_on_uats.clone,
-        uatest: @uatest,
-      )
-    end
-
     private
 
     attr_reader :server, :apps, :versions_on_uats
@@ -43,21 +34,5 @@ module Projections
         versions_on_uats[app_name] == expected_version
       }
     end
-  end
-
-  class LockingUatestsProjection
-    extend Forwardable
-
-    def initialize(feature_review_location)
-      @projection = LockingProjectionWrapper.new(
-        projection: UatestsProjection.new(
-          apps: feature_review_location.app_versions,
-          server: feature_review_location.uat_host,
-        ),
-        projection_url: feature_review_location.url,
-      )
-    end
-
-    def_delegators :@projection, :uatest, :apply
   end
 end

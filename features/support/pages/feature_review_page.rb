@@ -93,11 +93,6 @@ module Pages
       )
     end
 
-    def locked?
-      verify!
-      page.all('.icon-lock').any?
-    end
-
     private
 
     attr_reader :page, :url_helpers

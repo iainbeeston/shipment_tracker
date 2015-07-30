@@ -24,10 +24,6 @@ module Projections
       @tickets_table.values
     end
 
-    def clone
-      self.class.new(projection_url: @projection_url.clone, tickets_table: @tickets_table.clone)
-    end
-
     private
 
     def matches_projection_url?(comment)
@@ -39,18 +35,5 @@ module Projections
     def extract_path(url_string)
       Addressable::URI.parse(url_string).normalize.request_uri
     end
-  end
-
-  class LockingTicketsProjection
-    extend Forwardable
-
-    def initialize(feature_review_location)
-      @projection = LockingProjectionWrapper.new(
-        projection: TicketsProjection.new(projection_url: feature_review_location.url),
-        projection_url: feature_review_location.url,
-      )
-    end
-
-    def_delegators :@projection, :tickets, :apply, :locked?
   end
 end

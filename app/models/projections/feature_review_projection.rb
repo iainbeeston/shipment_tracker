@@ -4,14 +4,16 @@ module Projections
   class FeatureReviewProjection
     def self.build(projection_url)
       feature_review_location = FeatureReviewLocation.new(projection_url)
+      apps = feature_review_location.app_versions
+      server = feature_review_location.uat_host
       new(
         uat_url: feature_review_location.uat_url,
         apps: feature_review_location.app_versions,
-        builds_projection: LockingBuildsProjection.new(feature_review_location),
-        deploys_projection: LockingDeploysProjection.new(feature_review_location),
-        manual_tests_projection: LockingManualTestsProjection.new(feature_review_location),
-        tickets_projection: LockingTicketsProjection.new(feature_review_location),
-        uatests_projection: LockingUatestsProjection.new(feature_review_location),
+        builds_projection: BuildsProjection.new(apps: apps),
+        deploys_projection: DeploysProjection.new(apps: apps, server: server),
+        manual_tests_projection: ManualTestsProjection.new(apps: apps),
+        tickets_projection: TicketsProjection.new(projection_url: feature_review_location.url),
+        uatests_projection: UatestsProjection.new(apps: apps, server: server),
       )
     end
 
@@ -38,10 +40,6 @@ module Projections
       projections.each do |projection|
         projection.apply(event)
       end
-    end
-
-    def locked?
-      @tickets_projection.locked?
     end
 
     def deploys

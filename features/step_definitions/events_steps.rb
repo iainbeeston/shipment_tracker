@@ -13,10 +13,6 @@ Given 'ticket "$key" is approved by "$approver_email" at "$time"' do |jira_key, 
   scenario_context.approve_ticket(jira_key, approver_email: approver_email, time: time)
 end
 
-Given 'ticket "$key" is rejected' do |jira_key|
-  scenario_context.reject_ticket(jira_key)
-end
-
 Given 'CircleCi "$outcome" for commit "$version"' do |outcome, version|
   payload = build(
     :circle_ci_manual_webhook_event,

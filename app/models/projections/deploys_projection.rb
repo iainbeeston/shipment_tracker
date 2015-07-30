@@ -26,10 +26,6 @@ module Projections
       deploys_table.values
     end
 
-    def clone
-      self.class.new(apps: @apps.clone, server: @server.clone, deploys_table: @deploys_table.clone)
-    end
-
     private
 
     def app_under_review?(name)
@@ -41,21 +37,5 @@ module Projections
     def version_correctness_for_event(event)
       event.version == apps[event.app_name]
     end
-  end
-
-  class LockingDeploysProjection
-    extend Forwardable
-
-    def initialize(feature_review_location)
-      @projection = LockingProjectionWrapper.new(
-        projection: DeploysProjection.new(
-          apps: feature_review_location.app_versions,
-          server: feature_review_location.uat_host,
-        ),
-        projection_url: feature_review_location.url,
-      )
-    end
-
-    def_delegators :@projection, :deploys, :apply
   end
 end

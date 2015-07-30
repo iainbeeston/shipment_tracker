@@ -15,10 +15,9 @@ module FeatureReviewsHelper
     end
   end
 
-  def icon(classes, tooltip: nil)
+  def icon(classes)
     return unless classes
     attributes = { class: classes, aria: { hidden: true } }
-    attributes.merge!(data: { toggle: 'tooltip' }, title: tooltip) if tooltip
     haml_tag('span.glyphicon', '', attributes)
   end
 

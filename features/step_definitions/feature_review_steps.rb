@@ -73,14 +73,6 @@ When 'I "$action" the feature with comment "$comment"' do |action, comment|
   )
 end
 
-Then 'I should see that the feature review is locked' do
-  expect(feature_review_page).to be_locked
-end
-
-Then 'I should see that the feature review is not locked' do
-  expect(feature_review_page).to_not be_locked
-end
-
 Then 'I should see the QA acceptance with heading "$status"' do |status|
   expect(feature_review_page.panel_heading_status('qa-submission')).to eq(status)
 end
