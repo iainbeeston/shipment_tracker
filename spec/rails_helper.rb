@@ -30,6 +30,8 @@ require 'support/require_authentication_matcher'
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 
+OmniAuth.config.logger = Logger.new('/dev/null')
+
 RSpec.configure do |config|
   config.include Support::FeatureReviewUrl::Helpers
   config.include Support::Login::Controller, type: :controller
