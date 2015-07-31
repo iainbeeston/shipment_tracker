@@ -36,13 +36,19 @@ RSpec.describe Projections::FeatureReviewProjection do
     projection.apply(event)
   end
 
-  describe '.build' do
+  describe '.load' do
     let(:uat_host) { 'foo.com' }
     let(:uat_url) { "http://#{uat_host}" }
 
     let(:projection_url) { feature_review_url(apps, uat_url) }
+    let(:expected_projection) { instance_double(Projections::FeatureReviewProjection) }
+    let(:events) { [Event.new] }
 
-    it 'passes the correct values' do
+    before do
+      allow(Event).to receive(:in_order_of_creation).and_return(events)
+    end
+
+    it 'passes the correct values and feeds events' do
       expect(Projections::BuildsProjection).to receive(:new)
         .with(apps: apps).and_return(builds_projection)
       expect(Projections::DeploysProjection).to receive(:new)
@@ -62,9 +68,11 @@ RSpec.describe Projections::FeatureReviewProjection do
         manual_tests_projection: manual_tests_projection,
         tickets_projection: tickets_projection,
         uatests_projection: uatests_projection,
-      )
+      ).and_return(expected_projection)
 
-      Projections::FeatureReviewProjection.build(projection_url)
+      expect(expected_projection).to receive(:apply_all).with(events)
+
+      expect(Projections::FeatureReviewProjection.load(projection_url)).to eq(expected_projection)
     end
   end
 

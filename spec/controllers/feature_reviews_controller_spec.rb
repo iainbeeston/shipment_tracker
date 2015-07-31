@@ -123,20 +123,16 @@ RSpec.describe FeatureReviewsController do
       before do
         request.host = 'www.example.com'
 
-        allow(Projections::FeatureReviewProjection).to receive(:build)
+        allow(Projections::FeatureReviewProjection).to receive(:load)
           .with(projection_url)
           .and_return(projection)
 
         allow(projection).to receive(:apps).and_return(apps_with_versions)
 
-        allow(Event).to receive(:in_order_of_creation).and_return(events)
-
         allow(FeatureReviewPresenter).to receive(:new).with(projection).and_return(presenter)
       end
 
       it 'shows a report for each application' do
-        expect(projection).to receive(:apply_all).with(events)
-
         get :show, apps: all_apps, uat_url: uat_url
 
         expect(assigns(:presenter)).to eq(presenter)

@@ -16,11 +16,9 @@ class FeatureReviewsController < ApplicationController
 
   def show
     @return_to = request.original_fullpath
-
-    projection = Projections::FeatureReviewProjection.build(request.original_url)
-    projection.apply_all(Event.in_order_of_creation)
-
-    @presenter = FeatureReviewPresenter.new(projection)
+    @presenter = FeatureReviewPresenter.new(
+      Projections::FeatureReviewProjection.load(request.original_url),
+    )
   end
 
   def search
