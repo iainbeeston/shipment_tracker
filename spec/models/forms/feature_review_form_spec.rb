@@ -141,6 +141,14 @@ RSpec.describe Forms::FeatureReviewForm do
         expect(feature_review_form.valid?).to be true
       end
     end
+
+    context 'when no apps are specified' do
+      let(:apps) { {} }
+
+      it 'returns true' do
+        expect(feature_review_form.valid?).to be false
+      end
+    end
   end
 
   describe '#url' do

@@ -18,12 +18,6 @@ class FeatureReviewsController < ApplicationController
     @return_to = request.original_fullpath
 
     projection = Projections::FeatureReviewProjection.build(request.original_url)
-
-    if projection.apps.empty?
-      flash[:error] = 'Please specify at least one app'
-      return redirect_to new_feature_reviews_path
-    end
-
     projection.apply_all(Event.in_order_of_creation)
 
     @presenter = FeatureReviewPresenter.new(projection)

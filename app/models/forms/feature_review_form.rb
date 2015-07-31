@@ -17,6 +17,7 @@ module Forms
     end
 
     def valid?
+      errors.add(:base, 'Please specify at least one application version') if apps.empty?
       apps.each do |repo_name, version|
         begin
           repo = git_repository_loader.load(repo_name.to_s)

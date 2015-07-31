@@ -142,15 +142,6 @@ RSpec.describe FeatureReviewsController do
         expect(assigns(:presenter)).to eq(presenter)
       end
     end
-
-    context 'when no apps are submitted' do
-      it 'shows an error' do
-        get :show, apps: { 'frontend' => '', 'backend' => '' }
-
-        expect(response).to redirect_to(new_feature_reviews_path)
-        expect(flash[:error]).to include('Please specify at least one app')
-      end
-    end
   end
 
   describe 'GET #search', :logged_in do
