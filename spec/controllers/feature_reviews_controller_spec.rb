@@ -103,37 +103,51 @@ RSpec.describe FeatureReviewsController do
   end
 
   describe 'GET #show', :logged_in do
-    context 'when apps are submitted' do
-      let(:projection) { instance_double(Projections::FeatureReviewProjection) }
-      let(:presenter) { instance_double(FeatureReviewPresenter) }
-      let(:events) { [Event.new, Event.new, Event.new] }
-      let(:uat_url) { 'http://uat.fundingcircle.com' }
-      let(:apps_with_versions) { { 'frontend' => 'abc', 'backend' => 'def' } }
-      let(:apps_without_versions) { { 'irrelevant_app_without_version' => '' } }
-      let(:all_apps) { apps_with_versions.merge(apps_without_versions) }
+    let(:projection) { instance_double(Projections::FeatureReviewProjection) }
+    let(:presenter) { instance_double(FeatureReviewPresenter) }
+    let(:events) { [Event.new, Event.new, Event.new] }
+    let(:uat_url) { 'http://uat.fundingcircle.com' }
+    let(:apps_with_versions) { { 'frontend' => 'abc', 'backend' => 'def' } }
 
+    let(:projection_url) {
+      @routes.url_for host: 'www.example.com',
+                      controller: 'feature_reviews',
+                      action: 'show',
+                      apps: apps_with_versions,
+                      uat_url: uat_url
+    }
+
+    before do
+      request.host = 'www.example.com'
+      allow(FeatureReviewPresenter).to receive(:new).with(projection).and_return(presenter)
+    end
+
+    it 'shows a report for each application' do
+      allow(Projections::FeatureReviewProjection).to receive(:load)
+        .with(projection_url, up_to: nil)
+        .and_return(projection)
+
+      get :show, apps: apps_with_versions, uat_url: uat_url
+
+      expect(assigns(:presenter)).to eq(presenter)
+    end
+
+    context 'when time is specified' do
       let(:projection_url) {
         @routes.url_for host: 'www.example.com',
                         controller: 'feature_reviews',
                         action: 'show',
-                        apps: all_apps,
-                        uat_url: uat_url
+                        apps: apps_with_versions,
+                        uat_url: uat_url,
+                        time: '1990-12-31T23:59:60Z'
       }
 
-      before do
-        request.host = 'www.example.com'
-
+      it 'shows a report for each application' do
         allow(Projections::FeatureReviewProjection).to receive(:load)
-          .with(projection_url)
+          .with(projection_url, up_to: Time.zone.parse('1990-12-31T23:59:60Z'))
           .and_return(projection)
 
-        allow(projection).to receive(:apps).and_return(apps_with_versions)
-
-        allow(FeatureReviewPresenter).to receive(:new).with(projection).and_return(presenter)
-      end
-
-      it 'shows a report for each application' do
-        get :show, apps: all_apps, uat_url: uat_url
+        get :show, apps: apps_with_versions, uat_url: uat_url, time: '1990-12-31T23:59:60Z'
 
         expect(assigns(:presenter)).to eq(presenter)
       end

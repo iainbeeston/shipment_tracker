@@ -43,9 +43,10 @@ RSpec.describe Projections::FeatureReviewProjection do
     let(:projection_url) { feature_review_url(apps, uat_url) }
     let(:expected_projection) { instance_double(Projections::FeatureReviewProjection) }
     let(:events) { [Event.new] }
+    let(:time) { Time.current }
 
     before do
-      allow(Event).to receive(:in_order_of_creation).and_return(events)
+      allow(Event).to receive(:up_to).with(time).and_return(events)
     end
 
     it 'passes the correct values and feeds events' do
@@ -72,7 +73,9 @@ RSpec.describe Projections::FeatureReviewProjection do
 
       expect(expected_projection).to receive(:apply_all).with(events)
 
-      expect(Projections::FeatureReviewProjection.load(projection_url)).to eq(expected_projection)
+      expect(
+        Projections::FeatureReviewProjection.load(projection_url, up_to: time),
+      ).to eq(expected_projection)
     end
   end
 

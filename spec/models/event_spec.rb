@@ -20,4 +20,25 @@ RSpec.describe Event do
       expect(Event.after_id(event1.id).to_a).to eq([event2, event3])
     end
   end
+
+  describe '.up_to' do
+    let(:times) { [2.hours.ago, 1.hour.ago, 1.minute.ago] }
+    let(:events) { times.map { |t| build(:circle_ci_event, created_at: t) } }
+
+    before do
+      events.each(&:save!)
+    end
+
+    context 'when nil is specified' do
+      it 'returns all events' do
+        expect(Event.up_to(nil).to_a).to eq(events)
+      end
+    end
+
+    context 'when a time is specified' do
+      it 'returns all events up to the time specified' do
+        expect(Event.up_to(times[1]).to_a).to eq(events.slice(0..1))
+      end
+    end
+  end
 end

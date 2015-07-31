@@ -17,7 +17,10 @@ class FeatureReviewsController < ApplicationController
   def show
     @return_to = request.original_fullpath
     @presenter = FeatureReviewPresenter.new(
-      Projections::FeatureReviewProjection.load(request.original_url),
+      Projections::FeatureReviewProjection.load(
+        request.original_url,
+        up_to: time,
+      ),
     )
   end
 
@@ -36,6 +39,10 @@ class FeatureReviewsController < ApplicationController
   end
 
   private
+
+  def time
+    params.fetch(:time, nil).try { |t| Time.zone.parse(t) }
+  end
 
   def feature_review_form
     form_input = params.fetch(:forms_feature_review_form, {})
