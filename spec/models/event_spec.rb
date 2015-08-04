@@ -35,6 +35,15 @@ RSpec.describe Event do
       it 'returns all events up to the time specified' do
         expect(Event.between(0, up_to: times[1]).to_a).to eq(events[0, 2])
       end
+
+      context 'when the time differs by microseconds' do
+        let(:time) { Time.current }
+        let(:times) { [time.change(usec: 0), time] }
+
+        it 'returns all events up to the precise time specified' do
+          expect(Event.between(0, up_to: times[0]).to_a).to eq(events[0, 1])
+        end
+      end
     end
   end
 end
