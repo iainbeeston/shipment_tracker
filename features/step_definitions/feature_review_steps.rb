@@ -92,3 +92,7 @@ Then 'I should see the results of the User Acceptance Tests with heading "$s" an
   expect(panel.status).to eq(s)
   expect(panel.items.first).to eq('test_suite_version' => v)
 end
+
+Then 'I should see the time when the Feature Review is for' do
+  expect(feature_review_page.time).to include('UTC')
+end

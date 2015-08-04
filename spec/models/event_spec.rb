@@ -33,7 +33,7 @@ RSpec.describe Event do
 
     context 'when up_to is also specified' do
       it 'returns all events up to the time specified' do
-        expect(Event.between(0, up_to: events[1].created_at).to_a).to eq(events.slice(0..1))
+        expect(Event.between(0, up_to: times[1]).to_a).to eq(events[0, 2])
       end
     end
   end

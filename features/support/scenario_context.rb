@@ -57,13 +57,13 @@ module Support
       end
     end
 
-    def prepare_review(apps, uat_url)
+    def prepare_review(apps, uat_url, time = 1.hour.from_now)
       apps_hash = {}
       apps.each do |app|
         apps_hash[app[:app_name]] = resolve_version(app[:version])
       end
 
-      @review_url = Support::FeatureReviewUrl.new(@host).build(apps_hash, uat_url)
+      @review_url = Support::FeatureReviewUrl.new(@host).build(apps_hash, uat_url, time)
     end
 
     def link_ticket(jira_key)

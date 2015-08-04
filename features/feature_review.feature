@@ -90,6 +90,8 @@ Scenario: Viewing a feature review
     | frontend | #abc    | yes     |
     | backend  | #old    | no      |
 
+  And I should see the time when the Feature Review is for
+
 Scenario: QA rejects and approves feature
   Given I am logged in as "foo@bar.com"
   And a developer prepares a review for UAT "uat.fundingcircle.com" with apps

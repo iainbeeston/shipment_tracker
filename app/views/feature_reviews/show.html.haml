@@ -1,5 +1,8 @@
 - title 'Feature Review'
 
+- if @presenter.time
+  .time= "As of #{@presenter.time}"
+
 .row
   .col-lg-6
     - panel(heading: 'Summary', status: @presenter.summary_status, klass: 'summary') do

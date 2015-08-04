@@ -3,7 +3,7 @@ require 'forwardable'
 class FeatureReviewPresenter
   extend Forwardable
 
-  def_delegators :@projection, :tickets, :builds, :deploys, :qa_submission, :uatest, :uat_url, :apps
+  def_delegators :@projection, :tickets, :builds, :deploys, :qa_submission, :uatest, :uat_url, :apps, :time
 
   def initialize(projection)
     @projection = projection

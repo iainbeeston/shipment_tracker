@@ -93,6 +93,11 @@ module Pages
       )
     end
 
+    def time
+      verify!
+      page.find('.time').text
+    end
+
     private
 
     attr_reader :page, :url_helpers

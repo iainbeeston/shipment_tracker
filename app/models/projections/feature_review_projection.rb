@@ -7,6 +7,7 @@ module Projections
       apps = feature_review_location.app_versions
       server = feature_review_location.uat_host
       new(
+        time: at,
         uat_url: feature_review_location.uat_url,
         apps: feature_review_location.app_versions,
         builds_projection: BuildsProjection.load(apps: apps, at: at),
@@ -17,10 +18,10 @@ module Projections
       )
     end
 
-    attr_reader :uat_url, :apps
+    attr_reader :uat_url, :apps, :time
 
     def initialize(builds_projection:, deploys_projection:, manual_tests_projection:, tickets_projection:,
-                   uatests_projection:, uat_url:, apps:)
+                   uatests_projection:, uat_url:, apps:, time:)
       @builds_projection = builds_projection
       @deploys_projection = deploys_projection
       @manual_tests_projection = manual_tests_projection
@@ -28,6 +29,7 @@ module Projections
       @uatests_projection = uatests_projection
       @uat_url = uat_url
       @apps = apps
+      @time = time
     end
 
     def apply(event)

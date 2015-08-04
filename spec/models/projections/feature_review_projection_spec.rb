@@ -9,11 +9,13 @@ RSpec.describe Projections::FeatureReviewProjection do
     instance_double(Projections::ManualTestsProjection, qa_submission: double(:qa_submission))
   }
 
+  let(:time) { Time.current }
   let(:uat_url) { 'http://uat.example.com' }
   let(:apps) { { 'a' => 'xxx' } }
 
   subject(:projection) {
     Projections::FeatureReviewProjection.new(
+      time: time,
       uat_url: uat_url,
       apps: apps,
       builds_projection: builds_projection,
@@ -57,6 +59,7 @@ RSpec.describe Projections::FeatureReviewProjection do
         .with(apps: apps, server: uat_host, at: time).and_return(uatests_projection)
 
       expect(Projections::FeatureReviewProjection).to receive(:new).with(
+        time: time,
         uat_url: uat_url,
         apps: apps,
         builds_projection: builds_projection,
@@ -111,5 +114,10 @@ RSpec.describe Projections::FeatureReviewProjection do
   describe '#uat_url' do
     let(:uat_url) { 'https://uat.example.com' }
     it { expect(projection.uat_url).to eq('https://uat.example.com') }
+  end
+
+  describe '#time' do
+    let(:time) { 3.days.ago }
+    it { expect(projection.time).to eq(time) }
   end
 end
