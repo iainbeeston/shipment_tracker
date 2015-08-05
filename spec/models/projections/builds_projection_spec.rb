@@ -5,6 +5,31 @@ RSpec.describe Projections::BuildsProjection do
 
   subject(:projection) { Projections::BuildsProjection.new(apps: apps) }
 
+  describe '.load' do
+    let(:repository) { instance_double(Repositories::BuildRepository) }
+    let(:expected_builds) { [Build.new] }
+    let(:expected_events) { [Event.new] }
+    let(:expected_projection) { instance_double(Projections::BuildsProjection) }
+    let(:time) { Time.current }
+
+    it 'inflates the projection and feeds it remaining events' do
+      allow(repository).to receive(:builds_for)
+        .with(apps: apps, at: time)
+        .and_return(builds: expected_builds, events: expected_events)
+
+      allow(Projections::BuildsProjection).to receive(:new).with(
+        apps: apps,
+        builds: expected_builds,
+      ).and_return(expected_projection)
+
+      expect(expected_projection).to receive(:apply_all).with(expected_events)
+
+      expect(
+        Projections::BuildsProjection.load(apps: apps, at: time, repository: repository),
+      ).to be(expected_projection)
+    end
+  end
+
   it 'projects last build' do
     projection.apply(build(:jenkins_event, success?: false, version: 'abc'))
     expect(projection.builds).to eq(

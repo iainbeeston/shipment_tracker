@@ -2,21 +2,19 @@ require 'addressable/uri'
 
 module Projections
   class FeatureReviewProjection
-    def self.load(projection_url, up_to: nil)
+    def self.load(projection_url, at: nil)
       feature_review_location = FeatureReviewLocation.new(projection_url)
       apps = feature_review_location.app_versions
       server = feature_review_location.uat_host
       new(
         uat_url: feature_review_location.uat_url,
         apps: feature_review_location.app_versions,
-        builds_projection: BuildsProjection.new(apps: apps),
-        deploys_projection: DeploysProjection.new(apps: apps, server: server),
-        manual_tests_projection: ManualTestsProjection.new(apps: apps),
-        tickets_projection: TicketsProjection.new(projection_url: feature_review_location.url),
-        uatests_projection: UatestsProjection.new(apps: apps, server: server),
-      ).tap do |projection|
-        projection.apply_all(Event.up_to(up_to))
-      end
+        builds_projection: BuildsProjection.load(apps: apps, at: at),
+        deploys_projection: DeploysProjection.load(apps: apps, server: server, at: at),
+        manual_tests_projection: ManualTestsProjection.load(apps: apps, at: at),
+        tickets_projection: TicketsProjection.load(projection_url: feature_review_location.url, at: at),
+        uatests_projection: UatestsProjection.load(apps: apps, server: server, at: at),
+      )
     end
 
     attr_reader :uat_url, :apps

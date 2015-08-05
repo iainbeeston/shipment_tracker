@@ -2,9 +2,21 @@ require 'forwardable'
 
 module Projections
   class TicketsProjection
-    def initialize(projection_url:, tickets_table: {})
+    def self.load(projection_url:, at:, repository: Repositories::TicketRepository.new)
+      state = repository.tickets_for(projection_url: projection_url, at: at)
+      new(
+        projection_url: projection_url,
+        tickets: state.fetch(:tickets),
+      ).tap { |p| p.apply_all(state.fetch(:events)) }
+    end
+
+    def initialize(projection_url:, tickets: [])
       @projection_url = projection_url
-      @tickets_table = tickets_table
+      @tickets_table = tickets.map { |t| [t.key, t] }.to_h
+    end
+
+    def apply_all(events)
+      events.each(&method(:apply))
     end
 
     def apply(event)

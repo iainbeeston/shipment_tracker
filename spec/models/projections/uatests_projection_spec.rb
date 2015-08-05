@@ -8,6 +8,38 @@ RSpec.describe Projections::UatestsProjection do
 
   subject(:projection) { Projections::UatestsProjection.new(apps: apps, server: server) }
 
+  describe '.load' do
+    let(:repository) { instance_double(Repositories::UatestRepository) }
+    let(:expected_uatest) { Uatest.new }
+    let(:expected_versions) { { app_name: 'abc' } }
+    let(:expected_events) { [Event.new] }
+    let(:expected_projection) { instance_double(Projections::UatestsProjection) }
+    let(:time) { Time.current }
+
+    it 'inflates the projection and feeds it remaining events' do
+      allow(repository).to receive(:uatest_for)
+        .with(apps: apps, server: server, at: time)
+        .and_return(
+          uatest: expected_uatest,
+          versions: expected_versions,
+          events: expected_events,
+        )
+
+      allow(Projections::UatestsProjection).to receive(:new).with(
+        apps: apps,
+        server: server,
+        versions: expected_versions,
+        uatest: expected_uatest,
+      ).and_return(expected_projection)
+
+      expect(expected_projection).to receive(:apply_all).with(expected_events)
+
+      expect(
+        Projections::UatestsProjection.load(apps: apps, server: server, at: time, repository: repository),
+      ).to be(expected_projection)
+    end
+  end
+
   it 'projects last UaTest' do
     projection.apply(build(:deploy_event, server: server, version: 'abc', app_name: 'frontend'))
     projection.apply(build(:uat_event, defaults))

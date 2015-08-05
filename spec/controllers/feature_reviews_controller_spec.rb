@@ -124,7 +124,7 @@ RSpec.describe FeatureReviewsController do
 
     it 'shows a report for each application' do
       allow(Projections::FeatureReviewProjection).to receive(:load)
-        .with(projection_url, up_to: nil)
+        .with(projection_url, at: nil)
         .and_return(projection)
 
       get :show, apps: apps_with_versions, uat_url: uat_url
@@ -144,7 +144,7 @@ RSpec.describe FeatureReviewsController do
 
       it 'shows a report for each application' do
         allow(Projections::FeatureReviewProjection).to receive(:load)
-          .with(projection_url, up_to: Time.zone.parse('1990-12-31T23:59:60Z'))
+          .with(projection_url, at: Time.zone.parse('1990-12-31T23:59:60Z'))
           .and_return(projection)
 
         get :show, apps: apps_with_versions, uat_url: uat_url, time: '1990-12-31T23:59:60Z'

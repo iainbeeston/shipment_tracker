@@ -2,10 +2,27 @@ require 'forwardable'
 
 module Projections
   class DeploysProjection
-    def initialize(apps:, server:, deploys_table: {})
+    def self.load(apps: nil, server:, at: nil, repository: Repositories::DeployRepository.new)
+      state = repository.deploys_for(apps: apps, server: server, at: at)
+      new(
+        apps: apps,
+        server: server,
+        deploys: state.fetch(:deploys),
+      ).tap { |p| p.apply_all(state.fetch(:events)) }
+    end
+
+    def initialize(apps:, server:, deploys: [])
       @apps = apps
       @server = server
-      @deploys_table = deploys_table
+      @deploys_table = Hash[deploys.map { |d| [d.app_name, d] }]
+    end
+
+    def apply_all(events)
+      events.each(&method(:apply))
+    end
+
+    def deploys
+      deploys_table.values
     end
 
     def apply(event)
@@ -20,10 +37,6 @@ module Projections
         correct: version_correctness_for_event(event),
       )
       deploys_table[event.app_name] = deploy
-    end
-
-    def deploys
-      deploys_table.values
     end
 
     private

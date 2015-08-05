@@ -16,12 +16,8 @@ class Event < ActiveRecord::Base
     BatchedRelation.new(self)
   end
 
-  def self.up_to(time)
-    query = time ? where(arel_table['created_at'].lteq(time)) : self
-    BatchedRelation.new(query)
-  end
-
-  def self.after_id(id)
-    BatchedRelation.new(self, from_id: id + 1)
+  def self.between(id, up_to: nil)
+    query = up_to ? where(arel_table['created_at'].lteq(up_to)) : self
+    BatchedRelation.new(query, from_id: id + 1)
   end
 end

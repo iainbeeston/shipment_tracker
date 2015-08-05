@@ -3,6 +3,10 @@ class ManualTestEvent < Event
     details.fetch('apps', [])
   end
 
+  def versions
+    apps.map { |app| app.fetch('version') }
+  end
+
   def email
     details.fetch('email', nil)
   end

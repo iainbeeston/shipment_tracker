@@ -2,9 +2,21 @@ require 'forwardable'
 
 module Projections
   class BuildsProjection
-    def initialize(apps:, builds_table: nil)
+    def self.load(apps:, at: nil, repository: Repositories::BuildRepository.new)
+      state = repository.builds_for(apps: apps, at: at)
+      new(
+        apps: apps,
+        builds: state.fetch(:builds),
+      ).tap { |p| p.apply_all(state.fetch(:events)) }
+    end
+
+    def initialize(apps:, builds: [])
       @apps = apps
-      @builds_table = builds_table || apps_hash_with_value(@apps, Build.new)
+      @builds_table = default_builds_table.merge(builds_table_for(builds))
+    end
+
+    def apply_all(events)
+      events.each(&method(:apply))
     end
 
     def apply(event)
@@ -30,8 +42,16 @@ module Projections
       @versions ||= @apps.invert
     end
 
-    def apps_hash_with_value(apps, value)
-      apps.map { |key, _| [key, value] }.to_h
+    def builds_table_for(builds)
+      builds.map { |b| [versions[b.version], b] }.to_h
+    end
+
+    def app_names
+      @apps.keys
+    end
+
+    def default_builds_table
+      app_names.map { |name, _| [name, Build.new] }.to_h
     end
   end
 end

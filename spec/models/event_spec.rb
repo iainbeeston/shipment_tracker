@@ -11,17 +11,7 @@ RSpec.describe Event do
     end
   end
 
-  describe '.after_id' do
-    it 'returns all events greater than id' do
-      event1 = create(:circle_ci_event)
-      event2 = create(:jenkins_event)
-      event3 = create(:deploy_event)
-
-      expect(Event.after_id(event1.id).to_a).to eq([event2, event3])
-    end
-  end
-
-  describe '.up_to' do
+  describe '.between' do
     let(:times) { [2.hours.ago, 1.hour.ago, 1.minute.ago] }
     let(:events) { times.map { |t| build(:circle_ci_event, created_at: t) } }
 
@@ -31,13 +21,19 @@ RSpec.describe Event do
 
     context 'when nil is specified' do
       it 'returns all events' do
-        expect(Event.up_to(nil).to_a).to eq(events)
+        expect(Event.between(0).to_a).to eq(events)
       end
     end
 
-    context 'when a time is specified' do
+    context 'when an integer is specified' do
+      it 'returns events greater than that id' do
+        expect(Event.between(events.second.id).to_a).to eq(events[2..-1])
+      end
+    end
+
+    context 'when up_to is also specified' do
       it 'returns all events up to the time specified' do
-        expect(Event.up_to(times[1]).to_a).to eq(events.slice(0..1))
+        expect(Event.between(0, up_to: events[1].created_at).to_a).to eq(events.slice(0..1))
       end
     end
   end

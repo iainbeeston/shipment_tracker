@@ -19,7 +19,7 @@ class FeatureReviewsController < ApplicationController
     @presenter = FeatureReviewPresenter.new(
       Projections::FeatureReviewProjection.load(
         request.original_url,
-        up_to: time,
+        at: time,
       ),
     )
   end

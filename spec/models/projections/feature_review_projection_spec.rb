@@ -42,24 +42,19 @@ RSpec.describe Projections::FeatureReviewProjection do
 
     let(:projection_url) { feature_review_url(apps, uat_url) }
     let(:expected_projection) { instance_double(Projections::FeatureReviewProjection) }
-    let(:events) { [Event.new] }
     let(:time) { Time.current }
 
-    before do
-      allow(Event).to receive(:up_to).with(time).and_return(events)
-    end
-
     it 'passes the correct values and feeds events' do
-      expect(Projections::BuildsProjection).to receive(:new)
-        .with(apps: apps).and_return(builds_projection)
-      expect(Projections::DeploysProjection).to receive(:new)
-        .with(apps: apps, server: uat_host).and_return(deploys_projection)
-      expect(Projections::ManualTestsProjection).to receive(:new)
-        .with(apps: apps).and_return(manual_tests_projection)
-      expect(Projections::TicketsProjection).to receive(:new)
-        .with(projection_url: projection_url).and_return(tickets_projection)
-      allow(Projections::UatestsProjection).to receive(:new)
-        .with(apps: apps, server: uat_host).and_return(uatests_projection)
+      expect(Projections::BuildsProjection).to receive(:load)
+        .with(apps: apps, at: time).and_return(builds_projection)
+      expect(Projections::DeploysProjection).to receive(:load)
+        .with(apps: apps, server: uat_host, at: time).and_return(deploys_projection)
+      expect(Projections::ManualTestsProjection).to receive(:load)
+        .with(apps: apps, at: time).and_return(manual_tests_projection)
+      expect(Projections::TicketsProjection).to receive(:load)
+        .with(projection_url: projection_url, at: time).and_return(tickets_projection)
+      allow(Projections::UatestsProjection).to receive(:load)
+        .with(apps: apps, server: uat_host, at: time).and_return(uatests_projection)
 
       expect(Projections::FeatureReviewProjection).to receive(:new).with(
         uat_url: uat_url,
@@ -71,10 +66,8 @@ RSpec.describe Projections::FeatureReviewProjection do
         uatests_projection: uatests_projection,
       ).and_return(expected_projection)
 
-      expect(expected_projection).to receive(:apply_all).with(events)
-
       expect(
-        Projections::FeatureReviewProjection.load(projection_url, up_to: time),
+        Projections::FeatureReviewProjection.load(projection_url, at: time),
       ).to eq(expected_projection)
     end
   end

@@ -5,6 +5,31 @@ RSpec.describe Projections::TicketsProjection do
 
   subject(:projection) { Projections::TicketsProjection.new(projection_url: projection_url) }
 
+  describe '.load' do
+    let(:repository) { instance_double(Repositories::TicketRepository) }
+    let(:expected_tickets) { [Ticket.new] }
+    let(:expected_events) { [Event.new] }
+    let(:expected_projection) { instance_double(Projections::TicketsProjection) }
+    let(:time) { Time.current }
+
+    it 'inflates the projection and feeds it remaining events' do
+      allow(repository).to receive(:tickets_for)
+        .with(projection_url: projection_url, at: time)
+        .and_return(tickets: expected_tickets, events: expected_events)
+
+      allow(Projections::TicketsProjection).to receive(:new).with(
+        projection_url: projection_url,
+        tickets: expected_tickets,
+      ).and_return(expected_projection)
+
+      expect(expected_projection).to receive(:apply_all).with(expected_events)
+
+      expect(
+        Projections::TicketsProjection.load(projection_url: projection_url, at: time, repository: repository),
+      ).to be(expected_projection)
+    end
+  end
+
   it 'projects latest associated tickets' do
     projection.apply(build(:jira_event, :created, key: 'JIRA-1', comment_body: projection_url))
     expect(projection.tickets).to eq([Ticket.new(key: 'JIRA-1', status: 'To Do', summary: '')])

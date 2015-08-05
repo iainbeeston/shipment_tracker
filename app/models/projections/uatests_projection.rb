@@ -2,13 +2,27 @@ require 'forwardable'
 
 module Projections
   class UatestsProjection
+    def self.load(apps:, server:, at:, repository: Repositories::UatestRepository.new)
+      state = repository.uatest_for(apps: apps, server: server, at: at)
+      new(
+        apps: apps,
+        server: server,
+        versions: state.fetch(:versions),
+        uatest: state.fetch(:uatest),
+      ).tap { |p| p.apply_all(state.fetch(:events)) }
+    end
+
     attr_reader :uatest
 
-    def initialize(apps:, server:, versions_on_uats: {}, uatest: nil)
+    def initialize(apps:, server:, versions: {}, uatest: nil)
       @apps = apps
       @server = server
-      @versions_on_uats = versions_on_uats
+      @versions_on_uats = versions
       @uatest = uatest
+    end
+
+    def apply_all(events)
+      events.each(&method(:apply))
     end
 
     def apply(event)
