@@ -30,12 +30,6 @@ module Projections
       @apps = apps
     end
 
-    def apply_all(events)
-      events.each do |event|
-        apply(event)
-      end
-    end
-
     def apply(event)
       projections.each do |projection|
         projection.apply(event)

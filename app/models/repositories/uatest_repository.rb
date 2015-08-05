@@ -48,10 +48,6 @@ module Repositories
       end
     end
 
-    def deploy_projection_for(apps)
-      deploy_projection.load(apps: apps)
-    end
-
     def versions_for(server, at)
       projection = deploy_projection.load(server: server, at: at)
       projection.deploys.map { |d| [d.app_name, d.version] }.to_h

@@ -52,10 +52,6 @@ module Repositories
       old_urls.concat(new_urls).uniq
     end
 
-    def table
-      store.arel_table
-    end
-
     def prepare_url(url_string)
       Addressable::URI.parse(url_string).normalize.to_s
     end
