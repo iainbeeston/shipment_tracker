@@ -23,7 +23,7 @@ RSpec.describe Repositories::UatestRepository do
 
     context 'after an update' do
       it 'returns the state for the apps and server referenced' do
-        times = [1.hour.ago, 1.minute.ago]
+        times = [1.hour.ago, 1.minute.ago].map { |t| t.change(usec: 0) }
 
         deploy_0 = Deploy.new(app_name: 'a', version: '0', server: server)
 
@@ -53,7 +53,7 @@ RSpec.describe Repositories::UatestRepository do
 
     context 'with at specified' do
       it 'returns the state at that moment' do
-        times = [4.hours.ago, 3.hours.ago, 2.hours.ago, 1.hour.ago, 1.minute.ago]
+        times = [5.hours.ago, 4.hours.ago, 3.hours.ago, 2.hours.ago, 1.hour.ago].map { |t| t.change(usec: 0) }
 
         deploy = Deploy.new(app_name: 'a', version: '1', server: server)
 

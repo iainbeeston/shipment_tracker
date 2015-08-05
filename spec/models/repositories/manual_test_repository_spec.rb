@@ -24,7 +24,7 @@ RSpec.describe Repositories::ManualTestRepository do
       it 'returns the state for the apps referenced' do
         default = { apps: { 'ap1' => 'abc', 'ap2' => 'def' }, email: 'foo@ex.io', comment: 'Good' }
 
-        t = [4.hours.ago, 3.hours.ago, 2.hours.ago, 1.hour.ago]
+        t = [4.hours.ago, 3.hours.ago, 2.hours.ago, 1.hour.ago].map { |time| time.change(usec: 0) }
         create(:manual_test_event, default.merge(accepted: false, created_at: t[0]))
         create(:manual_test_event, default.merge(apps: { 'ap2' => 'def' }, accepted: false, created_at: t[1]))
         create(:manual_test_event, default.merge(accepted: true, created_at: t[2]))
@@ -50,7 +50,7 @@ RSpec.describe Repositories::ManualTestRepository do
       it 'returns the state at that moment' do
         default = { apps: { 'ap1' => 'abc', 'ap2' => 'def' }, email: 'foo@ex.io', comment: 'Good' }
 
-        times = [3.hours.ago, 2.hours.ago, 1.hour.ago]
+        times = [3.hours.ago, 2.hours.ago, 1.hour.ago].map { |t| t.change(usec: 0) }
         create(:manual_test_event, default.merge(accepted: false, created_at: times[0]))
         create(:manual_test_event, default.merge(accepted: true, created_at: times[1]))
         create(:manual_test_event, default.merge(accepted: false, created_at: times[2]))
@@ -75,7 +75,7 @@ RSpec.describe Repositories::ManualTestRepository do
     context 'with at specified but repository not up-to-date' do
       it 'returns the state at that moment and new events up to that moment' do
         defaults = { apps: { 'ap1' => '2' }, email: 'foo@ex.io', comment: 'Good' }
-        times = [3.hours.ago, 2.hours.ago, 1.minute.ago]
+        times = [3.hours.ago, 2.hours.ago, 1.minute.ago].map { |t| t.change(usec: 0) }
 
         create(:manual_test_event, defaults.merge(accepted: false, created_at: times[0]))
 
