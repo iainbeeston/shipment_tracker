@@ -59,7 +59,7 @@ Scenario: Viewing a feature review
   And commit "#old" is deployed by "Bob" on server "uat.fundingcircle.com"
   And commit "#def" is deployed by "Bob" on server "other-uat.fundingcircle.com"
   And commit "#xyz" is deployed by "Wendy" on server "uat.fundingcircle.com"
-  And a developer prepares a review for UAT "uat.fundingcircle.com" with apps
+  And a developer prepares a review upto now for UAT "uat.fundingcircle.com" with apps
     | app_name | version |
     | frontend | #abc    |
     | backend  | #def    |

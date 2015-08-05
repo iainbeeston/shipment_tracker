@@ -57,7 +57,7 @@ module Support
       end
     end
 
-    def prepare_review(apps, uat_url, time = 1.hour.from_now)
+    def prepare_review(apps, uat_url, time = nil)
       apps_hash = {}
       apps.each do |app|
         apps_hash[app[:app_name]] = resolve_version(app[:version])

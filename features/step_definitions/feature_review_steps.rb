@@ -23,6 +23,10 @@ Given 'a developer prepares a review for UAT "$uat_url" with apps' do |uat_url, 
   scenario_context.prepare_review(apps_table.hashes, uat_url)
 end
 
+Given 'a developer prepares a review upto now for UAT "$uat_url" with apps' do |uat_url, apps_table|
+  scenario_context.prepare_review(apps_table.hashes, uat_url, 1.second.from_now)
+end
+
 When 'I visit the feature review' do
   visit scenario_context.review_url
 end
