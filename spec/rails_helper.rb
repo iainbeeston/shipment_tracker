@@ -5,7 +5,6 @@ require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
 require 'factory_girl'
 
-require 'support/feature_review_url'
 require 'support/login'
 require 'support/require_authentication_matcher'
 
@@ -33,7 +32,6 @@ ActiveRecord::Migration.maintain_test_schema!
 OmniAuth.config.logger = Logger.new('/dev/null')
 
 RSpec.configure do |config|
-  config.include Support::FeatureReviewUrl::Helpers
   config.include Support::Login::Controller, type: :controller
   config.include Support::Login::Request, type: :request
   config.before(:each, :logged_in) do
