@@ -1,44 +1,36 @@
 require 'build'
 require 'circle_ci_event'
 require 'jenkins_event'
-require 'repositories/count_synchronizer'
 require 'snapshots/build'
-require 'snapshots/event_count'
-
-require 'active_record'
 
 module Repositories
   class BuildRepository
-    def initialize
-      @store = Snapshots::Build
-      @synchronizer = CountSynchronizer.new(store.table_name, Snapshots::EventCount)
+    def initialize(store = Snapshots::Build)
+      @store = store
+    end
+
+    delegate :table_name, to: :store
+
+    def apply(event)
+      return unless event.is_a?(CircleCiEvent) || event.is_a?(JenkinsEvent)
+
+      store.create!(
+        success: event.success,
+        source: event.source,
+        version: event.version,
+        event_created_at: event.created_at,
+      )
     end
 
     def builds_for(apps:, at: nil)
-      ActiveRecord::Base.transaction do
-        {
-          builds: builds(apps.values, at),
-          events: synchronizer.new_events(up_to: at),
-        }
-      end
-    end
-
-    def update
-      synchronizer.update do |event|
-        next unless event.is_a?(CircleCiEvent) || event.is_a?(JenkinsEvent)
-
-        store.create(
-          success: event.success,
-          source: event.source,
-          version: event.version,
-          event_created_at: event.created_at,
-        )
-      end
+      default_builds = apps.keys.map { |app_name| [app_name, Build.new] }.to_h
+      builds = builds(apps.values, at).map { |build| [apps.invert[build.version], build] }.to_h
+      default_builds.merge(builds)
     end
 
     private
 
-    attr_reader :store, :synchronizer
+    attr_reader :store
 
     def builds(versions, at)
       query = at ? store.arel_table['event_created_at'].lteq(at) : nil

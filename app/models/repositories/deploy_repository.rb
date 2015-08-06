@@ -1,43 +1,33 @@
 require 'deploy_event'
-require 'repositories/count_synchronizer'
 require 'snapshots/deploy'
-require 'snapshots/event_count'
-
-require 'active_record'
 
 module Repositories
   class DeployRepository
-    def initialize
-      @store = Snapshots::Deploy
-      @synchronizer = CountSynchronizer.new(store.table_name, Snapshots::EventCount)
+    def initialize(store = Snapshots::Deploy)
+      @store = store
     end
+
+    delegate :table_name, to: :store
 
     def deploys_for(apps: nil, server:, at: nil)
-      ActiveRecord::Base.transaction do
-        {
-          deploys: deploys(apps, server, at),
-          events: synchronizer.new_events(up_to: at),
-        }
-      end
+      deploys(apps, server, at)
     end
 
-    def update
-      synchronizer.update do |event|
-        next unless event.is_a?(DeployEvent)
+    def apply(event)
+      return unless event.is_a?(DeployEvent)
 
-        store.create(
-          app_name: event.app_name,
-          server: event.server,
-          version: event.version,
-          deployed_by: event.deployed_by,
-          event_created_at: event.created_at,
-        )
-      end
+      store.create!(
+        app_name: event.app_name,
+        server: event.server,
+        version: event.version,
+        deployed_by: event.deployed_by,
+        event_created_at: event.created_at,
+      )
     end
 
     private
 
-    attr_reader :store, :synchronizer
+    attr_reader :store
 
     def deploys(apps, server, at)
       query = store.select('DISTINCT ON (server, app_name) *').where(server: server)

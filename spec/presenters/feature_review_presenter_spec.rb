@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'feature_review_presenter'
 
+require 'feature_review_query'
 require 'build'
 require 'deploy'
-require 'projections/feature_review_projection'
 require 'qa_submission'
 require 'uatest'
 
@@ -15,27 +15,27 @@ RSpec.describe FeatureReviewPresenter do
   let(:uatest) { nil }
   let(:apps) { {} }
 
-  let(:projection) {
+  let(:feature_review_query) {
     instance_double(
-      Projections::FeatureReviewProjection,
+      FeatureReviewQuery,
       tickets: tickets,
       builds: builds,
       deploys: deploys,
       qa_submission: qa_submission,
       uatest: uatest,
-      apps: apps,
+      app_versions: apps,
     )
   }
 
-  subject(:presenter) { FeatureReviewPresenter.new(projection) }
+  subject(:presenter) { FeatureReviewPresenter.new(feature_review_query) }
 
-  it 'delegates #apps, #tickets, #builds, #deploys and #qa_submission to the projection' do
-    expect(presenter.tickets).to eq(projection.tickets)
-    expect(presenter.builds).to eq(projection.builds)
-    expect(presenter.deploys).to eq(projection.deploys)
-    expect(presenter.qa_submission).to eq(projection.qa_submission)
-    expect(presenter.uatest).to eq(projection.uatest)
-    expect(presenter.apps).to eq(projection.apps)
+  it 'delegates #apps, #tickets, #builds, #deploys and #qa_submission to the feature_review_query' do
+    expect(presenter.tickets).to eq(feature_review_query.tickets)
+    expect(presenter.builds).to eq(feature_review_query.builds)
+    expect(presenter.deploys).to eq(feature_review_query.deploys)
+    expect(presenter.qa_submission).to eq(feature_review_query.qa_submission)
+    expect(presenter.uatest).to eq(feature_review_query.uatest)
+    expect(presenter.app_versions).to eq(feature_review_query.app_versions)
   end
 
   describe '#build_status' do

@@ -4,40 +4,33 @@ require 'repositories/feature_review_repository'
 RSpec.describe Repositories::FeatureReviewRepository do
   subject(:repository) { Repositories::FeatureReviewRepository.new }
 
-  describe '#update' do
-    it 'updates the #new_events' do
-      event_1 = create(:jira_event)
-      event_2 = create(:circle_ci_event)
-      event_3 = create(:jira_event)
-      event_4 = create(:jira_event)
+  describe '#table_name' do
+    let(:active_record_class) { class_double(Snapshots::FeatureReview, table_name: 'the_table_name') }
 
-      expect(repository.new_events.to_a).to eq([event_1, event_2, event_3, event_4])
+    subject(:repository) { Repositories::FeatureReviewRepository.new(active_record_class) }
 
-      repository.update
-
-      expect(repository.new_events.to_a).to be_empty
-
-      event_5 = create(:jira_event)
-
-      expect(repository.new_events.to_a).to eq([event_5])
+    it 'delegates to the active record class backing the repository' do
+      expect(repository.table_name).to eq('the_table_name')
     end
+  end
 
-    it 'updates the #feature_reviews_for' do
-      create(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'abc', backend: 'NON1')}")
-      create(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'NON2', backend: 'def')}")
-      create(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'NON2', backend: 'NON3')}")
-      create(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'ghi',  backend: 'NON3')} "\
-                                        "and: #{feature_review_url(frontend: 'NON4', backend: 'NON5')}")
+  describe '#feature_reviews_for' do
+    it 'returns matching URLs' do
+      [
+        build(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'abc', backend: 'NON1')}"),
+        build(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'NON2', backend: 'def')}"),
+        build(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'NON2', backend: 'NON3')}"),
+        build(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'ghi',  backend: 'NON3')} "\
+                                         "and: #{feature_review_url(frontend: 'NON4', backend: 'NON5')}"),
+      ].each do |event|
+        repository.apply(event)
+      end
 
-      expect(repository.feature_reviews_for(%w(abc def ghi))).to eq(Set.new)
-
-      repository.update
-
-      expect(repository.feature_reviews_for(%w(abc def ghi))).to contain_exactly(
+      expect(repository.feature_reviews_for(%w(abc def ghi))).to match_array([
         feature_review_url(frontend: 'abc', backend: 'NON1'),
         feature_review_url(frontend: 'NON2', backend: 'def'),
         feature_review_url(frontend: 'ghi', backend: 'NON3'),
-      )
+      ])
     end
   end
 end

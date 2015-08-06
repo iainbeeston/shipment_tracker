@@ -4,7 +4,11 @@ class EventsController < ApplicationController
   def create
     event_factory.create(params[:type], request.request_parameters, current_user.email)
 
-    redirect_to redirect_path if redirect_path
+    if redirect_path
+      flash[:success] = 'Thank you for your submission. It will appear in a moment.'
+      redirect_to redirect_path
+    end
+
     self.response_body = 'ok'
   end
 

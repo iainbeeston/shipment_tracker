@@ -41,8 +41,8 @@ module Pages
     )
   end
 
-  def error_message
-    Pages::ErrorMessage.new(
+  def alert_message
+    Pages::AlertMessage.new(
       page: page,
       url_helpers: Rails.application.routes.url_helpers,
     )

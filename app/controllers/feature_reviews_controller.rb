@@ -17,10 +17,7 @@ class FeatureReviewsController < ApplicationController
   def show
     @return_to = request.original_fullpath
     @presenter = FeatureReviewPresenter.new(
-      Projections::FeatureReviewProjection.load(
-        request.original_url,
-        at: time,
-      ),
+      FeatureReviewQuery.new(request.original_url, at: time),
     )
   end
 
@@ -33,8 +30,8 @@ class FeatureReviewsController < ApplicationController
     return unless @version && @application
 
     versions = VersionResolver.new(git_repository_for(@application)).related_versions(@version)
-    projection = Projections::FeatureReviewSearchProjection.load(versions: versions)
-    @links = projection.feature_reviews
+    repository = Repositories::FeatureReviewRepository.new
+    @links = repository.feature_reviews_for(versions)
     flash[:error] = 'No Feature Reviews found.' if @links.empty?
   end
 

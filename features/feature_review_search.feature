@@ -34,4 +34,4 @@ Scenario: Searching for a Feature Review
 
 Scenario: Searching for a commit with no associated Feature Reviews
   When I look up feature reviews for "#master1" on "frontend"
-  Then I should see a warning: "No Feature Reviews found."
+  Then I should see an alert: "No Feature Reviews found."

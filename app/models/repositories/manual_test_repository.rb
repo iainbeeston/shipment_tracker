@@ -1,44 +1,34 @@
 require 'manual_test_event'
 require 'qa_submission'
-require 'repositories/count_synchronizer'
-require 'snapshots/event_count'
 require 'snapshots/manual_test'
-
-require 'active_record'
 
 module Repositories
   class ManualTestRepository
-    def initialize
-      @store = Snapshots::ManualTest
-      @synchronizer = CountSynchronizer.new(store.table_name, Snapshots::EventCount)
+    def initialize(store = Snapshots::ManualTest)
+      @store = store
     end
+
+    delegate :table_name, to: :store
 
     def qa_submission_for(apps:, at: nil)
-      ActiveRecord::Base.transaction do
-        {
-          qa_submission: qa_submission(apps.values, at),
-          events: synchronizer.new_events(up_to: at),
-        }
-      end
+      qa_submission(apps.values, at)
     end
 
-    def update
-      synchronizer.update do |event|
-        next unless event.is_a?(ManualTestEvent)
+    def apply(event)
+      return unless event.is_a?(ManualTestEvent)
 
-        store.create(
-          email: event.email,
-          accepted: event.accepted?,
-          comment: event.comment,
-          versions: prepared_versions(event.versions),
-          created_at: event.created_at,
-        )
-      end
+      store.create!(
+        email: event.email,
+        accepted: event.accepted?,
+        comment: event.comment,
+        versions: prepared_versions(event.versions),
+        created_at: event.created_at,
+      )
     end
 
     private
 
-    attr_reader :store, :synchronizer
+    attr_reader :store
 
     def qa_submission(versions, at)
       query = at ? table['created_at'].lteq(at) : nil

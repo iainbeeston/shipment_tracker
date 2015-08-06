@@ -29,7 +29,7 @@ namespace :jobs do
     manage_pid pid_path_for('jobs_update_events')
 
     puts "[#{Time.current}] Running update_events"
-    Rails.configuration.repositories.each(&:update)
+    Repositories::Updater.from_rails_config.run
     puts "[#{Time.current}] Completed update_events"
   end
 

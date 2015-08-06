@@ -15,6 +15,6 @@ Then 'I select link to feature review "$link_number"' do |link_number|
   feature_review_search_page.click_nth_link(link_number)
 end
 
-Then 'I should see a warning: "$warning"' do |warning|
-  expect(error_message.text).to eq(warning)
+Then 'I should see an alert: "$message"' do |message|
+  expect(alert_message.text).to eq(message)
 end

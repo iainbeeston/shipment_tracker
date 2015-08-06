@@ -3,115 +3,115 @@ require 'rails_helper'
 RSpec.describe Repositories::DeployRepository do
   subject(:repository) { Repositories::DeployRepository.new }
 
+  describe '#table_name' do
+    let(:active_record_class) { class_double(Snapshots::Deploy, table_name: 'the_table_name') }
+
+    subject(:repository) { Repositories::DeployRepository.new(active_record_class) }
+
+    it 'delegates to the active record class backing the repository' do
+      expect(repository.table_name).to eq('the_table_name')
+    end
+  end
+
   describe '#deploys_for' do
-    context 'when no apps are specified' do
-      it 'returns deploys for all apps to that server' do
-        create(:deploy_event, server: 'ex.io', version: '1', app_name: 'ap1', deployed_by: 'dj')
-        create(:deploy_event, server: 'ex.io', version: '2', app_name: 'ap2', deployed_by: 'dj')
-        create(:deploy_event, server: 'other.io', version: '3', app_name: 'ap3', deployed_by: 'dj')
+    let(:apps) { { 'frontend' => 'abc' } }
+    let(:server) { 'uat.fundingcircle.com' }
 
-        repository.update
+    let(:defaults) { { app_name: 'frontend', server: server, deployed_by: 'Bob', version: 'abc' } }
 
-        results = repository.deploys_for(server: 'ex.io')
+    it 'projects last deploy' do
+      repository.apply(build(:deploy_event, defaults.merge(version: 'abc')))
+      results = repository.deploys_for(apps: apps, server: server)
+      expect(results).to eq([Deploy.new(defaults.merge(version: 'abc', correct: true))])
 
-        expect(results[:deploys]).to match_array([
-          Deploy.new(app_name: 'ap1', server: 'ex.io', version: '1', deployed_by: 'dj', correct: false),
-          Deploy.new(app_name: 'ap2', server: 'ex.io', version: '2', deployed_by: 'dj', correct: false),
+      repository.apply(build(:deploy_event, defaults.merge(version: 'def')))
+      results = repository.deploys_for(apps: apps, server: server)
+      expect(results).to eq([Deploy.new(defaults.merge(version: 'def', correct: false))])
+    end
+
+    it 'is case insensitive when a repo name and the event app name do not match in case' do
+      repository.apply(build(:deploy_event, defaults.merge(app_name: 'Frontend')))
+
+      results = repository.deploys_for(apps: apps, server: server)
+      expect(results).to eq([Deploy.new(defaults.merge(app_name: 'frontend', correct: true))])
+    end
+
+    it 'ignores the deploys event when it is for another server' do
+      repository.apply(build(:deploy_event, defaults.merge(server: 'other.fundingcircle.com')))
+
+      expect(repository.deploys_for(apps: apps, server: server)).to eq([])
+    end
+
+    it 'ignores the deploy event when it is for an app that is not under review' do
+      repository.apply(build(:deploy_event, defaults.merge(app_name: 'irrelevant_app')))
+
+      expect(repository.deploys_for(apps: apps, server: server)).to eq([])
+    end
+
+    it 'reports an incorrect version deployed to the UAT when event is for a different app version' do
+      repository.apply(build(:deploy_event, defaults))
+      expect(repository.deploys_for(apps: apps, server: server).map(&:correct)).to eq([true])
+
+      repository.apply(build(:deploy_event, defaults.merge(version: 'def')))
+      expect(repository.deploys_for(apps: apps, server: server).map(&:correct)).to eq([false])
+    end
+
+    context 'with multiple apps' do
+      let(:apps) { { 'frontend' => 'abc', 'backend' => 'abc' } }
+
+      it 'returns multiple deploys' do
+        repository.apply(build(:deploy_event, defaults.merge(app_name: 'frontend')))
+        repository.apply(build(:deploy_event, defaults.merge(app_name: 'backend')))
+
+        expect(repository.deploys_for(apps: apps, server: server)).to match_array([
+          Deploy.new(defaults.merge(app_name: 'frontend', correct: true)),
+          Deploy.new(defaults.merge(app_name: 'backend', correct: true)),
         ])
       end
     end
 
-    context 'before an update' do
-      it 'returns the state for the apps and server referenced' do
-        events = [create(:deploy_event), create(:deploy_event), create(:deploy_event), create(:deploy_event)]
+    context 'with no apps' do
+      it 'returns deploys for all apps to that server' do
+        repository.apply(build(:deploy_event, server: 'x.io', version: '1', app_name: 'a', deployed_by: 'dj'))
+        repository.apply(build(:deploy_event, server: 'x.io', version: '2', app_name: 'b', deployed_by: 'dj'))
+        repository.apply(build(:deploy_event, server: 'y.io', version: '3', app_name: 'c', deployed_by: 'dj'))
 
-        results = repository.deploys_for(
-          apps: {
-            'ap1' => 'abc',
-            'ap2' => 'ghi',
-          },
-          server: 'ex.io',
-        )
+        results = repository.deploys_for(server: 'x.io')
 
-        expect(results[:deploys]).to eq([])
-        expect(results[:events].to_a).to eq(events)
-      end
-    end
-
-    context 'after an update' do
-      it 'returns the state for the apps and server referenced' do
-        create(:deploy_event, server: 'ex.io', version: 'abc', app_name: 'ap1', deployed_by: 'dj')
-        create(:deploy_event, server: 'example.com', version: 'xxx', app_name: 'ap1', deployed_by: 'dj')
-        create(:deploy_event, server: 'ex.io', version: 'def', app_name: 'ap2', deployed_by: 'dj')
-        create(:deploy_event, server: 'ex.io', version: 'ghi', app_name: 'ap1', deployed_by: 'dj')
-
-        repository.update
-
-        result = repository.deploys_for(
-          apps: {
-            'ap1' => 'abc',
-            'ap2' => 'def',
-          },
-          server: 'ex.io',
-        )
-
-        expect(result[:deploys]).to contain_exactly(
-          Deploy.new(app_name: 'ap1', server: 'ex.io', version: 'ghi', deployed_by: 'dj', correct: false),
-          Deploy.new(app_name: 'ap2', server: 'ex.io', version: 'def', deployed_by: 'dj', correct: true),
-        )
-        expect(result[:events].to_a).to eq([])
+        expect(results).to match_array([
+          Deploy.new(app_name: 'a', server: 'x.io', version: '1', deployed_by: 'dj', correct: false),
+          Deploy.new(app_name: 'b', server: 'x.io', version: '2', deployed_by: 'dj', correct: false),
+        ])
       end
     end
 
     context 'with at specified' do
+      let(:defaults) { { server: 'x.io', deployed_by: 'dj' } }
+
       it 'returns the state at that moment' do
-        defaults = { server: 'ex.io', deployed_by: 'dj' }
+        events = [
+          build(:deploy_event, defaults.merge(version: 'abc', app_name: 'app1', created_at: 3.hours.ago)),
+          build(:deploy_event, defaults.merge(server: 'y.io', app_name: 'app1', created_at: 2.hours.ago)),
+          build(:deploy_event, defaults.merge(version: 'def', app_name: 'app2', created_at: 1.hours.ago)),
+          build(:deploy_event, defaults.merge(version: 'ghi', app_name: 'app1', created_at: Time.current)),
+        ]
 
-        create(:deploy_event, defaults.merge(version: 'abc', app_name: 'ap1', created_at: 3.hours.ago))
-        create(:deploy_event, defaults.merge(server: 'foo.com', app_name: 'ap1', created_at: 2.hours.ago))
-        create(:deploy_event, defaults.merge(version: 'def', app_name: 'ap2', created_at: 1.hours.ago))
-        create(:deploy_event, defaults.merge(version: 'ghi', app_name: 'ap1', created_at: Time.current))
+        events.each do |event|
+          repository.apply(event)
+        end
 
-        repository.update
-
-        result = repository.deploys_for(
+        results = repository.deploys_for(
           apps: {
-            'ap1' => 'abc',
-            'ap2' => 'def',
+            'app1' => 'abc',
+            'app2' => 'def',
           },
-          server: 'ex.io',
+          server: 'x.io',
           at: 2.hours.ago,
         )
 
-        expect(result[:deploys]).to contain_exactly(
-          Deploy.new(app_name: 'ap1', server: 'ex.io', version: 'abc', deployed_by: 'dj', correct: true),
-        )
-        expect(result[:events].to_a).to eq([])
-      end
-    end
-
-    context 'with at specified but repository not up-to-date' do
-      it 'returns the state at that moment and new events up to that moment' do
-        defaults = { server: 'ex.io', deployed_by: 'dj' }
-
-        create(:deploy_event, defaults.merge(version: '1', app_name: 'ap1', created_at: 3.hours.ago))
-
-        repository.update
-
-        expected_event =
-          create(:deploy_event, defaults.merge(version: '2', app_name: 'ap1', created_at: 2.hours.ago))
-        create(:deploy_event, defaults.merge(version: '3', app_name: 'ap1', created_at: 1.minute.ago))
-
-        result = repository.deploys_for(
-          apps: { 'ap1' => '2' },
-          server: 'ex.io',
-          at: 1.hour.ago,
-        )
-
-        expect(result[:deploys]).to contain_exactly(
-          Deploy.new(app_name: 'ap1', server: 'ex.io', version: '1', deployed_by: 'dj', correct: false),
-        )
-        expect(result[:events].to_a).to eq([expected_event])
+        expect(results).to match_array([
+          Deploy.new(app_name: 'app1', server: 'x.io', version: 'abc', deployed_by: 'dj', correct: true),
+        ])
       end
     end
   end

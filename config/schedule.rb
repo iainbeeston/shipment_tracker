@@ -1,4 +1,4 @@
-every 10.minutes, roles: [:cron_events_worker] do
+every 10.seconds, roles: [:cron_events_worker] do
   rake 'jobs:update_events', output: File.join(path, 'log', 'jobs.log')
 end
 

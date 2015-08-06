@@ -1,37 +1,30 @@
 require 'feature_review_location'
 require 'jira_event'
-require 'repositories/count_synchronizer'
-require 'snapshots/event_count'
 require 'snapshots/feature_review'
-
-require 'active_record'
 
 module Repositories
   class FeatureReviewRepository
-    def initialize
-      @store = Snapshots::FeatureReview
-      @synchronizer = CountSynchronizer.new(store.table_name, Snapshots::EventCount)
+    def initialize(store = Snapshots::FeatureReview)
+      @store = store
     end
+
+    delegate :table_name, to: :store
 
     def feature_reviews_for(versions)
       store.where('versions && ARRAY[?]::varchar[]', versions).pluck(:url).to_set
     end
 
-    delegate :new_events, to: :synchronizer
+    def apply(event)
+      return unless event.is_a?(JiraEvent) && event.issue?
 
-    def update
-      synchronizer.update do |event|
-        next unless event.is_a?(JiraEvent) && event.issue?
-
-        locations(event.comment).each do |location|
-          store.create(location)
-        end
+      locations(event.comment).each do |location|
+        store.create!(location)
       end
     end
 
     private
 
-    attr_reader :synchronizer, :store
+    attr_reader :store
 
     def locations(text)
       FeatureReviewLocation.from_text(text).map { |location|

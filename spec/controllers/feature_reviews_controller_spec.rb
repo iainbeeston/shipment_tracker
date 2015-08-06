@@ -103,7 +103,7 @@ RSpec.describe FeatureReviewsController do
   end
 
   describe 'GET #show', :logged_in do
-    let(:projection) { instance_double(Projections::FeatureReviewProjection) }
+    let(:query) { instance_double(FeatureReviewQuery) }
     let(:presenter) { instance_double(FeatureReviewPresenter) }
     let(:events) { [Event.new, Event.new, Event.new] }
     let(:uat_url) { 'http://uat.fundingcircle.com' }
@@ -119,13 +119,13 @@ RSpec.describe FeatureReviewsController do
 
     before do
       request.host = 'www.example.com'
-      allow(FeatureReviewPresenter).to receive(:new).with(projection).and_return(presenter)
+      allow(FeatureReviewPresenter).to receive(:new).with(query).and_return(presenter)
     end
 
     it 'shows a report for each application' do
-      allow(Projections::FeatureReviewProjection).to receive(:load)
+      allow(FeatureReviewQuery).to receive(:new)
         .with(projection_url, at: nil)
-        .and_return(projection)
+        .and_return(query)
 
       get :show, apps: apps_with_versions, uat_url: uat_url
 
@@ -143,9 +143,9 @@ RSpec.describe FeatureReviewsController do
       }
 
       it 'shows a report for each application' do
-        allow(Projections::FeatureReviewProjection).to receive(:load)
+        allow(FeatureReviewQuery).to receive(:new)
           .with(projection_url, at: Time.zone.parse('1990-12-31T23:59:60Z'))
-          .and_return(projection)
+          .and_return(query)
 
         get :show, apps: apps_with_versions, uat_url: uat_url, time: '1990-12-31T23:59:60Z'
 
@@ -158,45 +158,29 @@ RSpec.describe FeatureReviewsController do
     let(:applications) { %w(frontend backend mobile) }
 
     let(:version_resolver) { instance_double(VersionResolver) }
-    let(:projection) { instance_double(Projections::FeatureReviewSearchProjection) }
+    let(:repository) { instance_double(Repositories::FeatureReviewRepository) }
     let(:git_repository_loader) { instance_double(GitRepositoryLoader) }
     let(:repo) { instance_double(GitRepository) }
     let(:related_versions) { %w(abc def ghi) }
+    let(:expected_links) { ['/somelink'] }
+    let(:version) { 'abc123' }
 
     before do
       allow(VersionResolver).to receive(:new).with(repo).and_return(version_resolver)
       allow(version_resolver).to receive(:related_versions).with(version).and_return(related_versions)
       allow(RepositoryLocation).to receive(:app_names).and_return(applications)
       allow(GitRepositoryLoader).to receive(:new).and_return(git_repository_loader)
-      allow(Projections::FeatureReviewSearchProjection).to receive(:load).with(
-        versions: related_versions,
-      ).and_return(projection)
+      allow(Repositories::FeatureReviewRepository).to receive(:new).and_return(repository)
+      allow(repository).to receive(:feature_reviews_for).with(related_versions).and_return(expected_links)
 
       allow(git_repository_loader).to receive(:load).with('frontend').and_return(repo)
     end
 
-    context 'when no search entered' do
-      let(:version) { nil }
+    it 'assigns links for found Feature Reviews' do
+      get :search, version: version, application: 'frontend'
 
-      it 'it assigns links as empty' do
-        get :search
-        expect(assigns(:links)).to be_empty
-        expect(assigns(:applications)).to eq(applications)
-      end
-    end
-
-    context 'when search query submitted' do
-      let(:expected_links) { ['/somelink'] }
-      let(:version) { 'abc123' }
-
-      it 'assigns links for found Feature Reviews' do
-        expect(projection).to receive(:feature_reviews).and_return(expected_links).ordered
-
-        get :search, version: version, application: 'frontend'
-
-        expect(assigns(:links)).to eq(expected_links)
-        expect(assigns(:applications)).to eq(applications)
-      end
+      expect(assigns(:links)).to eq(expected_links)
+      expect(assigns(:applications)).to eq(applications)
     end
   end
 end

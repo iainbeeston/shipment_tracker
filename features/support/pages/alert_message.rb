@@ -1,5 +1,5 @@
 module Pages
-  class ErrorMessage
+  class AlertMessage
     def initialize(page:, url_helpers:)
       @page        = page
       @url_helpers = url_helpers
@@ -14,7 +14,7 @@ module Pages
     attr_reader :page, :url_helpers
 
     def selector
-      '.alert.alert-danger'
+      '.alert'
     end
   end
 end

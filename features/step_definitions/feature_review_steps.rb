@@ -100,3 +100,8 @@ end
 Then 'I should see the time when the Feature Review is for' do
   expect(feature_review_page.time).to include('UTC')
 end
+
+When 'I reload the page after a while' do
+  Repositories::Updater.from_rails_config.run
+  page.visit(page.current_url)
+end

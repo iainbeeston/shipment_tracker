@@ -3,96 +3,61 @@ require 'rails_helper'
 RSpec.describe Repositories::ManualTestRepository do
   subject(:repository) { Repositories::ManualTestRepository.new }
 
-  describe '#qa_submission_for' do
-    context 'before an update' do
-      it 'returns the state for the apps referenced' do
-        events = [create(:manual_test_event), create(:manual_test_event), create(:manual_test_event)]
+  describe '#table_name' do
+    let(:active_record_class) { class_double(Snapshots::ManualTest, table_name: 'the_table_name') }
 
-        results = repository.qa_submission_for(
-          apps: {
-            'ap1' => 'abc',
-            'ap2' => 'ghi',
-          },
-        )
+    subject(:repository) { Repositories::ManualTestRepository.new(active_record_class) }
 
-        expect(results[:qa_submission]).to eq(nil)
-        expect(results[:events].to_a).to eq(events)
-      end
+    it 'delegates to the active record class backing the repository' do
+      expect(repository.table_name).to eq('the_table_name')
     end
+  end
 
-    context 'after an update' do
-      it 'returns the state for the apps referenced' do
-        default = { apps: { 'ap1' => 'abc', 'ap2' => 'def' }, email: 'foo@ex.io', comment: 'Good' }
+  describe '#qa_submission_for' do
+    it 'projects last QA submission' do
+      # usec reset is required as the precision for the database column is not as great as the Time class,
+      # without it, tests would fail on CI build.
+      t = [4.hours.ago, 3.hours.ago, 2.hours.ago, 1.hour.ago].map { |time| time.change(usec: 0) }
 
-        t = [4.hours.ago, 3.hours.ago, 2.hours.ago, 1.hour.ago].map { |time| time.change(usec: 0) }
-        create(:manual_test_event, default.merge(accepted: false, created_at: t[0]))
-        create(:manual_test_event, default.merge(apps: { 'ap2' => 'def' }, accepted: false, created_at: t[1]))
-        create(:manual_test_event, default.merge(accepted: true, created_at: t[2]))
-        create(:manual_test_event, default.merge(apps: { 'ap1' => 'abc' }, accepted: false, created_at: t[3]))
+      default = { apps: { 'app1' => '1', 'app2' => '2' }, email: 'foo@ex.io', comment: 'Good' }
+      events = [
+        build(:manual_test_event, default.merge(accepted: false, created_at: t[0])),
+        build(:manual_test_event, default.merge(apps: { 'app2' => '2' }, accepted: false, created_at: t[1])),
+        build(:manual_test_event, default.merge(accepted: true, created_at: t[2])),
+        build(:manual_test_event, default.merge(apps: { 'app1' => '1' }, accepted: false, created_at: t[3])),
+      ]
 
-        repository.update
-
-        result = repository.qa_submission_for(
-          apps: {
-            'ap1' => 'abc',
-            'ap2' => 'def',
-          },
-        )
-
-        expect(result[:qa_submission]).to eq(
-          QaSubmission.new(email: 'foo@ex.io', accepted: true, comment: 'Good', created_at: t[2]),
-        )
-        expect(result[:events].to_a).to eq([])
+      events.each do |event|
+        repository.apply(event)
       end
+
+      result = repository.qa_submission_for(apps: { 'app1' => '1', 'app2' => '2' })
+
+      expect(result).to eq(
+        QaSubmission.new(email: 'foo@ex.io', accepted: true, comment: 'Good', created_at: t[2]),
+      )
     end
 
     context 'with at specified' do
       it 'returns the state at that moment' do
-        default = { apps: { 'ap1' => 'abc', 'ap2' => 'def' }, email: 'foo@ex.io', comment: 'Good' }
+        default = { apps: { 'app1' => 'abc', 'app2' => 'def' }, email: 'foo@ex.io', comment: 'Good' }
 
         times = [3.hours.ago, 2.hours.ago, 1.hour.ago].map { |t| t.change(usec: 0) }
-        create(:manual_test_event, default.merge(accepted: false, created_at: times[0]))
-        create(:manual_test_event, default.merge(accepted: true, created_at: times[1]))
-        create(:manual_test_event, default.merge(accepted: false, created_at: times[2]))
+        events = [
+          build(:manual_test_event, default.merge(accepted: false, created_at: times[0])),
+          build(:manual_test_event, default.merge(accepted: true, created_at: times[1])),
+          build(:manual_test_event, default.merge(accepted: false, created_at: times[2])),
+        ]
 
-        repository.update
+        events.each do |event|
+          repository.apply(event)
+        end
 
-        result = repository.qa_submission_for(
-          apps: {
-            'ap1' => 'abc',
-            'ap2' => 'def',
-          },
-          at: 2.hours.ago,
-        )
+        result = repository.qa_submission_for(apps: { 'app1' => 'abc', 'app2' => 'def' }, at: 2.hours.ago)
 
-        expect(result[:qa_submission]).to eq(
+        expect(result).to eq(
           QaSubmission.new(email: 'foo@ex.io', accepted: true, comment: 'Good', created_at: times[1]),
         )
-        expect(result[:events].to_a).to eq([])
-      end
-    end
-
-    context 'with at specified but repository not up-to-date' do
-      it 'returns the state at that moment and new events up to that moment' do
-        defaults = { apps: { 'ap1' => '2' }, email: 'foo@ex.io', comment: 'Good' }
-        times = [3.hours.ago, 2.hours.ago, 1.minute.ago].map { |t| t.change(usec: 0) }
-
-        create(:manual_test_event, defaults.merge(accepted: false, created_at: times[0]))
-
-        repository.update
-
-        expected_event = create(:manual_test_event, defaults.merge(accepted: true, created_at: times[1]))
-        create(:manual_test_event, defaults.merge(accepted: false, created_at: times[2]))
-
-        result = repository.qa_submission_for(
-          apps: { 'ap1' => '2' },
-          at: 1.hour.ago,
-        )
-
-        expect(result[:qa_submission]).to eq(
-          QaSubmission.new(email: 'foo@ex.io', accepted: false, comment: 'Good', created_at: times[0]),
-        )
-        expect(result[:events].to_a).to eq([expected_event])
       end
     end
   end

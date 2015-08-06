@@ -55,5 +55,5 @@ def post_event(type, payload)
   url = "/events/#{type}"
   post url, payload.to_json, 'CONTENT_TYPE' => 'application/json'
 
-  Rails.configuration.repositories.each(&:update)
+  Repositories::Updater.from_rails_config.run
 end

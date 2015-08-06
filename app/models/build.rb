@@ -1,3 +1,5 @@
+require 'virtus'
+
 class Build
   include Virtus.value_object
 

@@ -92,7 +92,7 @@ Scenario: Viewing a feature review
 
   And I should see the time when the Feature Review is for
 
-Scenario: QA rejects and approves feature
+Scenario: QA rejects feature
   Given I am logged in as "foo@bar.com"
   And a developer prepares a review for UAT "uat.fundingcircle.com" with apps
     | app_name | version |
@@ -102,11 +102,17 @@ Scenario: QA rejects and approves feature
   Then I should see the QA acceptance with heading "warning"
 
   When I "reject" the feature with comment "Not good enough"
+
+  Then I should see an alert: "Thank you for your submission. It will appear in a moment."
+
+  When I reload the page after a while
   Then I should see the QA acceptance
     | status  | email       | comment         |
     | danger  | foo@bar.com | Not good enough |
 
   When I "accept" the feature with comment "Superb!"
+
+  And I reload the page after a while
   Then I should see the QA acceptance
     | status  | email       | comment |
     | success | foo@bar.com | Superb! |

@@ -1,115 +1,161 @@
 require 'rails_helper'
 
 RSpec.describe Repositories::UatestRepository do
-  let(:deploy_projection_loader) { class_double(Projections::DeploysProjection) }
+  let(:deploy_repository) { Repositories::DeployRepository.new }
 
-  subject(:repository) { Repositories::UatestRepository.new(deploy_projection: deploy_projection_loader) }
+  subject(:repository) { Repositories::UatestRepository.new(deploy_repository: deploy_repository) }
+
+  describe '#table_name' do
+    let(:active_record_class) { class_double(Snapshots::Uatest, table_name: 'the_table_name') }
+
+    subject(:repository) { Repositories::UatestRepository.new(active_record_class) }
+
+    it 'delegates to the active record class backing the repository' do
+      expect(repository.table_name).to eq('the_table_name')
+    end
+  end
 
   describe '#uatest_for' do
-    let(:apps) { { 'a' => '1' } }
+    let(:apps) { { 'frontend' => 'abc' } }
     let(:server) { 'uat.example.com' }
+    let(:defaults) { { success: true, test_suite_version: '111', server: server } }
 
-    context 'before an update' do
-      it 'returns the state for the apps and server referenced' do
-        events = [create(:deploy_event), create(:uat_event), create(:uat_event)]
+    it 'projects last UaTest' do
+      [
+        build(:deploy_event, server: server, version: 'abc', app_name: 'frontend'),
+        build(:uat_event, defaults),
+      ].each do |event|
+        deploy_repository.apply(event)
+        repository.apply(event)
+      end
 
-        results = repository.uatest_for(apps: apps, server: server)
+      result = repository.uatest_for(apps: apps, server: server)
+      expect(result).to eq(Uatest.new(defaults))
 
-        expect(results[:uatest]).to be_nil
-        expect(results[:versions]).to eq({})
-        expect(results[:events].to_a).to eq(events)
+      repository.apply(build(:uat_event, defaults.merge(test_suite_version: '999')))
+
+      result = repository.uatest_for(apps: apps, server: server)
+      expect(result).to eq(Uatest.new(defaults.merge(test_suite_version: '999')))
+    end
+
+    context 'when the server matches' do
+      context 'when the app versions match' do
+        let(:apps) { { 'frontend' => 'abc', 'backend' => 'def' } }
+
+        before do
+          deploy_repository.apply(build(:deploy_event, server: server, app_name: 'frontend', version: 'old'))
+          deploy_repository.apply(build(:deploy_event, server: server, app_name: 'frontend', version: 'abc'))
+          deploy_repository.apply(build(:deploy_event, server: server, app_name: 'backend', version: 'def'))
+        end
+
+        it 'returns the relevant User Acceptance Tests details' do
+          repository.apply(build(:uat_event, test_suite_version: 'xyz', success: true, server: server))
+          repository.apply(build(:jira_event))
+          result = repository.uatest_for(apps: apps, server: server)
+          expect(result).to eq(Uatest.new(success: true, test_suite_version: 'xyz'))
+
+          repository.apply(build(:uat_event, test_suite_version: 'xyz', success: false, server: server))
+          result = repository.uatest_for(apps: apps, server: server)
+          expect(result).to eq(Uatest.new(success: false, test_suite_version: 'xyz'))
+        end
+      end
+
+      context 'when some of the app versions match' do
+        let(:apps) { { 'frontend' => 'abc', 'backend' => 'def' } }
+
+        before do
+          [
+            build(:deploy_event, server: server, app_name: 'frontend', version: 'abc'),
+            build(:deploy_event, server: server, app_name: 'backend', version: 'not_def'),
+          ].each do |event|
+            deploy_repository.apply(event)
+          end
+        end
+
+        it 'ignores the UAT event' do
+          uat_event = build(:uat_event, server: server)
+
+          repository.apply(uat_event)
+
+          expect(repository.uatest_for(apps: apps, server: server)).to be nil
+        end
+      end
+
+      context 'when all the app versions do not match' do
+        let(:apps) { { 'frontend' => 'abc', 'backend' => 'def' } }
+
+        before do
+          [
+            build(:deploy_event, server: server, app_name: 'frontend', version: 'not_abc'),
+            build(:deploy_event, server: server, app_name: 'backend', version: 'not_def'),
+          ].each do |event|
+            deploy_repository.apply(event)
+          end
+        end
+
+        it 'ignores the UAT event' do
+          uat_event = build(:uat_event, server: server)
+
+          repository.apply(uat_event)
+
+          expect(repository.uatest_for(apps: apps, server: server)).to be nil
+        end
+      end
+
+      context 'when a deploy event does not exist for all apps' do
+        it 'ignores the UAT event' do
+          repository.apply(build(:uat_event, server: server))
+
+          expect(repository.uatest_for(apps: apps, server: server)).to be nil
+        end
       end
     end
 
-    context 'after an update' do
-      it 'returns the state for the apps and server referenced' do
-        times = [1.hour.ago, 1.minute.ago].map { |t| t.change(usec: 0) }
+    context 'when the server does not match' do
+      before do
+        deploy_repository.apply(build(:deploy_event, server: server, app_name: 'frontend', version: 'abc'))
+      end
 
-        deploy_0 = Deploy.new(app_name: 'a', version: '0', server: server)
+      it 'ignores the UAT event' do
+        repository.apply(build(:uat_event, server: 'other.server'))
+        expect(repository.uatest_for(apps: apps, server: server)).to be nil
+      end
+    end
 
-        allow(deploy_projection_loader).to receive(:load)
-          .with(server: server, at: times[0])
-          .and_return(instance_double(Projections::DeploysProjection, deploys: [deploy_0]))
+    context 'when we receive deploy events for different servers' do
+      it 'does not affect the result' do
+        [
+          build(:deploy_event, server: server, app_name: 'frontend', version: 'abc'),
+          build(:deploy_event, server: 'other.server', app_name: 'frontend', version: 'zzz'),
+        ].each do |event|
+          deploy_repository.apply(event)
+        end
 
-        deploy_1 = Deploy.new(app_name: 'a', version: '1', server: server)
-        deploy_2 = Deploy.new(app_name: 'b', version: '2', server: server)
-
-        allow(deploy_projection_loader).to receive(:load)
-          .with(server: server, at: times[1])
-          .and_return(instance_double(Projections::DeploysProjection, deploys: [deploy_1, deploy_2]))
-
-        create(:uat_event, test_suite_version: '1', server: server, success: true, created_at: times[0])
-        create(:uat_event, test_suite_version: '2', server: server, success: true, created_at: times[1])
-
-        repository.update
-
-        result = repository.uatest_for(apps: apps, server: server)
-
-        expect(result[:uatest]).to eq(Uatest.new(success: true, test_suite_version: '2'))
-        expect(result[:versions]).to eq('a' => '1', 'b' => '2')
-        expect(result[:events].to_a).to eq([])
+        repository.apply(build(:uat_event, server: server))
+        expect(repository.uatest_for(apps: apps, server: server)).to be_present
       end
     end
 
     context 'with at specified' do
       it 'returns the state at that moment' do
-        times = [5.hours.ago, 4.hours.ago, 3.hours.ago, 2.hours.ago, 1.hour.ago].map { |t| t.change(usec: 0) }
+        # usec reset is required as the precision for the database column is not as great as the Time class,
+        # without it, tests would fail on CI build.
+        times = [2.hours.ago, 1.hour.ago].map { |t| t.change(usec: 0) }
 
-        deploy = Deploy.new(app_name: 'a', version: '1', server: server)
-
-        allow(deploy_projection_loader).to receive(:load)
-          .with(server: server, at: times[0])
-          .and_return(instance_double(Projections::DeploysProjection, deploys: [deploy]))
-
-        allow(deploy_projection_loader).to receive(:load)
-          .with(server: 'other', at: times[0])
-          .and_return(instance_double(Projections::DeploysProjection, deploys: []))
-
-        allow(deploy_projection_loader).to receive(:load)
-          .with(server: server, at: times[1])
-          .and_return(instance_double(Projections::DeploysProjection, deploys: [deploy]))
-
-        create(:uat_event, test_suite_version: '1', server: server, success: false, created_at: times[0])
-        create(:uat_event, test_suite_version: '1', server: 'other', success: true, created_at: times[0])
-        create(:uat_event, test_suite_version: '2', server: server, success: true, created_at: times[1])
-
-        repository.update
-
-        result = repository.uatest_for(apps: apps, server: server, at: times[0])
-
-        expect(result[:uatest]).to eq(Uatest.new(success: false, test_suite_version: '1'))
-        expect(result[:versions]).to eq('a' => '1')
-        expect(result[:events].to_a).to eq([])
-      end
-    end
-
-    context 'with at specified but repository not up-to-date' do
-      it 'returns the state at that moment and new events up to that moment' do
-        deploy_projection = instance_double(
-          Projections::DeploysProjection,
-          deploys: [Deploy.new(app_name: 'a', version: '1', server: server)],
+        deploy_repository.apply(
+          build(:deploy_event, server: server, version: 'abc', app_name: 'frontend', created_at: times[0]),
         )
 
-        allow(deploy_projection_loader).to receive(:load)
-          .with(server: server, at: anything)
-          .and_return(deploy_projection)
+        [
+          build(:uat_event, test_suite_version: '1', server: server, success: false, created_at: times[0]),
+          build(:uat_event, test_suite_version: '1', server: 'other', success: true, created_at: times[0]),
+          build(:uat_event, test_suite_version: '2', server: server, success: true, created_at: times[1]),
+        ].each do |event|
+          repository.apply(event)
+        end
 
-        defaults = { success: false, server: server }
-
-        t = [3.hours.ago, 2.hours.ago, 1.minute.ago]
-
-        create(:uat_event, defaults.merge(test_suite_version: '1', success: true, created_at: t[0]))
-
-        repository.update
-
-        expected_event = create(:uat_event, defaults.merge(test_suite_version: '2', created_at: t[1]))
-        create(:uat_event, defaults.merge(test_suite_version: '3', created_at: t[2]))
-
-        result = repository.uatest_for(apps: apps, server: server, at: t[1])
-
-        expect(result[:uatest]).to eq(Uatest.new(success: true, test_suite_version: '1'))
-        expect(result[:versions]).to eq('a' => '1')
-        expect(result[:events].to_a).to eq([expected_event])
+        result = repository.uatest_for(apps: apps, server: server, at: times[0])
+        expect(result).to eq(Uatest.new(success: false, test_suite_version: '1'))
       end
     end
   end
