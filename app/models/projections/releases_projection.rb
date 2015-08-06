@@ -1,5 +1,7 @@
 require 'git_repository'
 
+require 'projections/releases_tickets_projection'
+
 module Projections
   class ReleasesProjection
     attr_reader :commits

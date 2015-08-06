@@ -1,4 +1,5 @@
-require 'rails_helper'
+require 'spec_helper'
+require 'forms/feature_review_form'
 
 RSpec.describe Forms::FeatureReviewForm do
   let(:git_repository_loader) { instance_double(GitRepositoryLoader) }

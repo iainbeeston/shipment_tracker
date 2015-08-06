@@ -1,3 +1,7 @@
+require 'git_repository_loader'
+
+require 'active_model'
+
 module Forms
   class FeatureReviewForm
     extend ActiveModel::Naming

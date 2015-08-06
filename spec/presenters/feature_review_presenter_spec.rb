@@ -1,4 +1,11 @@
-require 'rails_helper'
+require 'spec_helper'
+require 'feature_review_presenter'
+
+require 'build'
+require 'deploy'
+require 'projections/feature_review_projection'
+require 'qa_submission'
+require 'uatest'
 
 RSpec.describe FeatureReviewPresenter do
   let(:tickets) { [] }

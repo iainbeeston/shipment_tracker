@@ -1,3 +1,5 @@
+require 'virtus'
+
 class GitCommit
   include Virtus.value_object
 
