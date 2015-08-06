@@ -1,4 +1,6 @@
 require 'rails_helper'
+require 'projections/releases_projection'
+require 'git_commit'
 
 RSpec.describe Projections::ReleasesProjection do
   subject(:projection) {

@@ -1,6 +1,9 @@
+require 'feature_review_location'
 require 'git_repository'
-
+require 'jira_event'
 require 'projections/releases_tickets_projection'
+require 'release'
+require 'ticket'
 
 module Projections
   class ReleasesProjection

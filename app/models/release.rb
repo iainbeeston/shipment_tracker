@@ -1,3 +1,5 @@
+require 'virtus'
+
 class Release
   include Virtus.value_object
 
