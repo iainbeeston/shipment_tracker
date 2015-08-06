@@ -1,4 +1,3 @@
-# rubocop:disable Style/BlockDelimiters
 require 'rails_helper'
 
 RSpec.describe UatEvent do
@@ -13,9 +12,11 @@ RSpec.describe UatEvent do
       }
     }
 
-    its(:test_suite_version) { is_expected.to eq('ab91d954a51ddc74e29e7582d9a2efe8bb6d480f') }
-    its(:server) { is_expected.to eq('uat.example.com') }
-    its(:success) { is_expected.to be(true) }
+    it 'returns the correct values' do
+      expect(subject.test_suite_version).to eq('ab91d954a51ddc74e29e7582d9a2efe8bb6d480f')
+      expect(subject.server).to eq('uat.example.com')
+      expect(subject.success).to be(true)
+    end
   end
 
   context 'when given an invalid payload' do
@@ -25,9 +26,10 @@ RSpec.describe UatEvent do
       }
     }
 
-    its(:test_suite_version) { is_expected.to be_nil }
-    its(:server) { is_expected.to be_nil }
-    its(:success) { is_expected.to be(false) }
+    it 'returns the correct values' do
+      expect(subject.test_suite_version).to be_nil
+      expect(subject.server).to be_nil
+      expect(subject.success).to be(false)
+    end
   end
 end
-# rubocop:enable Style/BlockDelimiters

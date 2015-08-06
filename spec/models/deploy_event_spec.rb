@@ -1,4 +1,3 @@
-# rubocop:disable Style/BlockDelimiters
 require 'rails_helper'
 
 RSpec.describe DeployEvent do
@@ -15,10 +14,12 @@ RSpec.describe DeployEvent do
         }
       }
 
-      its(:app_name) { is_expected.to eq('someapp') }
-      its(:server) { is_expected.to eq('uat.example.com') }
-      its(:version) { is_expected.to eq('123') }
-      its(:deployed_by) { is_expected.to eq('bob') }
+      it 'returns the correct values' do
+        expect(subject.app_name).to eq('someapp')
+        expect(subject.server).to eq('uat.example.com')
+        expect(subject.version).to eq('123')
+        expect(subject.deployed_by).to eq('bob')
+      end
     end
 
     context 'when given multiple servers' do
@@ -30,10 +31,13 @@ RSpec.describe DeployEvent do
           'deployed_by' => 'bob',
         }
       }
-      its(:app_name) { is_expected.to eq('someapp') }
-      its(:server) { is_expected.to eq('prod1.example.com') }
-      its(:version) { is_expected.to eq('123') }
-      its(:deployed_by) { is_expected.to eq('bob') }
+
+      it 'returns the correct values' do
+        expect(subject.app_name).to eq('someapp')
+        expect(subject.server).to eq('prod1.example.com')
+        expect(subject.version).to eq('123')
+        expect(subject.deployed_by).to eq('bob')
+      end
     end
   end
 
@@ -44,10 +48,11 @@ RSpec.describe DeployEvent do
       }
     }
 
-    its(:app_name) { is_expected.to be_nil }
-    its(:server) { is_expected.to be_nil }
-    its(:version) { is_expected.to be_nil }
-    its(:deployed_by) { is_expected.to be_nil }
+    it 'returns the correct values' do
+      expect(subject.app_name).to be_nil
+      expect(subject.server).to be_nil
+      expect(subject.version).to be_nil
+      expect(subject.deployed_by).to be_nil
+    end
   end
 end
-# rubocop:enable Style/BlockDelimiters
