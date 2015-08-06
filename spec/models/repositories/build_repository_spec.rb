@@ -25,7 +25,7 @@ RSpec.describe Repositories::BuildRepository do
         create(:circle_ci_event, success?: true,  version: 'abc')
         create(:circle_ci_event, success?: true,  version: 'def')
         create(:circle_ci_event, success?: true,  version: 'xyz')
-        create(:circle_ci_event, success?: false,  version: 'abc')
+        create(:circle_ci_event, success?: false, version: 'abc')
 
         repository.update
 

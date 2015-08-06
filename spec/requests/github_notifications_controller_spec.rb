@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'GithubNotificationsController' do
   describe 'POST #create' do
-    let(:payload) { { 'github' => 'stuff', 'token' => 'the payloads token'  } }
+    let(:payload) { { 'github' => 'stuff', 'token' => 'the payloads token' } }
 
     context 'with a cookie' do
       let(:user_email) { 'alice@fundingcircle.com' }
