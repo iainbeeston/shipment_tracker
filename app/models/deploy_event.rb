@@ -1,3 +1,5 @@
+require 'event'
+
 class DeployEvent < Event
   def app_name
     details.fetch('app_name', nil).try(:downcase)

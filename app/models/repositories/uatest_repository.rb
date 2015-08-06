@@ -1,3 +1,11 @@
+require 'repositories/count_synchronizer'
+require 'snapshots/event_count'
+require 'snapshots/uatest'
+require 'uat_event'
+require 'uatest'
+
+require 'active_record'
+
 module Repositories
   class UatestRepository
     def initialize(deploy_projection: Projections::DeploysProjection)

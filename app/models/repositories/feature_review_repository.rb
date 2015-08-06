@@ -1,3 +1,11 @@
+require 'feature_review_location'
+require 'jira_event'
+require 'repositories/count_synchronizer'
+require 'snapshots/event_count'
+require 'snapshots/feature_review'
+
+require 'active_record'
+
 module Repositories
   class FeatureReviewRepository
     def initialize

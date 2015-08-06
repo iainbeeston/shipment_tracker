@@ -1,3 +1,5 @@
+require 'event'
+
 class CircleCiEvent < Event
   def source
     'CircleCi'

@@ -1,3 +1,7 @@
+require 'event'
+
+require 'active_record'
+
 module Repositories
   class CountSynchronizer
     def initialize(name, count)

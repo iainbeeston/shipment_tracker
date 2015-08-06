@@ -1,3 +1,13 @@
+require 'jira_event'
+require 'repositories/count_synchronizer'
+require 'snapshots/event_count'
+require 'snapshots/ticket'
+require 'ticket'
+
+require 'active_record'
+require 'addressable/uri'
+require 'uri'
+
 module Repositories
   class TicketRepository
     def initialize

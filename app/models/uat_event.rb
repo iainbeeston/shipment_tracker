@@ -1,3 +1,5 @@
+require 'event'
+
 class UatEvent < Event
   def test_suite_version
     details.fetch('test_suite_version', nil)

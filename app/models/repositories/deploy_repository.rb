@@ -1,3 +1,10 @@
+require 'deploy_event'
+require 'repositories/count_synchronizer'
+require 'snapshots/deploy'
+require 'snapshots/event_count'
+
+require 'active_record'
+
 module Repositories
   class DeployRepository
     def initialize

@@ -1,3 +1,11 @@
+require 'manual_test_event'
+require 'qa_submission'
+require 'repositories/count_synchronizer'
+require 'snapshots/event_count'
+require 'snapshots/manual_test'
+
+require 'active_record'
+
 module Repositories
   class ManualTestRepository
     def initialize

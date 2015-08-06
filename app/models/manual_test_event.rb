@@ -1,3 +1,5 @@
+require 'event'
+
 class ManualTestEvent < Event
   def apps
     details.fetch('apps', [])

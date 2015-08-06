@@ -1,3 +1,12 @@
+require 'build'
+require 'circle_ci_event'
+require 'jenkins_event'
+require 'repositories/count_synchronizer'
+require 'snapshots/build'
+require 'snapshots/event_count'
+
+require 'active_record'
+
 module Repositories
   class BuildRepository
     def initialize

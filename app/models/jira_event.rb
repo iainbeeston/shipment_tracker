@@ -1,3 +1,5 @@
+require 'event'
+
 class JiraEvent < Event
   def key
     details.fetch('issue').fetch('key')

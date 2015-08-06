@@ -1,3 +1,5 @@
+require 'active_record'
+
 class Event < ActiveRecord::Base
   class BatchedRelation
     include Enumerable

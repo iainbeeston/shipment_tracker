@@ -1,3 +1,5 @@
+require 'event'
+
 class JenkinsEvent < Event
   def source
     'Jenkins'

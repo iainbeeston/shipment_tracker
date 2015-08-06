@@ -1,6 +1,7 @@
+require 'active_support/core_ext/hash/keys'
+require 'addressable/uri'
 require 'rack/utils'
 require 'uri'
-require 'active_support/core_ext/hash/keys'
 
 class FeatureReviewLocation
   def self.from_text(text)

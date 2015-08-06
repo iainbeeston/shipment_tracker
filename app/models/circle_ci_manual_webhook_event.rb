@@ -1,3 +1,5 @@
+require 'event'
+
 class CircleCiManualWebhookEvent < CircleCiEvent
   def success
     all_steps_but_last = details.fetch('steps', [])[0..-2]
