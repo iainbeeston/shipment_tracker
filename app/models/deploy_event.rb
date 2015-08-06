@@ -6,7 +6,7 @@ class DeployEvent < Event
   end
 
   def server
-    details.fetch('server', nil)
+    servers.first
   end
 
   def version
@@ -15,5 +15,15 @@ class DeployEvent < Event
 
   def deployed_by
     details.fetch('deployed_by', nil)
+  end
+
+  private
+
+  def servers
+    details.fetch('servers', servers_fallback)
+  end
+
+  def servers_fallback
+    [details.fetch('server', nil)].compact
   end
 end
