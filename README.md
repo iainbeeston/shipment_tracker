@@ -10,23 +10,31 @@ Tracks shipment of software versions for audit purposes.
 The app has various "audit endpoints" to receive events,
 such as deploys, builds, ticket creations, etc.
 
-We use an append-only store, nothing in the DB is ever modified or deleted.
-Event sourcing is used to replay each event allowing us to reconstruct the state
+All received events are stored in the DB and are never modified.
+[Event sourcing] is used to replay each event allowing us to reconstruct the state
 of the system at any point in time.
 
 ## Getting Started
 
-Install the gems and set up the database.
+Install the Ruby version specified in `.ruby-version`.
+
+Install the Gems.
 
 ```
 bundle install
+```
+
+Setup database and environment.
+
+```
+cp .env.development.example .env.development
 bundle exec rake db:setup
 ```
 
 Set up Git hooks, for running tests and linters before pushing to master.
 
 ```
-rake git:setup_hooks
+bundle exec rake git:setup_hooks
 ```
 
 ### Enabling access to repositories via SSH
@@ -57,33 +65,37 @@ You can also use Foreman to start the server and use settings from Heroku:
 bin/boot_with_heroku_settings
 ```
 
-### Enabling periodic snapshots
+### Running periodic snapshots
 
-In order to stay performant, Shipment Tracker needs to regularly record snapshots. This can be setup using the
-[`whenever` gem](https://github.com/javan/whenever) or, if you're on Heroku, using the
-[Heroku Scheduler](https://devcenter.heroku.com/articles/scheduler).
+In order to return results with recent events, Shipment Tracker needs to continuously record snapshots.  
+This can be setup using the [Whenever Gem] or, if you're on Heroku, using the [Heroku Scheduler].
 
-Just make sure the following command runs every few minutes:
+Please make sure the following command runs every few seconds:
 
 ```
-rake jobs:update_events
+bundle exec rake jobs:update_events
 ```
 
-*Warning:* If your application is deployed on multiple servers, make sure the recurring task runs only on one server.
+*Warning:* This recurring task should only run on **one** server.
 
 ### Enabling periodic git fetching
 
-It's important to keep the Shipment Tracker git cache reasonably up-to-date to avoid timeouts. Please make
-sure the following command runs every few minutes (see previous paragraph on how to do it):
+It's important to keep the Shipment Tracker git cache reasonably up-to-date to avoid request timeouts.
+
+Please make sure the following command runs every few minutes:
 
 ```
-rake jobs:update_git
+bundle exec rake jobs:update_git
 ```
 
-*Warning:* If your application is deployed on multiple servers, make sure the recurring task runs on every server.
+*Warning:* This recurring task should run on **every** server that your application is running on.
 
 ## License
 
 Copyright © 2015 Funding Circle Ltd.
 
 Distributed under the BSD 3-Clause License.
+
+[Event sourcing]: http://www.infoq.com/presentations/Events-Are-Not-Just-for-Notifications
+[Whenever Gem]: https://github.com/javan/whenever
+[Heroku Scheduler]: https://devcenter.heroku.com/articles/scheduler
