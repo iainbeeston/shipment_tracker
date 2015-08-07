@@ -26,28 +26,19 @@ RSpec.describe 'Projection performance', type: :request do
     Event.delete_all
   end
 
+  def updater
+    Repositories::Updater.from_rails_config
+  end
+
   def create_snapshots
-    Repositories::FeatureReviewRepository.new.update
+    updater.run
   end
 
   def drop_snapshots
-    Snapshots::FeatureReview.delete_all
-    Snapshots::EventCount.delete_all
+    updater.reset
   end
 
   def benchmark(count, &block)
-    create_events(count)
-
-    time_to_run = Benchmark.realtime(&block)
-    results = [Event.count, time_to_run]
-    puts "#{results[0]} events -> #{results[1].round(3)} seconds"
-
-    drop_events
-
-    results
-  end
-
-  def benchmark_with_snapshots(count, &block)
     create_events(count)
     create_snapshots
 
@@ -55,8 +46,8 @@ RSpec.describe 'Projection performance', type: :request do
     results = [Event.count, time_to_run]
     puts "#{results[0]} events -> #{results[1].round(3)} seconds"
 
-    drop_events
     drop_snapshots
+    drop_events
 
     results
   end
@@ -79,13 +70,13 @@ RSpec.describe 'Projection performance', type: :request do
   describe 'Feature Review' do
     let(:apps) { { 'frontend' => 'abc', 'backend' => 'def' } }
     let(:server) { 'uat.fc.com' }
-    let(:feature_review_url) { feature_review_url(apps, server) }
-    let(:feature_review_path) { URI.parse(feature_review_url).request_uri }
+    let(:url) { feature_review_url(apps, server) }
+    let(:path) { URI.parse(url).request_uri }
 
     it 'measures the request time' do
       csv(name: 'feature_review', headers: ['Count', 'Time to Run']) do |file|
         progression do |event_count|
-          create :jira_event, comment_body: "Here you go: #{feature_review_url}"
+          create :jira_event, comment_body: "Here you go: #{url}"
           create :circle_ci_event, version: apps['frontend']
           apps.each do |name, version|
             create :deploy_event, server: server, app_name: name, version: version
@@ -94,7 +85,7 @@ RSpec.describe 'Projection performance', type: :request do
           create :uat_event, server: server
 
           file << benchmark(event_count) do
-            get(feature_review_path)
+            get(path)
           end
         end
       end
@@ -104,7 +95,7 @@ RSpec.describe 'Projection performance', type: :request do
   describe 'Feature Review Search' do
     let(:apps) { { 'frontend' => version, 'backend' => 'def' } }
     let(:server) { 'uat.fc.com' }
-    let(:feature_review_url) { feature_review_url(apps, server) }
+    let(:url) { feature_review_url(apps, server) }
 
     let(:repo_name) { 'frontend' }
     let(:test_git_repo) { Support::GitTestRepository.new }
@@ -120,29 +111,13 @@ RSpec.describe 'Projection performance', type: :request do
       let(:git_diagram) { '-A' }
       let(:version) { test_git_repo.commit_for_pretend_version('A') }
 
-      context 'without snapshots' do
-        it 'measures the request time' do
-          csv(name: 'feature_review_search', headers: ['Count', 'Time to Run']) do |file|
-            progression do |event_count|
-              create :jira_event, comment_body: "Here you go: #{feature_review_url}"
+      it 'measures the request time' do
+        csv(name: 'feature_review_search', headers: ['Count', 'Time to Run']) do |file|
+          progression do |event_count|
+            create :jira_event, comment_body: "Here you go: #{url}"
 
-              file << benchmark(event_count) do
-                get(search_feature_reviews_path, application: 'frontend', version: version)
-              end
-            end
-          end
-        end
-      end
-
-      context 'with snapshots' do
-        it 'measures the request time' do
-          csv(name: 'feature_review_search_with_snapshots', headers: ['Count', 'Time to Run']) do |file|
-            progression do |event_count|
-              create :jira_event, comment_body: "Here you go: #{feature_review_url}"
-
-              file << benchmark_with_snapshots(event_count) do
-                get(search_feature_reviews_path, application: 'frontend', version: version)
-              end
+            file << benchmark(event_count) do
+              get(search_feature_reviews_path, application: 'frontend', version: version)
             end
           end
         end
@@ -173,8 +148,8 @@ RSpec.describe 'Projection performance', type: :request do
       count.times do
         repository_builder.build(git_diagram)
         version = test_git_repo.commit_for_pretend_version('B')
-        feature_review_url = feature_review_url(frontend: version)
-        create :jira_event, comment_body: "Here you go: #{feature_review_url}"
+        url = feature_review_url(frontend: version)
+        create :jira_event, comment_body: "Here you go: #{url}"
       end
     end
 
