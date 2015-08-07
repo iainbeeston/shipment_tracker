@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150807082220) do
+ActiveRecord::Schema.define(version: 20150807113312) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,8 @@ ActiveRecord::Schema.define(version: 20150807082220) do
     t.datetime "event_created_at"
   end
 
+  add_index "builds", ["version"], name: "index_builds_on_version", using: :btree
+
   create_table "deploys", force: :cascade do |t|
     t.string   "app_name"
     t.string   "server"
@@ -30,6 +32,8 @@ ActiveRecord::Schema.define(version: 20150807082220) do
     t.string   "deployed_by"
     t.datetime "event_created_at"
   end
+
+  add_index "deploys", ["server", "app_name"], name: "index_deploys_on_server_and_app_name", using: :btree
 
   create_table "event_counts", force: :cascade do |t|
     t.string  "snapshot_name"
@@ -48,6 +52,8 @@ ActiveRecord::Schema.define(version: 20150807082220) do
     t.string "versions", array: true
   end
 
+  add_index "feature_reviews", ["versions"], name: "index_feature_reviews_on_versions", using: :gin
+
   create_table "manual_tests", force: :cascade do |t|
     t.string   "email"
     t.string   "versions",   array: true
@@ -55,6 +61,8 @@ ActiveRecord::Schema.define(version: 20150807082220) do
     t.text     "comment"
     t.datetime "created_at"
   end
+
+  add_index "manual_tests", ["versions"], name: "index_manual_tests_on_versions", using: :gin
 
   create_table "repository_locations", force: :cascade do |t|
     t.string   "uri"
@@ -74,6 +82,8 @@ ActiveRecord::Schema.define(version: 20150807082220) do
     t.datetime "event_created_at"
   end
 
+  add_index "tickets", ["urls"], name: "index_tickets_on_urls", using: :gin
+
   create_table "tokens", force: :cascade do |t|
     t.string   "source"
     t.string   "value"
@@ -91,5 +101,7 @@ ActiveRecord::Schema.define(version: 20150807082220) do
     t.datetime "event_created_at"
     t.text     "versions",           array: true
   end
+
+  add_index "uatests", ["versions"], name: "index_uatests_on_versions", using: :gin
 
 end
