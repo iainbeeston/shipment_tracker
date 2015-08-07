@@ -60,4 +60,35 @@ RSpec.describe Repositories::Updater do
       end
     end
   end
+
+  describe '#reset' do
+    let(:events) { [build(:circle_ci_event), build(:deploy_event)] }
+
+    let(:store_1) { Snapshots::Build }
+    let(:store_2) { Snapshots::Deploy }
+
+    let(:repository_1) { Repositories::BuildRepository.new(store_1) }
+    let(:repository_2) { Repositories::DeployRepository.new(store_2) }
+
+    it 'wipes all repositories and what events they require' do
+      events.each(&:save!)
+
+      updater.run
+
+      expect(store_1.count).to be > 0
+      expect(store_2.count).to be > 0
+
+      updater.reset
+
+      expect(store_1.count).to eq(0)
+      expect(store_2.count).to eq(0)
+
+      expect(repository_1).to receive(:apply).with(events[0]).ordered
+      expect(repository_1).to receive(:apply).with(events[1]).ordered
+      expect(repository_2).to receive(:apply).with(events[0]).ordered
+      expect(repository_2).to receive(:apply).with(events[1]).ordered
+
+      updater.run
+    end
+  end
 end

@@ -10,3 +10,8 @@ task 'db:create_database_yml' do
     f.write ERB.new(file_contents).result
   end
 end
+
+desc 'clear snapshots'
+task 'db:clear_snapshots' => :environment do
+  Repositories::Updater.from_rails_config.reset
+end
