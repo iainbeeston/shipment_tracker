@@ -106,7 +106,6 @@ RSpec.describe 'Projection performance', type: :request do
       RepositoryLocation.create(name: repo_name, uri: "file://#{test_git_repo.dir}")
     end
 
-    # rubocop:disable Style/BlockDelimiters
     context 'with a simple repo so that git has minimal effect on performance' do
       let(:git_diagram) { '-A' }
       let(:version) { test_git_repo.commit_for_pretend_version('A') }
@@ -123,7 +122,6 @@ RSpec.describe 'Projection performance', type: :request do
         end
       end
     end
-    # rubocop:enable Style/BlockDelimiters
   end
 
   describe 'Releases' do
