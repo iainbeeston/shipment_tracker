@@ -9,4 +9,4 @@ development:
 
 test:
   <<: *default
-  database: shipment_tracker_test
+  database: shipment_tracker_test2
