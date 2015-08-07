@@ -13,7 +13,7 @@ module Repositories
     delegate :table_name, to: :store
 
     def uatest_for(apps:, server:, at: nil)
-      uatest(apps, server, at)
+      uatest(apps.values, server, at)
     end
 
     def apply(event)
@@ -32,11 +32,11 @@ module Repositories
 
     attr_reader :store, :deploy_repository
 
-    def uatest(app_versions, server, at)
+    def uatest(versions, server, at)
       query = at ? store.arel_table['event_created_at'].lteq(at) : nil
       store
         .where(server: server)
-        .where('versions @> ?', app_versions.to_json)
+        .where('versions @> ARRAY[?]', versions)
         .where(query)
         .order('id DESC')
         .first
@@ -44,8 +44,7 @@ module Repositories
     end
 
     def versions_for(server, at)
-      deploys = deploy_repository.deploys_for(server: server, at: at)
-      deploys.map { |d| [d.app_name, d.version] }.to_h
+      deploy_repository.deploys_for(server: server, at: at).map(&:version)
     end
   end
 end

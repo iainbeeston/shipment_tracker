@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150804151329) do
+ActiveRecord::Schema.define(version: 20150807082220) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -88,8 +88,8 @@ ActiveRecord::Schema.define(version: 20150804151329) do
     t.string   "server"
     t.boolean  "success"
     t.string   "test_suite_version"
-    t.jsonb    "versions"
     t.datetime "event_created_at"
+    t.text     "versions",           array: true
   end
 
 end
