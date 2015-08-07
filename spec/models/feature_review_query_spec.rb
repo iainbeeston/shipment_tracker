@@ -99,10 +99,11 @@ RSpec.describe FeatureReviewQuery do
 
   describe '#uatest' do
     let(:expected_uatest) { double('uatest') }
+    let(:expected_versions) { expected_apps.values }
 
     before do
       allow(uatest_repository).to receive(:uatest_for)
-        .with(apps: expected_apps, server: expected_uat_host, at: time).and_return(expected_uatest)
+        .with(versions: expected_versions, server: expected_uat_host, at: time).and_return(expected_uatest)
     end
 
     it 'delegates to the uatest repository' do

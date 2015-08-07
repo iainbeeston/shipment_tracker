@@ -12,8 +12,8 @@ module Repositories
 
     delegate :table_name, to: :store
 
-    def uatest_for(apps:, server:, at: nil)
-      uatest(apps.values, server, at)
+    def uatest_for(versions:, server:, at: nil)
+      uatest(versions, server, at)
     end
 
     def apply(event)

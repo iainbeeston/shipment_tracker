@@ -16,7 +16,6 @@ RSpec.describe Repositories::UatestRepository do
   end
 
   describe '#uatest_for' do
-    let(:apps) { { 'frontend' => 'abc' } }
     let(:server) { 'uat.example.com' }
     let(:defaults) { { success: true, test_suite_version: '111', server: server } }
 
@@ -29,19 +28,17 @@ RSpec.describe Repositories::UatestRepository do
         repository.apply(event)
       end
 
-      result = repository.uatest_for(apps: apps, server: server)
+      result = repository.uatest_for(versions: ['abc'], server: server)
       expect(result).to eq(Uatest.new(defaults))
 
       repository.apply(build(:uat_event, defaults.merge(test_suite_version: '999')))
 
-      result = repository.uatest_for(apps: apps, server: server)
+      result = repository.uatest_for(versions: ['abc'], server: server)
       expect(result).to eq(Uatest.new(defaults.merge(test_suite_version: '999')))
     end
 
     context 'when the server matches' do
       context 'when the app versions match' do
-        let(:apps) { { 'frontend' => 'abc', 'backend' => 'def' } }
-
         before do
           deploy_repository.apply(build(:deploy_event, server: server, app_name: 'frontend', version: 'old'))
           deploy_repository.apply(build(:deploy_event, server: server, app_name: 'frontend', version: 'abc'))
@@ -51,18 +48,16 @@ RSpec.describe Repositories::UatestRepository do
         it 'returns the relevant User Acceptance Tests details' do
           repository.apply(build(:uat_event, test_suite_version: 'xyz', success: true, server: server))
           repository.apply(build(:jira_event))
-          result = repository.uatest_for(apps: apps, server: server)
+          result = repository.uatest_for(versions: %w(abc def), server: server)
           expect(result).to eq(Uatest.new(success: true, test_suite_version: 'xyz'))
 
           repository.apply(build(:uat_event, test_suite_version: 'xyz', success: false, server: server))
-          result = repository.uatest_for(apps: apps, server: server)
+          result = repository.uatest_for(versions: %w(abc def), server: server)
           expect(result).to eq(Uatest.new(success: false, test_suite_version: 'xyz'))
         end
       end
 
-      context 'when some of the app versions match' do
-        let(:apps) { { 'frontend' => 'abc', 'backend' => 'def' } }
-
+      context 'when some of the versions match' do
         before do
           [
             build(:deploy_event, server: server, app_name: 'frontend', version: 'abc'),
@@ -77,13 +72,11 @@ RSpec.describe Repositories::UatestRepository do
 
           repository.apply(uat_event)
 
-          expect(repository.uatest_for(apps: apps, server: server)).to be nil
+          expect(repository.uatest_for(versions: %w(abc def), server: server)).to be nil
         end
       end
 
-      context 'when all the app versions do not match' do
-        let(:apps) { { 'frontend' => 'abc', 'backend' => 'def' } }
-
+      context 'when none of the versions match' do
         before do
           [
             build(:deploy_event, server: server, app_name: 'frontend', version: 'not_abc'),
@@ -98,15 +91,7 @@ RSpec.describe Repositories::UatestRepository do
 
           repository.apply(uat_event)
 
-          expect(repository.uatest_for(apps: apps, server: server)).to be nil
-        end
-      end
-
-      context 'when a deploy event does not exist for all apps' do
-        it 'ignores the UAT event' do
-          repository.apply(build(:uat_event, server: server))
-
-          expect(repository.uatest_for(apps: apps, server: server)).to be nil
+          expect(repository.uatest_for(versions: %w(abc def), server: server)).to be nil
         end
       end
     end
@@ -118,7 +103,7 @@ RSpec.describe Repositories::UatestRepository do
 
       it 'ignores the UAT event' do
         repository.apply(build(:uat_event, server: 'other.server'))
-        expect(repository.uatest_for(apps: apps, server: server)).to be nil
+        expect(repository.uatest_for(versions: ['abc'], server: server)).to be nil
       end
     end
 
@@ -132,7 +117,7 @@ RSpec.describe Repositories::UatestRepository do
         end
 
         repository.apply(build(:uat_event, server: server))
-        expect(repository.uatest_for(apps: apps, server: server)).to be_present
+        expect(repository.uatest_for(versions: ['abc'], server: server)).to be_present
       end
     end
 
@@ -154,7 +139,7 @@ RSpec.describe Repositories::UatestRepository do
           repository.apply(event)
         end
 
-        result = repository.uatest_for(apps: apps, server: server, at: times[0])
+        result = repository.uatest_for(versions: ['abc'], server: server, at: times[0])
         expect(result).to eq(Uatest.new(success: false, test_suite_version: '1'))
       end
     end

@@ -39,7 +39,7 @@ class FeatureReviewQuery
   end
 
   def uatest
-    uatest_repository.uatest_for(apps: app_versions, server: uat_host, at: time)
+    uatest_repository.uatest_for(versions: app_versions.values, server: uat_host, at: time)
   end
 
   private
