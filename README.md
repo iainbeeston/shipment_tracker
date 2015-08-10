@@ -65,16 +65,14 @@ You can also use Foreman to start the server and use settings from Heroku:
 bin/boot_with_heroku_settings
 ```
 
-### Running periodic snapshots
+### Running event snapshots
 
-In order to return results with recent events, Shipment Tracker needs to continuously record snapshots.  
-This can be setup using the [Whenever Gem] or, if you're on Heroku, using the [Heroku Scheduler].
+In order to return results from recent events, Shipment Tracker needs to continuously record snapshots.  
+There is a rake task `jobs:update_events_loop` which continuously updates the event cache.
+We suggest that you have this running in the background (e.g. using Supervisor or a Heroku worker).
 
-Please make sure the following command runs every few seconds:
-
-```
-bundle exec rake jobs:update_events
-```
+There is also a rake task `jobs:update_events` for running the snapshotting manually,
+for example, after you clear the event snapshots with the `db:clear_snapshots` rake task.
 
 *Warning:* This recurring task should only run on **one** server.
 
@@ -97,5 +95,3 @@ Copyright © 2015 Funding Circle Ltd.
 Distributed under the BSD 3-Clause License.
 
 [Event sourcing]: http://www.infoq.com/presentations/Events-Are-Not-Just-for-Notifications
-[Whenever Gem]: https://github.com/javan/whenever
-[Heroku Scheduler]: https://devcenter.heroku.com/articles/scheduler

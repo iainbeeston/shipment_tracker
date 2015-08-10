@@ -33,6 +33,16 @@ namespace :jobs do
     puts "[#{Time.current}] Completed update_events"
   end
 
+  desc 'Continuously updates event cache'
+  task update_events_loop: :environment do
+    loop do
+      puts "[#{Time.current}] Running update_events"
+      Repositories::Updater.from_rails_config.run
+      puts "[#{Time.current}] Completed update_events"
+      sleep 5
+    end
+  end
+
   desc 'Update git cache'
   task update_git: :environment do
     manage_pid pid_path_for('jobs_update_git')
