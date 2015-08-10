@@ -41,6 +41,14 @@ RSpec.describe FeatureReviewLocation do
         expect(feature_review_locations).to be_empty
       end
     end
+
+    context 'when a URL contains an unknown schema' do
+      let(:text) { 'foo:/feature_reviews' }
+
+      it 'ignores it' do
+        expect(feature_review_locations).to be_empty
+      end
+    end
   end
 
   describe '#versions' do

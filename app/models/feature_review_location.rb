@@ -5,7 +5,7 @@ require 'uri'
 
 class FeatureReviewLocation
   def self.from_text(text)
-    URI.extract(text)
+    URI.extract(text, %w(http https))
       .map { |uri| parse_uri(uri) }
       .compact
       .select { |url| url.path == '/feature_reviews' }
