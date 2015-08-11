@@ -38,14 +38,13 @@ namespace :jobs do
     loop do
       start_time = Time.current
       puts "[#{start_time}] Running update_events"
-      count = if Snapshots::EventCount.any?
-                Event.count
-              else
-                0
-              end
+      lowest_event_id = Snapshots::EventCount.all.min_by(&:event_id).try(:event_id).to_i
+
       Repositories::Updater.from_rails_config.run
+
       end_time = Time.current
-      puts "[#{end_time}] Applied #{Event.count - count} events in #{end_time - start_time} seconds"
+      num_events = Event.where('id > ?', lowest_event_id).count
+      puts "[#{end_time}] Cached #{num_events} events in #{end_time - start_time} seconds"
       sleep 5
     end
   end
