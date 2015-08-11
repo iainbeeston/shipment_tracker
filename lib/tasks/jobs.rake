@@ -38,7 +38,11 @@ namespace :jobs do
     loop do
       start_time = Time.current
       puts "[#{start_time}] Running update_events"
-      count = Event.count
+      count = if Snapshots::EventCount.any?
+                Event.count
+              else
+                0
+              end
       Repositories::Updater.from_rails_config.run
       end_time = Time.current
       puts "[#{end_time}] Applied #{Event.count - count} events in #{end_time - start_time} seconds"
