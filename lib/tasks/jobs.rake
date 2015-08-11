@@ -42,7 +42,6 @@ namespace :jobs do
       Repositories::Updater.from_rails_config.run
       end_time = Time.current
       puts "[#{end_time}] Applied #{Event.count - count} events in #{end_time - start_time} seconds"
-      puts "[#{end_time}] Completed update_events"
       sleep 5
     end
   end

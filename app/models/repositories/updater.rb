@@ -38,7 +38,7 @@ module Repositories
           last_id = event.id
           repository.apply(event)
         end
-        update_count_for(repository, last_id)
+        update_count_for(repository, last_id) unless last_id == 0
       end
     end
 

@@ -25,7 +25,7 @@ RSpec.describe Repositories::Updater do
   subject(:updater) { Repositories::Updater.new(repositories) }
 
   describe '#run' do
-    it 'feeds events to each repository' do
+    it 'feeds events to each repository and updates the counts' do
       events.each(&:save!)
 
       expect(repository_1).to receive(:apply).with(events[0]).ordered
@@ -35,6 +35,10 @@ RSpec.describe Repositories::Updater do
       expect(repository_2).to receive(:apply).with(events[1]).ordered
 
       updater.run
+
+      last_id = events[1].id
+      expect(Snapshots::EventCount.find_by(snapshot_name: repository_1.table_name).event_id).to eq(last_id)
+      expect(Snapshots::EventCount.find_by(snapshot_name: repository_2.table_name).event_id).to eq(last_id)
     end
 
     context 'when the application is updated and we have different repositories specified' do
@@ -57,6 +61,16 @@ RSpec.describe Repositories::Updater do
         expect(repository_2).to receive(:apply).with(new_events[0]).ordered
 
         Repositories::Updater.new([repository_1, repository_2]).run
+      end
+    end
+
+    context 'when there are no new events' do
+      let(:events) { [] }
+
+      it 'does not update the event count' do
+        expect_any_instance_of(Snapshots::EventCount).to_not receive(:save)
+
+        updater.run
       end
     end
   end
