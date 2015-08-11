@@ -35,12 +35,14 @@ namespace :jobs do
 
   desc 'Continuously updates event cache'
   task update_events_loop: :environment do
-    count = Event.count
     loop do
-      puts "[#{Time.current}] Running update_events"
+      start_time = Time.current
+      puts "[#{start_time}] Running update_events"
+      count = Event.count
       Repositories::Updater.from_rails_config.run
-      puts "[#{Time.current}] Applied #{Event.count - count} events"
-      puts "[#{Time.current}] Completed update_events"
+      end_time = Time.current
+      puts "[#{end_time}] Applied #{Event.count - count} events in #{end_time - start_time} seconds"
+      puts "[#{end_time}] Completed update_events"
       sleep 5
     end
   end
