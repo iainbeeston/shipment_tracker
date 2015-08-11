@@ -14,7 +14,7 @@ RSpec.describe Repositories::TicketRepository do
   end
 
   describe '#tickets_for' do
-    let(:url) { 'http://foo.com/bar' }
+    let(:url) { 'http://foo.com/feature_reviews' }
 
     it 'projects latest associated tickets' do
       repository.apply(build(:jira_event, :created, key: 'JIRA-1', comment_body: url))

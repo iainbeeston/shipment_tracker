@@ -58,7 +58,7 @@ module Repositories
     end
 
     def projection_urls(comment)
-      URI.extract(comment).map(&method(:prepare_url))
+      FeatureReviewLocation.from_text(comment).map { |frl| prepare_url(frl.url) }
     end
   end
 end

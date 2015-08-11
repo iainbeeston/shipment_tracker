@@ -6,21 +6,13 @@ require 'uri'
 class FeatureReviewLocation
   def self.from_text(text)
     URI.extract(text, %w(http https))
-      .map { |uri| parse_uri(uri) }
-      .compact
+      .map { |url| Addressable::URI.parse(url) }
       .select { |url| url.path == '/feature_reviews' }
       .map { |url| new(url) }
   end
 
-  def self.parse_uri(uri)
-    URI.parse(uri)
-  rescue URI::InvalidURIError
-    nil
-  end
-  private_class_method :parse_uri
-
   def initialize(url)
-    @url = URI(url)
+    @url = Addressable::URI.parse(url)
   end
 
   def app_versions
