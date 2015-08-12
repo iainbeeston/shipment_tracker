@@ -19,6 +19,18 @@ RSpec.describe SessionsController do
       expect(get :auth0_success_callback).to redirect_to(root_path)
     end
 
+    context 'when redirect_path is set in sesssion' do
+      let(:redirect_path) { '/any-path' }
+
+      before do
+        session[:redirect_path] = redirect_path
+      end
+
+      it 'redirects to redirect_path' do
+        expect(get :auth0_success_callback).to redirect_to(redirect_path)
+      end
+    end
+
     it 'stores user in session' do
       get :auth0_success_callback
 

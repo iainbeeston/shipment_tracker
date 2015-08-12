@@ -14,6 +14,7 @@ module Authentication
   end
 
   def unauthenticated_strategy
+    session[:redirect_path] = request.original_fullpath
     redirect_to login_url
   end
 

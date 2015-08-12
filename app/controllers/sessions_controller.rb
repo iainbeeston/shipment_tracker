@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
   def auth0_success_callback
     setup_current_user!
     flash[:info] = "Hello #{current_user.first_name || current_user.email}!"
-    redirect_to root_path
+    redirect_to session[:redirect_path] || root_path
   end
 
   def auth0_failure_callback
