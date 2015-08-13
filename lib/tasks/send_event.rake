@@ -1,7 +1,10 @@
 namespace :send do
-  # rake "send:uat_event[true, abc123, uat.fundingcircle.com, http://localhost:1201/events/uat?token=123]"
   desc 'Sends a sample UAT event'
   task :uat_event, [:success, :test_suite_version, :server, :url] do |_, args|
+    usage = 'Usage: rake "send:uat_event[true, s0m3c0mm1t, uat.example.com, '\
+            'http://shipment_tracker.url/events/uat?token=s0m3t0k3n]"'
+    abort(usage) if args.to_hash.empty?
+
     send_event(
       args[:url],
       success: args[:success] == 'true',
@@ -10,9 +13,12 @@ namespace :send do
     )
   end
 
-  # rake send:deploy_event[app1,abc123,uat.fundingcircle.com,http://localhost:1201/events/deploy?token=123]
   desc 'Sends a sample deploy event'
   task :deploy_event, [:app_name, :version, :server, :environment, :url] do |_, args|
+    usage = 'Usage: rake "send:deploy_event[app_name, s0m3c0mm1t, app_name.example.com, production, '\
+            'http://shipment_tracker.url/events/deploy?token=s0m3t0k3n]"'
+    abort(usage) if args.to_hash.empty?
+
     send_event(
       args[:url],
       server: args[:server],
