@@ -12,10 +12,11 @@ namespace :send do
 
   # rake send:deploy_event[app1,abc123,uat.fundingcircle.com,http://localhost:1201/events/deploy?token=123]
   desc 'Sends a sample deploy event'
-  task :deploy_event, [:app_name, :version, :server, :url] do |_, args|
+  task :deploy_event, [:app_name, :version, :server, :environment, :url] do |_, args|
     send_event(
       args[:url],
       server: args[:server],
+      environment: args[:environment],
       version: args[:version],
       app_name: args[:app_name],
     )
