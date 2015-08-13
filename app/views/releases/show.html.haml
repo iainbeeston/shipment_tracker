@@ -1,11 +1,13 @@
 - title "Releases for #{@app_name}"
 
 %table.table
-  %tr
-    %th id
-    %th date
-    %th message
-    %th feature review
+  %thead
+    %tr
+      %th id
+      %th date
+      %th message
+      %th feature review
+  %tbody
   - @releases.each do |release|
     %tr.release{class: ('danger' unless release.approved)}
       %td= release.version
