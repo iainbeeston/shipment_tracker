@@ -5,7 +5,8 @@ class ReleasesController < ApplicationController
 
   def show
     projection = build_projection(Event.in_order_of_creation)
-    @releases = projection.releases
+    @pending_releases = projection.pending_releases
+    @deployed_releases = projection.deployed_releases
     @app_name = app_name
   rescue GitRepositoryLoader::NotFound
     render text: 'Repository not found', status: :not_found
@@ -17,6 +18,7 @@ class ReleasesController < ApplicationController
     Projections::ReleasesProjection.new(
       per_page: 50,
       git_repository: git_repository,
+      app_name: app_name,
     ).tap do |projection|
       projection.apply_all(events)
     end

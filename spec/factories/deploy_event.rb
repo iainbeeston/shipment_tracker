@@ -2,11 +2,12 @@
 FactoryGirl.define do
   factory :deploy_event do
     transient do
-      server 'prod.example.com'
+      server 'uat.example.com'
       sequence(:version) { |n| "abc#{n}" }
       app_name 'hello_world'
       deployed_at { Time.now.utc.to_i }
       deployed_by 'frank@example.com'
+      environment 'uat'
     end
 
     details {
@@ -16,6 +17,7 @@ FactoryGirl.define do
         'app_name' => app_name,
         'deployed_at' => deployed_at,
         'deployed_by' => deployed_by,
+        'environment' => environment,
       }
     }
 

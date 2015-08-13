@@ -24,9 +24,17 @@ RSpec.describe ReleasesController do
   describe 'GET #show', :logged_in do
     let(:repository) { instance_double(GitRepository) }
     let(:repository_loader) { instance_double(GitRepositoryLoader) }
-    let(:releases) { double(:releases) }
-    let(:projection) { instance_double(Projections::ReleasesProjection, releases: releases) }
     let(:events) { double(:events) }
+    let(:app_name) { 'frontend' }
+    let(:pending_releases) { double(:pending_releases) }
+    let(:deployed_releases) { double(:deployed_releases) }
+    let(:projection) {
+      instance_double(
+        Projections::ReleasesProjection,
+        pending_releases: pending_releases,
+        deployed_releases: deployed_releases,
+      )
+    }
 
     before do
       allow(GitRepositoryLoader).to receive(:from_rails_config).and_return(repository_loader)
@@ -34,6 +42,7 @@ RSpec.describe ReleasesController do
       allow(Projections::ReleasesProjection).to receive(:new).with(
         per_page: 50,
         git_repository: repository,
+        app_name: app_name,
       ).and_return(projection)
       allow(Event).to receive(:in_order_of_creation).and_return(events)
     end
@@ -41,11 +50,12 @@ RSpec.describe ReleasesController do
     it 'shows the list of commits for an app' do
       expect(projection).to receive(:apply_all).with(events)
 
-      get :show, id: 'frontend'
+      get :show, id: app_name
 
       expect(response).to have_http_status(:success)
-      expect(assigns(:app_name)).to eq('frontend')
-      expect(assigns(:releases)).to eq(releases)
+      expect(assigns(:app_name)).to eq(app_name)
+      expect(assigns(:pending_releases)).to eq(pending_releases)
+      expect(assigns(:deployed_releases)).to eq(deployed_releases)
     end
 
     context 'when app id does not exist' do

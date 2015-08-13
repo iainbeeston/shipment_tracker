@@ -7,27 +7,35 @@ RSpec.describe Projections::ReleasesProjection do
     Projections::ReleasesProjection.new(
       per_page: 50,
       git_repository: repository,
+      app_name: app_name,
     )
   }
 
   let(:repository) { instance_double(GitRepository) }
-
+  let(:app_name) { 'foo' }
   let(:time) { Time.now }
+  let(:formatted_time) { time.to_formatted_s(:long_ordinal) }
 
   let(:commits) {
     [
-      GitCommit.new(id: 'abc', message: "abc done\nbody", time: time),
-      GitCommit.new(id: 'def', message: "def done\n\nbody", time: time),
-      GitCommit.new(id: 'ghi', message: "ghi done\n\nbody", time: time),
+      GitCommit.new(id: 'abc', message: "commit on topic branch\n\nchild of def", time: time),
+      GitCommit.new(id: 'def', message: "commit on topic branch\n\nchild of ghi", time: time),
+      GitCommit.new(id: 'ghi', message: 'commit on master branch', time: time),
     ]
   }
 
   let(:events) {
     [
-      build(:jira_event, comment_body: feature_review_comment(foo: 'abc')),
-      build(:jira_event, key: 'JIRA-123', comment_body: feature_review_comment(foo: 'abc', bar: 'jkl')),
-      build(:jira_event, comment_body: feature_review_comment(foo: 'xyz')),
-      build(:jira_event, :approved, key: 'JIRA-123'),
+      build(:deploy_event, environment: 'uat', app_name: app_name, version: 'def'),
+      build(:deploy_event, environment: 'uat', app_name: app_name, version: 'abc'),
+
+      build(:jira_event, key: 'JIRA-1', comment_body: feature_review_comment(foo: 'abc')),
+      build(:jira_event, key: 'JIRA-2', comment_body: feature_review_comment(foo: 'abc', bar: 'jkl')),
+      build(:jira_event, key: 'JIRA-3', comment_body: feature_review_comment(foo: 'xyz')),
+      build(:jira_event, :approved, key: 'JIRA-2'),
+
+      build(:deploy_event, version: 'def', environment: 'production', app_name: app_name),
+      build(:deploy_event, version: 'klm', environment: 'production', app_name: 'irrelevant_app'),
     ]
   }
 
@@ -36,32 +44,43 @@ RSpec.describe Projections::ReleasesProjection do
     allow(repository).to receive(:get_dependent_commits).with('abc').and_return([GitCommit.new(id: 'def')])
   end
 
-  describe '#releases' do
-    it 'returns the list of releases' do
+  describe '#pending_releases' do
+    it 'returns the list of releases not yet deployed to production' do
       projection.apply_all(events)
 
-      expect(projection.releases).to eq(
+      expect(projection.pending_releases).to eq(
         [
           Release.new(
             version: 'abc',
-            subject: 'abc done',
-            time: time,
+            subject: 'commit on topic branch',
+            time: formatted_time,
             feature_review_status: 'Ready for Deployment',
-            feature_review_path: feature_review_path(foo: 'abc', bar: 'jkl'),
-            approved: true,
+            feature_review_path: feature_review_path(foo: 'abc', bar: 'jkl'), # Only shows last associated FR
+            approved: true, # A release has max one FR, so approved even when FR for JIRA-1 is not approved
           ),
+        ],
+      )
+    end
+  end
+
+  describe '#deployed_releases' do
+    it 'returns the list of releases deployed to production' do
+      projection.apply_all(events)
+
+      expect(projection.deployed_releases).to eq(
+        [
           Release.new(
             version: 'def',
-            subject: 'def done',
-            time: time,
+            subject: 'commit on topic branch',
+            time: formatted_time,
             feature_review_status: 'Ready for Deployment',
             feature_review_path: feature_review_path(foo: 'abc', bar: 'jkl'),
             approved: true,
           ),
           Release.new(
             version: 'ghi',
-            subject: 'ghi done',
-            time: time,
+            subject: 'commit on master branch',
+            time: formatted_time,
             feature_review_path: nil,
             approved: false,
           ),

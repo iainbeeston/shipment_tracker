@@ -10,9 +10,23 @@ module Pages
       page.click_on(app)
     end
 
-    def releases
+    def method_missing(method_name)
+      if method_name.to_s =~ /(.*)_releases$/
+        releases(Regexp.last_match(1))
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(method_name, include_private = false)
+      method_name.to_s.end_with?('_releases') || super
+    end
+
+    private
+
+    def releases(deploy_status)
       verify!
-      page.all('.release').map { |release_line|
+      page.all(".#{deploy_status}-release").map { |release_line|
         values = release_line.all('td').to_a
         {
           'version' => values.fetch(0).text,
@@ -24,8 +38,6 @@ module Pages
         }
       }
     end
-
-    private
 
     def extract_href_if_exists(element)
       element.find('a')['href'] if element.has_css?('a')

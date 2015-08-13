@@ -23,11 +23,24 @@ Given 'CircleCi "$outcome" for commit "$version"' do |outcome, version|
   post_event 'circleci-manual', payload
 end
 
-Given 'commit "$version" is deployed by "$name" on server "$server"' do |version, name, server|
+Given 'commit "$version" of "$app" is deployed by "$name" to server "$server"' do |version, app, name, server|
   payload = build(
     :deploy_event,
     server: server,
-    app_name: scenario_context.resolve_app(version),
+    app_name: app,
+    version: scenario_context.resolve_version(version),
+    deployed_by: name,
+  ).details
+
+  post_event 'deploy', payload
+end
+
+Given 'commit "$version" of "$app" is deployed by "$name" to production' do |version, app, name|
+  payload = build(
+    :deploy_event,
+    server: "#{app}.example.com",
+    environment: 'production',
+    app_name: app,
     version: scenario_context.resolve_version(version),
     deployed_by: name,
   ).details

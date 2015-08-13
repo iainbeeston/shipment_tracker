@@ -1,15 +1,34 @@
 - title "Releases for #{@app_name}"
 
-%table.table
+%h2 Pending
+
+%table.table.table-condensed
   %thead
     %tr
-      %th id
+      %th version
       %th date
       %th message
       %th feature review
   %tbody
-  - @releases.each do |release|
-    %tr.release{class: ('danger' unless release.approved)}
+  - @pending_releases.each do |release|
+    %tr.pending-release{class: ('danger' unless release.approved)}
+      %td= release.version
+      %td= release.time
+      %td= release.subject
+      %td= link_to release.feature_review_status, release.feature_review_path if release.feature_review_path
+
+%h2 Deployed
+
+%table.table.table-condensed
+  %thead
+    %tr
+      %th version
+      %th date
+      %th message
+      %th feature review
+  %tbody
+  - @deployed_releases.each do |release|
+    %tr.deployed-release{class: ('danger' unless release.approved)}
       %td= release.version
       %td= release.time
       %td= release.subject

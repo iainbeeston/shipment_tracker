@@ -26,8 +26,8 @@ Scenario: Preparing a Feature Review
 Scenario: Viewing User Acceptance Tests results on a Feature review
   Given a commit "#abc" by "Alice" is created for app "frontend"
   And a commit "#def" by "Bob" is created for app "backend"
-  And commit "#abc" is deployed by "Alice" on server "uat.fundingcircle.com"
-  And commit "#def" is deployed by "Bob" on server "uat.fundingcircle.com"
+  And commit "#abc" of "frontend" is deployed by "Alice" to server "uat.fundingcircle.com"
+  And commit "#def" of "backend" is deployed by "Bob" to server "uat.fundingcircle.com"
   And a developer prepares a review for UAT "uat.fundingcircle.com" with apps
     | app_name | version |
     | frontend | #abc    |
@@ -55,10 +55,10 @@ Scenario: Viewing a feature review
   And CircleCi "fails" for commit "#def"
   # Flaky tests, build retriggered.
   And CircleCi "passes" for commit "#def"
-  And commit "#abc" is deployed by "Alice" on server "uat.fundingcircle.com"
-  And commit "#old" is deployed by "Bob" on server "uat.fundingcircle.com"
-  And commit "#def" is deployed by "Bob" on server "other-uat.fundingcircle.com"
-  And commit "#xyz" is deployed by "Wendy" on server "uat.fundingcircle.com"
+  And commit "#abc" of "frontend" is deployed by "Alice" to server "uat.fundingcircle.com"
+  And commit "#old" of "backend" is deployed by "Bob" to server "uat.fundingcircle.com"
+  And commit "#def" of "backend" is deployed by "Bob" to server "other-uat.fundingcircle.com"
+  And commit "#xyz" of "irrelevant" is deployed by "Wendy" to server "uat.fundingcircle.com"
   And a developer prepares a review upto now for UAT "uat.fundingcircle.com" with apps
     | app_name | version |
     | frontend | #abc    |

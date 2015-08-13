@@ -29,10 +29,6 @@ module Support
       @repos[application]
     end
 
-    def resolve_app(version)
-      app_for_version(resolve_version(version))
-    end
-
     def resolve_version(version)
       version.start_with?('#') ? commit_from_pretend(version) : version
     end
@@ -101,10 +97,6 @@ module Support
       value = @repos.values.map { |r| r.commit_for_pretend_version(pretend_commit) }.compact.first
       fail "Could not find '#{pretend_commit}'" unless value
       value
-    end
-
-    def app_for_version(version)
-      @repos.find { |_app_name, repo| repo.commit?(version) }.first
     end
 
     def build(*args)

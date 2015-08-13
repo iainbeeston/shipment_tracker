@@ -2,7 +2,7 @@ When 'I view the releases for "$app"' do |app|
   releases_page.visit(app)
 end
 
-Then 'I should see the releases' do |releases_table|
+Then 'I should see the "$deploy_status" releases' do |deploy_status, releases_table|
   expected_releases = releases_table.hashes.map { |release|
     {
       'time' => Time.parse(release.fetch('date')),
@@ -14,5 +14,6 @@ Then 'I should see the releases' do |releases_table|
     }
   }
 
-  expect(releases_page.releases).to eq(expected_releases)
+  actual_releases = releases_page.public_send("#{deploy_status}_releases".to_sym)
+  expect(actual_releases).to eq(expected_releases)
 end

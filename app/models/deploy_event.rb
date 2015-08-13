@@ -17,6 +17,10 @@ class DeployEvent < Event
     details.fetch('deployed_by', nil)
   end
 
+  def environment
+    details.fetch('environment', nil)
+  end
+
   private
 
   def servers
