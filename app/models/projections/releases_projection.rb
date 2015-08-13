@@ -43,7 +43,7 @@ module Projections
         ticket = get_ticket(feature_review.fetch(:key))
         Release.new(
           version: commit.id,
-          time: commit.time,
+          time: commit.time.to_formatted_s(:long_ordinal),
           subject: commit.subject_line,
           feature_review_status: ticket.status,
           feature_review_path: feature_review.fetch(:path),
