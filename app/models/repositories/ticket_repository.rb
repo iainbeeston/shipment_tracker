@@ -3,7 +3,6 @@ require 'snapshots/ticket'
 require 'ticket'
 
 require 'addressable/uri'
-require 'uri'
 
 module Repositories
   class TicketRepository

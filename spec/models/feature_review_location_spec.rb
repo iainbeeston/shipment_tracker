@@ -34,6 +34,14 @@ RSpec.describe FeatureReviewLocation do
       end
     end
 
+    context 'when a URL is unparseable' do
+      let(:text) { 'unparseable http://foo.io/feature_reviews#bad]' }
+
+      it 'ignores it' do
+        expect(feature_review_locations).to be_empty
+      end
+    end
+
     context 'when a URL contains an unknown schema' do
       let(:text) { 'foo:/feature_reviews' }
 
