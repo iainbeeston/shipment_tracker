@@ -4,7 +4,23 @@ RSpec.describe DeployEvent do
   subject { DeployEvent.new(details: payload) }
 
   context 'when given a valid payload' do
-    context 'when given a single server' do
+    let(:payload) {
+      {
+        'app_name' => 'soMeApp',
+        'servers' => ['prod1.example.com', 'prod2.example.com'],
+        'version' => '123',
+        'deployed_by' => 'bob',
+      }
+    }
+
+    it 'returns the correct values' do
+      expect(subject.app_name).to eq('someapp')
+      expect(subject.server).to eq('prod1.example.com')
+      expect(subject.version).to eq('123')
+      expect(subject.deployed_by).to eq('bob')
+    end
+
+    context 'when the payload structure is deprecated' do
       let(:payload) {
         {
           'app_name' => 'soMeApp',
@@ -17,24 +33,6 @@ RSpec.describe DeployEvent do
       it 'returns the correct values' do
         expect(subject.app_name).to eq('someapp')
         expect(subject.server).to eq('uat.example.com')
-        expect(subject.version).to eq('123')
-        expect(subject.deployed_by).to eq('bob')
-      end
-    end
-
-    context 'when given multiple servers' do
-      let(:payload) {
-        {
-          'app_name' => 'soMeApp',
-          'servers' => ['prod1.example.com', 'prod2.example.com'],
-          'version' => '123',
-          'deployed_by' => 'bob',
-        }
-      }
-
-      it 'returns the correct values' do
-        expect(subject.app_name).to eq('someapp')
-        expect(subject.server).to eq('prod1.example.com')
         expect(subject.version).to eq('123')
         expect(subject.deployed_by).to eq('bob')
       end
