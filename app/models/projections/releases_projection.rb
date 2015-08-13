@@ -7,8 +7,6 @@ require 'ticket'
 
 module Projections
   class ReleasesProjection
-    attr_reader :commits
-
     def initialize(per_page:, git_repository:)
       @per_page = per_page
       @tickets_projection = Projections::ReleasesTicketsProjection.new
