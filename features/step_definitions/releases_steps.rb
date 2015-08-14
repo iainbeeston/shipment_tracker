@@ -5,7 +5,7 @@ end
 Then 'I should see the "$deploy_status" releases' do |deploy_status, releases_table|
   expected_releases = releases_table.hashes.map { |release_line|
     release = {
-      'version' => scenario_context.resolve_version(release_line.fetch('version')),
+      'version' => scenario_context.resolve_version(release_line.fetch('version')).slice(0..6),
       'subject' => release_line.fetch('subject'),
       'feature_review_status' => release_line.fetch('issue audit'),
       'feature_review_path' => (scenario_context.review_path if release_line.fetch('issue audit').present?),

@@ -5,13 +5,13 @@
 %table.table.table-condensed
   %thead
     %tr
-      %th version
-      %th message
-      %th feature review
+      %th{width: '10%'} version
+      %th{width: '50%'} message
+      %th{width: '40%'} feature review
   %tbody
   - @pending_releases.each do |release|
     %tr.pending-release{class: ('danger' unless release.approved)}
-      %td= release.version
+      %td= short_sha(release.version)
       %td= release.subject
       %td= link_to release.feature_review_status, release.feature_review_path if release.feature_review_path
 
@@ -20,14 +20,14 @@
 %table.table.table-condensed
   %thead
     %tr
-      %th version
-      %th message
-      %th feature review
-      %th last deployed at
+      %th{width: '10%'} version
+      %th{width: '50%'} message
+      %th{width: '20%'} feature review
+      %th{width: '20%'} last deployed at
   %tbody
   - @deployed_releases.each do |release|
     %tr.deployed-release{class: ('danger' unless release.approved)}
-      %td= release.version
+      %td= short_sha(release.version)
       %td= release.subject
       %td= link_to release.feature_review_status, release.feature_review_path if release.feature_review_path
       %td= release.time
