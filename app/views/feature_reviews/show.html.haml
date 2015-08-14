@@ -29,7 +29,7 @@
         - @presenter.app_versions.each do |name, version|
           %li.list-group-item.app
             %strong.name= name
-            %span.version= short_sha(version)
+            %span.version.monospace= short_sha(version)
         %li.list-group-item
           - if @presenter.uat_url
             Deployed to UAT
@@ -62,7 +62,7 @@
               %td
                 - icon(item_status_icon_class(deploy.correct))
               %td= deploy.app_name
-              %td= short_sha(deploy.version)
+              %td.monospace= short_sha(deploy.version)
 
   .col-lg-6
     - panel(heading: 'Test Results', klass: 'builds', status: @presenter.build_status) do
