@@ -10,34 +10,40 @@ module Pages
       page.click_on(app)
     end
 
-    def method_missing(method_name)
-      if method_name.to_s =~ /(.*)_releases$/
-        releases(Regexp.last_match(1))
-      else
-        super
-      end
-    end
-
-    def respond_to_missing?(method_name, include_private = false)
-      method_name.to_s.end_with?('_releases') || super
-    end
-
-    private
-
-    def releases(deploy_status)
+    def pending_releases
       verify!
-      page.all(".#{deploy_status}-release").map { |release_line|
+      page.all('.pending-release').map { |release_line|
         values = release_line.all('td').to_a
         {
           'version' => values.fetch(0).text,
-          'time' => Time.parse(values.fetch(1).text),
-          'subject' => values.fetch(2).text,
+          'subject' => values.fetch(1).text,
           'approved' => !release_line['class'].split.include?('danger'),
-          'feature_review_status' => values.fetch(3).text,
-          'feature_review_path' => extract_href_if_exists(values.fetch(3)),
+          'feature_review_status' => values.fetch(2).text,
+          'feature_review_path' => extract_href_if_exists(values.fetch(2)),
         }
       }
     end
+
+    def deployed_releases
+      verify!
+      page.all('.deployed-release').map { |release_line|
+        values = release_line.all('td').to_a
+        release = {
+          'version' => values.fetch(0).text,
+          'subject' => values.fetch(1).text,
+          'approved' => !release_line['class'].split.include?('danger'),
+          'feature_review_status' => values.fetch(2).text,
+          'feature_review_path' => extract_href_if_exists(values.fetch(2)),
+          'time' => nil,
+        }
+
+        time = values.fetch(3).text
+        release['time'] = Time.parse(time) unless time.empty?
+        release
+      }
+    end
+
+    private
 
     def extract_href_if_exists(element)
       element.find('a')['href'] if element.has_css?('a')

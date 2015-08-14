@@ -15,7 +15,7 @@ module Projections
       @git_repository = git_repository
       @feature_reviews = {}
       @tickets_hash = {}
-      @deployed_version = nil
+      @production_deploys = {}
       @pending_releases = []
       @deployed_releases = []
       @app_name = app_name
@@ -30,14 +30,14 @@ module Projections
 
     private
 
-    attr_reader :tickets_projection, :app_name, :deployed_version
+    attr_reader :tickets_projection, :app_name, :production_deploys
 
     def apply(event)
       case event
       when DeployEvent
         return unless event.environment == 'production'
         return unless event.app_name == app_name
-        @deployed_version = event.version
+        @production_deploys[event.version] = event.created_at
       when JiraEvent
         associate_releases_with_feature_review(event)
         tickets_projection.apply(event)
@@ -53,7 +53,7 @@ module Projections
 
       deployed = false
       commits.each { |commit|
-        deployed = true if commit.id == deployed_version
+        deployed = true if production_deploys.key?(commit.id)
         if deployed
           @deployed_releases << create_release_from(commit)
         else
@@ -68,7 +68,7 @@ module Projections
 
       Release.new(
         version: commit.id,
-        time: commit.time.to_formatted_s(:long_ordinal),
+        time: production_deploys[commit.id].try(:to_formatted_s, :long_ordinal),
         subject: commit.subject_line,
         feature_review_status: ticket.status,
         feature_review_path: feature_review.fetch(:path),

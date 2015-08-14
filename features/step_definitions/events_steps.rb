@@ -35,17 +35,19 @@ Given 'commit "$version" of "$app" is deployed by "$name" to server "$server"' d
   post_event 'deploy', payload
 end
 
-Given 'commit "$version" of "$app" is deployed by "$name" to production' do |version, app, name|
+Given 'commit "$ver" of "$app" is deployed by "$name" to production at "$time"' do |ver, app, name, time|
   payload = build(
     :deploy_event,
     server: "#{app}.example.com",
     environment: 'production',
     app_name: app,
-    version: scenario_context.resolve_version(version),
+    version: scenario_context.resolve_version(ver),
     deployed_by: name,
   ).details
 
-  post_event 'deploy', payload
+  travel_to Time.zone.parse(time) do
+    post_event 'deploy', payload
+  end
 end
 
 Given 'User Acceptance Tests at version "$sha" which "$outcome" on server "$server"' do |sha, outcome, server|

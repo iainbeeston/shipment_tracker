@@ -13,14 +13,14 @@ RSpec.describe Projections::ReleasesProjection do
 
   let(:repository) { instance_double(GitRepository) }
   let(:app_name) { 'foo' }
-  let(:time) { Time.now }
+  let(:time) { Time.current }
   let(:formatted_time) { time.to_formatted_s(:long_ordinal) }
 
   let(:commits) {
     [
-      GitCommit.new(id: 'abc', message: "commit on topic branch\n\nchild of def", time: time),
-      GitCommit.new(id: 'def', message: "commit on topic branch\n\nchild of ghi", time: time),
-      GitCommit.new(id: 'ghi', message: 'commit on master branch', time: time),
+      GitCommit.new(id: 'abc', message: "commit on topic branch\n\nchild of def", time: time - 1.hour),
+      GitCommit.new(id: 'def', message: "commit on topic branch\n\nchild of ghi", time: time - 2.hours),
+      GitCommit.new(id: 'ghi', message: 'commit on master branch', time: time - 3.hours),
     ]
   }
 
@@ -34,7 +34,7 @@ RSpec.describe Projections::ReleasesProjection do
       build(:jira_event, key: 'JIRA-3', comment_body: feature_review_comment(foo: 'xyz')),
       build(:jira_event, :approved, key: 'JIRA-2'),
 
-      build(:deploy_event, version: 'def', environment: 'production', app_name: app_name),
+      build(:deploy_event, version: 'def', environment: 'production', app_name: app_name, created_at: time),
       build(:deploy_event, version: 'klm', environment: 'production', app_name: 'irrelevant_app'),
     ]
   }
@@ -53,7 +53,7 @@ RSpec.describe Projections::ReleasesProjection do
           Release.new(
             version: 'abc',
             subject: 'commit on topic branch',
-            time: formatted_time,
+            time: nil,
             feature_review_status: 'Ready for Deployment',
             feature_review_path: feature_review_path(foo: 'abc', bar: 'jkl'), # Only shows last associated FR
             approved: true, # A release has max one FR, so approved even when FR for JIRA-1 is not approved
@@ -80,7 +80,7 @@ RSpec.describe Projections::ReleasesProjection do
           Release.new(
             version: 'ghi',
             subject: 'commit on master branch',
-            time: formatted_time,
+            time: nil,
             feature_review_path: nil,
             approved: false,
           ),

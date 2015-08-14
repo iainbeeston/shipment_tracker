@@ -19,18 +19,18 @@ Scenario: Viewing releases for an app
   And ticket "JIRA-123" is approved by "bob@fundingcircle.com" at "15:24:34"
   And the branch "master" is checked out
   And a commit "#master2" with message "sneaky commit" is created at "13:31:17"
-  And commit "#master2" of "frontend" is deployed by "Charlotte" to production
+  And commit "#master2" of "frontend" is deployed by "Charlotte" to production at "15:54:20"
   And the branch "feature" is merged with merge commit "#merge" at "16:04:19"
 
   When I view the releases for "frontend"
 
   Then I should see the "pending" releases
-    | version  | date  | subject                            | issue audit          | approved |
-    | #merge   | 16:04 | Merged `feature` into `master`     | Ready for Deployment | yes      |
-    | #branch2 | 15:04 | second commit                      | Ready for Deployment | yes      |
-    | #branch1 | 14:01 | first commit                       | Ready for Deployment | yes      |
+    | version  | subject                            | issue audit          | approved |
+    | #merge   | Merged `feature` into `master`     | Ready for Deployment | yes      |
+    | #branch2 | second commit                      | Ready for Deployment | yes      |
+    | #branch1 | first commit                       | Ready for Deployment | yes      |
 
   And I should see the "deployed" releases
-    | version  | date  | subject                            | issue audit          | approved |
-    | #master2 | 13:31 | sneaky commit                      |                      | no       |
-    | #master1 | 13:01 | historic commit                    |                      | no       |
+    | version  | subject                            | issue audit          | approved | last deployed at |
+    | #master2 | sneaky commit                      |                      | no       | 15:54            |
+    | #master1 | historic commit                    |                      | no       |                  |
