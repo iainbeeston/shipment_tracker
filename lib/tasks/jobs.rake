@@ -35,7 +35,13 @@ namespace :jobs do
 
   desc 'Continuously updates event cache'
   task update_events_loop: :environment do
+    Signal.trap('TERM') do
+      warn 'Terminating rake task jobs:update_events_loop...'
+      @shutdown = true
+    end
+
     loop do
+      break if @shutdown
       start_time = Time.current
       puts "[#{start_time}] Running update_events"
       lowest_event_id = Snapshots::EventCount.all.min_by(&:event_id).try(:event_id).to_i
@@ -45,6 +51,7 @@ namespace :jobs do
       end_time = Time.current
       num_events = Event.where('id > ?', lowest_event_id).count
       puts "[#{end_time}] Cached #{num_events} events in #{end_time - start_time} seconds"
+      break if @shutdown
       sleep 5
     end
   end
