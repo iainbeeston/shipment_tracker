@@ -12,6 +12,8 @@ RSpec.describe Projections::ReleasesProjection do
   }
 
   let(:deploy_repository) { instance_double(Repositories::DeployRepository) }
+  let(:ticket_repository) { instance_double(Repositories::TicketRepository) }
+
   let(:git_repository) { instance_double(GitRepository) }
   let(:app_name) { 'foo' }
   let(:time) { Time.current }
@@ -38,6 +40,14 @@ RSpec.describe Projections::ReleasesProjection do
     ]
   }
 
+  let(:tickets) {
+    [
+      Ticket.new(key: 'JIRA-1'),
+      Ticket.new(key: 'JIRA-2', status: 'Ready for Deployment'),
+      Ticket.new(key: 'JIRA-3'),
+    ]
+  }
+
   before do
     allow(Repositories::DeployRepository).to receive(:new).and_return(deploy_repository)
     allow(git_repository).to receive(:recent_commits).with(50).and_return(commits)
@@ -45,6 +55,10 @@ RSpec.describe Projections::ReleasesProjection do
       .and_return([GitCommit.new(id: 'def')])
     allow(deploy_repository).to receive(:deploys_for_versions).with(versions, environment: 'production')
       .and_return(deploys)
+
+    allow(Repositories::TicketRepository).to receive(:new).and_return(ticket_repository)
+    allow(ticket_repository).to receive(:tickets_for_versions).with(versions)
+      .and_return(tickets)
   end
 
   describe '#pending_releases' do

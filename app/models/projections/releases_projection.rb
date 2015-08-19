@@ -10,8 +10,8 @@ module Projections
 
     def initialize(per_page:, git_repository:, app_name:)
       @per_page = per_page
-      @tickets_projection = Projections::ReleasesTicketsProjection.new
       @git_repository = git_repository
+      @tickets_projection = Projections::ReleasesTicketsProjection.new(versions)
       @feature_reviews = {}
       @tickets_hash = {}
       @pending_releases = []
@@ -35,7 +35,7 @@ module Projections
       case event
       when Events::JiraEvent
         associate_releases_with_feature_review(event)
-        tickets_projection.apply(event)
+        # tickets_projection.apply(event)
       end
     end
 

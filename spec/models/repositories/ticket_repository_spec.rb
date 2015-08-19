@@ -13,6 +13,11 @@ RSpec.describe Repositories::TicketRepository do
     end
   end
 
+  describe '#tickets_for_versions' do
+    xit 'returns all tickets that reference the given version'
+    xit 'returns empty if now matching tickets are found'
+  end
+
   describe '#tickets_for' do
     let(:url) { 'http://foo.com/feature_reviews' }
 
