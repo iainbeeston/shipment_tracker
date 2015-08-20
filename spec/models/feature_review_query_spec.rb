@@ -61,9 +61,10 @@ RSpec.describe FeatureReviewQuery do
 
   describe '#qa_submission' do
     let(:expected_qa_submission) { double('expected qa submission') }
+    let(:expected_versions) { expected_apps.values }
 
     before do
-      allow(manual_test_repository).to receive(:qa_submission_for).with(apps: expected_apps, at: time)
+      allow(manual_test_repository).to receive(:qa_submission_for).with(versions: expected_versions, at: time)
         .and_return(expected_qa_submission)
     end
 

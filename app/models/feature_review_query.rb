@@ -31,7 +31,7 @@ class FeatureReviewQuery
   end
 
   def qa_submission
-    manual_test_repository.qa_submission_for(apps: app_versions, at: time)
+    manual_test_repository.qa_submission_for(versions: app_versions.values, at: time)
   end
 
   def tickets
