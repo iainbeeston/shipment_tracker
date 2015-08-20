@@ -17,8 +17,10 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-require 'simplecov'
-SimpleCov.start
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start
+end
 
 require 'pathname'
 root = Pathname.new('..').expand_path(File.dirname(__FILE__))
