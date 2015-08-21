@@ -163,6 +163,7 @@ RSpec.describe FeatureReviewsController do
     let(:repo) { instance_double(GitRepository) }
     let(:related_versions) { %w(abc def ghi) }
     let(:expected_links) { ['/somelink'] }
+    let(:expected_feature_reviews) { [instance_double(FeatureReview, url: '/somelink')] }
     let(:version) { 'abc123' }
 
     before do
@@ -171,7 +172,9 @@ RSpec.describe FeatureReviewsController do
       allow(RepositoryLocation).to receive(:app_names).and_return(applications)
       allow(GitRepositoryLoader).to receive(:new).and_return(git_repository_loader)
       allow(Repositories::FeatureReviewRepository).to receive(:new).and_return(repository)
-      allow(repository).to receive(:feature_reviews_for).with(related_versions).and_return(expected_links)
+      allow(repository).to receive(:feature_reviews_for)
+        .with(related_versions)
+        .and_return(expected_feature_reviews)
 
       allow(git_repository_loader).to receive(:load).with('frontend').and_return(repo)
     end
