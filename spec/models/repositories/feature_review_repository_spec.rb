@@ -14,8 +14,18 @@ RSpec.describe Repositories::FeatureReviewRepository do
     end
   end
 
-  describe '#feature_reviews_for' do
-    it 'returns matching URLs' do
+  describe '#apply' do
+    let(:active_record_class) { class_double(Snapshots::FeatureReview) }
+
+    subject(:repository) { Repositories::FeatureReviewRepository.new(active_record_class) }
+
+    it 'creates a snapshot for each feature review url in the event comment' do
+      expect(active_record_class).to receive(:create!).with(url: feature_review_url(frontend: 'abc', backend: 'NON1'), versions: ['NON1', 'abc'])
+      expect(active_record_class).to receive(:create!).with(url: feature_review_url(frontend: 'NON2', backend: 'def'), versions: ['def', 'NON2'])
+      expect(active_record_class).to receive(:create!).with(url: feature_review_url(frontend: 'NON2', backend: 'NON3'), versions: ['NON3', 'NON2'])
+      expect(active_record_class).to receive(:create!).with(url: feature_review_url(frontend: 'ghi',  backend: 'NON3'), versions: ['NON3', 'ghi'])
+      expect(active_record_class).to receive(:create!).with(url: feature_review_url(frontend: 'NON4', backend: 'NON5'), versions: ['NON5', 'NON4'])
+
       [
         build(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'abc', backend: 'NON1')}"),
         build(:jira_event, comment_body: "Review: #{feature_review_url(frontend: 'NON2', backend: 'def')}"),
@@ -25,6 +35,16 @@ RSpec.describe Repositories::FeatureReviewRepository do
       ].each do |event|
         repository.apply(event)
       end
+    end
+  end
+
+  describe '#feature_reviews_for' do
+    it 'returns the latest snapshots for the versions specified' do
+      Snapshots::FeatureReview.create!(url: feature_review_url(frontend: 'abc', backend: 'NON1'), versions: ['NON1', 'abc'])
+      Snapshots::FeatureReview.create!(url: feature_review_url(frontend: 'NON2', backend: 'def'), versions: ['def', 'NON2'])
+      Snapshots::FeatureReview.create!(url: feature_review_url(frontend: 'NON2', backend: 'NON3'), versions: ['NON3', 'NON2'])
+      Snapshots::FeatureReview.create!(url: feature_review_url(frontend: 'ghi',  backend: 'NON3'), versions: ['NON3', 'ghi'])
+      Snapshots::FeatureReview.create!(url: feature_review_url(frontend: 'NON4', backend: 'NON5'), versions: ['NON5', 'NON4'])
 
       expect(repository.feature_reviews_for(%w(abc def ghi))).to match_array([
         feature_review_url(frontend: 'abc', backend: 'NON1'),
