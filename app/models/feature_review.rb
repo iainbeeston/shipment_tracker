@@ -4,5 +4,6 @@ class FeatureReview
   values do
     attribute :url, String
     attribute :versions, Array
+    attribute :status, String
   end
 end
