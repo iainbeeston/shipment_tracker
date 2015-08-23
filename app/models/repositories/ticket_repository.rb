@@ -1,4 +1,4 @@
-require 'jira_event'
+require 'events/jira_event'
 require 'snapshots/ticket'
 require 'ticket'
 
@@ -17,7 +17,7 @@ module Repositories
     end
 
     def apply(event)
-      return unless event.is_a?(JiraEvent) && event.issue?
+      return unless event.is_a?(Events::JiraEvent) && event.issue?
 
       last_ticket = (store.where(key: event.key).last.try(:attributes) || {}).except('id')
 

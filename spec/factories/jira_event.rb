@@ -1,6 +1,6 @@
 # rubocop:disable Style/BlockDelimiters
 FactoryGirl.define do
-  factory :jira_event do
+  factory :jira_event, class: Events::JiraEvent do
     transient do
       sequence(:issue_id)
       sequence(:key) { |n| "JIRA-#{n}" }
@@ -122,7 +122,7 @@ FactoryGirl.define do
     end
   end
 
-  factory :jira_event_user_created, class: JiraEvent do
+  factory :jira_event_user_created, class: Events::JiraEvent do
     details do
       {
         'timestamp' => 1_434_031_799_536,

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe ManualTestEvent do
-  subject(:event) { ManualTestEvent.new(details: details) }
+RSpec.describe Events::ManualTestEvent do
+  subject(:event) { described_class.new(details: details) }
 
   let(:apps) { [{ 'name' => 'frontend', 'version' => 'abc' }] }
   let(:email) { 'alice@example.com' }

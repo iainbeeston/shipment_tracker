@@ -1,6 +1,6 @@
 # rubocop:disable Style/BlockDelimiters
 FactoryGirl.define do
-  factory :uat_event do
+  factory :uat_event, class: Events::UatEvent do
     transient do
       success true
       sequence(:test_suite_version)

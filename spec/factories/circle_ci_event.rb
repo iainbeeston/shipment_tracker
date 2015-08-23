@@ -1,6 +1,6 @@
 # rubocop:disable Style/BlockDelimiters
 FactoryGirl.define do
-  factory :circle_ci_event do
+  factory :circle_ci_event, class: Events::CircleCiEvent do
     transient do
       success? true
       sequence(:version)

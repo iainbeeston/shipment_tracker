@@ -1,13 +1,13 @@
 require 'rails_helper'
 
-RSpec.describe Event do
+RSpec.describe Events::BaseEvent do
   describe '.in_order_of_creation' do
     it 'returns all Events in insertion order' do
       first = create(:circle_ci_event)
       middle = create(:jenkins_event)
       last = create(:deploy_event)
 
-      expect(Event.in_order_of_creation.to_a).to eq([first, middle, last])
+      expect(Events::BaseEvent.in_order_of_creation.to_a).to eq([first, middle, last])
     end
   end
 
@@ -21,19 +21,19 @@ RSpec.describe Event do
 
     context 'when nil is specified' do
       it 'returns all events' do
-        expect(Event.between(0).to_a).to eq(events)
+        expect(Events::BaseEvent.between(0).to_a).to eq(events)
       end
     end
 
     context 'when an integer is specified' do
       it 'returns events greater than that id' do
-        expect(Event.between(events.second.id).to_a).to eq(events[2..-1])
+        expect(Events::BaseEvent.between(events.second.id).to_a).to eq(events[2..-1])
       end
     end
 
     context 'when up_to is also specified' do
       it 'returns all events up to the time specified' do
-        expect(Event.between(0, up_to: times[1]).to_a).to eq(events[0, 2])
+        expect(Events::BaseEvent.between(0, up_to: times[1]).to_a).to eq(events[0, 2])
       end
 
       context 'when the time differs by microseconds' do
@@ -41,7 +41,7 @@ RSpec.describe Event do
         let(:times) { [time.change(usec: 0), time] }
 
         it 'returns all events up to the precise time specified' do
-          expect(Event.between(0, up_to: times[0]).to_a).to eq(events[0, 1])
+          expect(Events::BaseEvent.between(0, up_to: times[0]).to_a).to eq(events[0, 1])
         end
       end
     end

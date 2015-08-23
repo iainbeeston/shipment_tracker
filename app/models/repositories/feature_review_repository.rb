@@ -1,5 +1,5 @@
 require 'feature_review_location'
-require 'jira_event'
+require 'events/jira_event'
 require 'snapshots/feature_review'
 
 module Repositories
@@ -21,7 +21,7 @@ module Repositories
     end
 
     def apply(event)
-      return unless event.is_a?(JiraEvent) && event.issue?
+      return unless event.is_a?(Events::JiraEvent) && event.issue?
 
       FeatureReviewLocation.from_text(event.comment).each do |location|
         store.create!(

@@ -23,7 +23,7 @@ RSpec.describe 'Projection performance', type: :request do
   end
 
   def drop_events
-    Event.delete_all
+    Events::BaseEvent.delete_all
   end
 
   def updater
@@ -43,7 +43,7 @@ RSpec.describe 'Projection performance', type: :request do
     create_snapshots
 
     time_to_run = Benchmark.realtime(&block)
-    results = [Event.count, time_to_run]
+    results = [Events::BaseEvent.count, time_to_run]
     puts "#{results[0]} events -> #{results[1].round(3)} seconds"
 
     drop_snapshots
@@ -162,7 +162,7 @@ RSpec.describe 'Projection performance', type: :request do
             get(release_path(repo_name))
           end
 
-          results = [test_git_repo.total_commits, Event.count, time]
+          results = [test_git_repo.total_commits, Events::BaseEvent.count, time]
           file << results
           puts results.inspect
         end
@@ -174,7 +174,7 @@ RSpec.describe 'Projection performance', type: :request do
 
   def build_events(type:, number:, **args)
     blueprint = build(type, args)
-    Event.connection.execute(<<-QUERY)
+    Events::BaseEvent.connection.execute(<<-QUERY)
       INSERT INTO events (
           details,
           created_at,

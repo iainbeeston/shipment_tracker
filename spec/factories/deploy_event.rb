@@ -1,6 +1,6 @@
 # rubocop:disable Style/BlockDelimiters
 FactoryGirl.define do
-  factory :deploy_event do
+  factory :deploy_event, class: Events::DeployEvent do
     transient do
       server 'uat.example.com'
       sequence(:version) { |n| "abc#{n}" }

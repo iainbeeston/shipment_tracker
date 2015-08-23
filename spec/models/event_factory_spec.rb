@@ -8,7 +8,7 @@ RSpec.describe EventFactory do
     let(:payload) { { 'foo' => 'bar' } }
     let(:user_email) { 'foo@bar.com' }
     let(:event_type) {
-      EventType.new(endpoint: 'circleci', event_class: CircleCiEvent)
+      EventType.new(endpoint: 'circleci', event_class: Events::CircleCiEvent)
     }
 
     before do
@@ -18,7 +18,7 @@ RSpec.describe EventFactory do
     let(:created_event) { subject.create(event_type.endpoint, payload, user_email) }
 
     it 'returns an instance of the correct class' do
-      expect(created_event).to be_an_instance_of(CircleCiEvent)
+      expect(created_event).to be_an_instance_of(Events::CircleCiEvent)
     end
 
     it 'stores the payload in the event details' do
@@ -27,7 +27,7 @@ RSpec.describe EventFactory do
 
     context 'with an internal event type' do
       let(:event_type) {
-        EventType.new(endpoint: 'manual_test', event_class: ManualTestEvent, internal: true)
+        EventType.new(endpoint: 'manual_test', event_class: Events::ManualTestEvent, internal: true)
       }
 
       it 'stores the payload in the event details, including the user email' do

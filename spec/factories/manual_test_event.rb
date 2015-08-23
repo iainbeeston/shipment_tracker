@@ -1,6 +1,6 @@
 # rubocop:disable Style/BlockDelimiters
 FactoryGirl.define do
-  factory :manual_test_event do
+  factory :manual_test_event, class: Events::ManualTestEvent do
     transient do
       accepted true
       email 'alice@example.com'

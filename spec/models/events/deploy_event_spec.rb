@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe DeployEvent do
-  subject { DeployEvent.new(details: payload) }
+RSpec.describe Events::DeployEvent do
+  subject { described_class.new(details: payload) }
 
   context 'when given a valid payload' do
     let(:payload) {

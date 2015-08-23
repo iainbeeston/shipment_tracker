@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe UatEvent do
-  subject { UatEvent.new(details: payload) }
+RSpec.describe Events::UatEvent do
+  subject { described_class.new(details: payload) }
 
   context 'when given a valid payload' do
     let(:payload) {

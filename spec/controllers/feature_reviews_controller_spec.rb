@@ -105,7 +105,7 @@ RSpec.describe FeatureReviewsController do
   describe 'GET #show', :logged_in do
     let(:query) { instance_double(FeatureReviewQuery) }
     let(:presenter) { instance_double(FeatureReviewPresenter) }
-    let(:events) { [Event.new, Event.new, Event.new] }
+    let(:events) { [Events::BaseEvent.new, Events::BaseEvent.new, Events::BaseEvent.new] }
     let(:uat_url) { 'http://uat.fundingcircle.com' }
     let(:apps_with_versions) { { 'frontend' => 'abc', 'backend' => 'def' } }
 

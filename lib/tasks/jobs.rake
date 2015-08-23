@@ -49,7 +49,7 @@ namespace :jobs do
       Repositories::Updater.from_rails_config.run
 
       end_time = Time.current
-      num_events = Event.where('id > ?', lowest_event_id).count
+      num_events = Events::BaseEvent.where('id > ?', lowest_event_id).count
       puts "[#{end_time}] Cached #{num_events} events in #{end_time - start_time} seconds"
       break if @shutdown
       sleep 5

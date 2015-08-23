@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe JiraEvent do
+RSpec.describe Events::JiraEvent do
   describe '#approval?' do
     context 'when the status changes from unapproved to approved' do
       it 'returns true' do

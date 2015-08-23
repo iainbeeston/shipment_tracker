@@ -1,6 +1,6 @@
 require 'feature_review_location'
 require 'git_repository'
-require 'jira_event'
+require 'events/jira_event'
 require 'projections/releases_tickets_projection'
 require 'release'
 require 'ticket'
@@ -34,11 +34,11 @@ module Projections
 
     def apply(event)
       case event
-      when DeployEvent
+      when Events::DeployEvent
         return unless event.environment == 'production'
         return unless event.app_name == app_name
         @production_deploys[event.version] = event.created_at
-      when JiraEvent
+      when Events::JiraEvent
         associate_releases_with_feature_review(event)
         tickets_projection.apply(event)
       end
