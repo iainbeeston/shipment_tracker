@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150823100018) do
+ActiveRecord::Schema.define(version: 20150823124738) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,6 +55,16 @@ ActiveRecord::Schema.define(version: 20150823100018) do
 
   add_index "feature_reviews", ["versions"], name: "index_feature_reviews_on_versions", using: :gin
 
+  create_table "git_repository_locations", force: :cascade do |t|
+    t.string   "uri"
+    t.string   "name"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.string   "remote_head"
+  end
+
+  add_index "git_repository_locations", ["name"], name: "index_git_repository_locations_on_name", unique: true, using: :btree
+
   create_table "manual_tests", force: :cascade do |t|
     t.string   "email"
     t.string   "versions",   array: true
@@ -64,16 +74,6 @@ ActiveRecord::Schema.define(version: 20150823100018) do
   end
 
   add_index "manual_tests", ["versions"], name: "index_manual_tests_on_versions", using: :gin
-
-  create_table "repository_locations", force: :cascade do |t|
-    t.string   "uri"
-    t.string   "name"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-    t.string   "remote_head"
-  end
-
-  add_index "repository_locations", ["name"], name: "index_repository_locations_on_name", unique: true, using: :btree
 
   create_table "tickets", force: :cascade do |t|
     t.string   "key"

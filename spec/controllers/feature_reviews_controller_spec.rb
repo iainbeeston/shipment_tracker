@@ -26,7 +26,7 @@ RSpec.describe FeatureReviewsController do
     let(:feature_review_form) { instance_double(Forms::FeatureReviewForm) }
 
     before do
-      allow(RepositoryLocation).to receive(:app_names).and_return(%w(frontend backend))
+      allow(GitRepositoryLocation).to receive(:app_names).and_return(%w(frontend backend))
       allow(Forms::FeatureReviewForm).to receive(:new).with(
         hash_including(
           apps: nil,
@@ -72,7 +72,7 @@ RSpec.describe FeatureReviewsController do
     context 'when the feature review form is invalid' do
       before do
         allow(feature_review_form).to receive(:valid?).and_return(false)
-        allow(RepositoryLocation).to receive(:app_names).and_return(%w(frontend backend))
+        allow(GitRepositoryLocation).to receive(:app_names).and_return(%w(frontend backend))
       end
 
       it 'renders the new page' do
@@ -169,7 +169,7 @@ RSpec.describe FeatureReviewsController do
     before do
       allow(VersionResolver).to receive(:new).with(repo).and_return(version_resolver)
       allow(version_resolver).to receive(:related_versions).with(version).and_return(related_versions)
-      allow(RepositoryLocation).to receive(:app_names).and_return(applications)
+      allow(GitRepositoryLocation).to receive(:app_names).and_return(applications)
       allow(GitRepositoryLoader).to receive(:new).and_return(git_repository_loader)
       allow(Repositories::FeatureReviewRepository).to receive(:new).and_return(repository)
       allow(repository).to receive(:feature_reviews_for)

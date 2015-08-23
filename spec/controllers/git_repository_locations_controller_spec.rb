@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe RepositoryLocationsController do
+RSpec.describe GitRepositoryLocationsController do
   context 'when logged out' do
-    let(:repository_location) {
+    let(:git_repository_location) {
       {
         'name' => 'shipment_tracker',
         'uri' => 'https://github.com/FundingCircle/shipment_tracker.git',
@@ -10,6 +10,11 @@ RSpec.describe RepositoryLocationsController do
     }
 
     it { is_expected.to require_authentication_on(:get, :index) }
-    it { is_expected.to require_authentication_on(:post, :create, repository_location: repository_location) }
+    it {
+      is_expected.to require_authentication_on(
+        :post,
+        :create,
+        git_repository_location: git_repository_location)
+    }
   end
 end

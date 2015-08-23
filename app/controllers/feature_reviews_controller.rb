@@ -1,6 +1,6 @@
 class FeatureReviewsController < ApplicationController
   def new
-    @app_names = RepositoryLocation.app_names
+    @app_names = GitRepositoryLocation.app_names
     @feature_review_form = feature_review_form
   end
 
@@ -9,7 +9,7 @@ class FeatureReviewsController < ApplicationController
     if @feature_review_form.valid?
       redirect_to @feature_review_form.url
     else
-      @app_names = RepositoryLocation.app_names
+      @app_names = GitRepositoryLocation.app_names
       render :new
     end
   end
@@ -23,7 +23,7 @@ class FeatureReviewsController < ApplicationController
 
   def search
     @links = []
-    @applications = RepositoryLocation.app_names
+    @applications = GitRepositoryLocation.app_names
     @version = params[:version]
     @application = params[:application]
 

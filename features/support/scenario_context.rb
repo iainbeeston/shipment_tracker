@@ -1,6 +1,6 @@
 require 'support/git_test_repository'
 require 'support/feature_review_url'
-require 'repository_location'
+require 'git_repository_location'
 
 require 'rack/test'
 require 'factory_girl'
@@ -22,7 +22,7 @@ module Support
       @application = name
       @repos[name] = Support::GitTestRepository.new(dir)
 
-      RepositoryLocation.create(uri: "file://#{dir}", name: name)
+      GitRepositoryLocation.create(uri: "file://#{dir}", name: name)
     end
 
     def repository_for(application)

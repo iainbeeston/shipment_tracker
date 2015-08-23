@@ -1,6 +1,6 @@
 class ReleasesController < ApplicationController
   def index
-    @app_names = RepositoryLocation.app_names
+    @app_names = GitRepositoryLocation.app_names
   end
 
   def show

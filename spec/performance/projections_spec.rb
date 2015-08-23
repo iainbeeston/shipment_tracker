@@ -103,7 +103,7 @@ RSpec.describe 'Projection performance', type: :request do
 
     before do
       repository_builder.build(git_diagram)
-      RepositoryLocation.create(name: repo_name, uri: "file://#{test_git_repo.dir}")
+      GitRepositoryLocation.create(name: repo_name, uri: "file://#{test_git_repo.dir}")
     end
 
     context 'with a simple repo so that git has minimal effect on performance' do
@@ -138,7 +138,7 @@ RSpec.describe 'Projection performance', type: :request do
     end
 
     before do
-      RepositoryLocation.create(name: repo_name, uri: "file://#{test_git_repo.dir}")
+      GitRepositoryLocation.create(name: repo_name, uri: "file://#{test_git_repo.dir}")
       puts test_git_repo.dir
     end
 

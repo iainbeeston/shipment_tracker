@@ -62,7 +62,7 @@ namespace :jobs do
 
     puts "[#{Time.current}] Running update_git"
     git_repository_loader = GitRepositoryLoader.from_rails_config
-    RepositoryLocation.app_names.each do |repository_name|
+    GitRepositoryLocation.app_names.each do |repository_name|
       puts "[#{Time.current}] Updating #{repository_name}"
       git_repository_loader.load(repository_name)
     end

@@ -11,8 +11,8 @@ RSpec.describe 'GithubNotificationsController' do
         login_with_omniauth(email: user_email)
       end
 
-      it 'updates the corresponsing RepositoryLocation' do
-        expect(RepositoryLocation).to receive(:update_from_github_notification).with(payload)
+      it 'updates the corresponsing GitRepositoryLocation' do
+        expect(GitRepositoryLocation).to receive(:update_from_github_notification).with(payload)
 
         post '/github_notifications', payload
 
@@ -28,8 +28,8 @@ RSpec.describe 'GithubNotificationsController' do
         allow(Token).to receive(:valid?).with('github_notifications', token).and_return(true)
       end
 
-      it 'updates the corresponsing RepositoryLocation' do
-        expect(RepositoryLocation).to receive(:update_from_github_notification).with(payload)
+      it 'updates the corresponsing GitRepositoryLocation' do
+        expect(GitRepositoryLocation).to receive(:update_from_github_notification).with(payload)
 
         post "/github_notifications?token=#{token}", payload
 
@@ -37,7 +37,7 @@ RSpec.describe 'GithubNotificationsController' do
       end
 
       it 'does not create authorised session' do
-        expect(RepositoryLocation).to receive(:update_from_github_notification).with(payload)
+        expect(GitRepositoryLocation).to receive(:update_from_github_notification).with(payload)
 
         post "/github_notifications?token=#{token}", payload
 

@@ -1,4 +1,4 @@
-class AddRemoteHeadToRepositoryLocations < ActiveRecord::Migration
+class AddRemoteHeadToGitRepositoryLocations < ActiveRecord::Migration
   def change
     add_column :repository_locations, :remote_head, :string
   end

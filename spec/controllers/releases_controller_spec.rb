@@ -10,7 +10,7 @@ RSpec.describe ReleasesController do
     let(:app_names) { %w(frontend backend) }
 
     before do
-      allow(RepositoryLocation).to receive(:app_names).and_return(app_names)
+      allow(GitRepositoryLocation).to receive(:app_names).and_return(app_names)
     end
 
     it 'displays the list of apps' do
