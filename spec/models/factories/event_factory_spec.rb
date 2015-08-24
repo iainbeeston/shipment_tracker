@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe EventFactory do
+RSpec.describe Factories::EventFactory do
   let(:repository) { instance_double(EventTypeRepository) }
-  subject(:factory) { EventFactory.new(repository) }
+  subject(:factory) { described_class.new(repository) }
 
   describe '#create' do
     let(:payload) { { 'foo' => 'bar' } }
