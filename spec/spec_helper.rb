@@ -29,10 +29,10 @@ root = Pathname.new('..').expand_path(File.dirname(__FILE__))
   $LOAD_PATH.unshift path.to_s
 end
 
-require 'support/feature_review_url'
+require 'support/feature_review_helpers'
 
 RSpec.configure do |config|
-  config.include Support::FeatureReviewUrl::Helpers
+  config.include Support::FeatureReviewHelpers
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest

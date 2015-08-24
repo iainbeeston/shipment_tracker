@@ -31,7 +31,7 @@ RSpec.describe Repositories::ManualTestRepository do
         repository.apply(event)
       end
 
-      result = repository.qa_submission_for(apps: { 'app1' => '1', 'app2' => '2' })
+      result = repository.qa_submission_for(versions: %w(1 2))
 
       expect(result).to eq(
         QaSubmission.new(email: 'foo@ex.io', accepted: true, comment: 'Good', created_at: t[2]),
@@ -53,7 +53,7 @@ RSpec.describe Repositories::ManualTestRepository do
           repository.apply(event)
         end
 
-        result = repository.qa_submission_for(apps: { 'app1' => 'abc', 'app2' => 'def' }, at: 2.hours.ago)
+        result = repository.qa_submission_for(versions: %w(abc def), at: 2.hours.ago)
 
         expect(result).to eq(
           QaSubmission.new(email: 'foo@ex.io', accepted: true, comment: 'Good', created_at: times[1]),

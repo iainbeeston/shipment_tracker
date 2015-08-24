@@ -16,9 +16,9 @@ class FeatureReviewsController < ApplicationController
 
   def show
     @return_to = request.original_fullpath
-    @presenter = FeatureReviewPresenter.new(
-      FeatureReviewQuery.new(request.original_url, at: time),
-    )
+    feature_review = Factories::FeatureReviewFactory.new.create_from_url_string(request.original_url)
+    @query = FeatureReviewQuery.new(feature_review, at: time)
+    @presenter = FeatureReviewPresenter.new(@query)
   end
 
   def search

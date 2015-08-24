@@ -57,7 +57,9 @@ module Repositories
     end
 
     def projection_urls(comment)
-      FeatureReviewLocation.from_text(comment).map { |frl| prepare_url(frl.url) }
+      Factories::FeatureReviewFactory.new.create_from_text(comment).map { |feature_review|
+        prepare_url(feature_review.url)
+      }
     end
   end
 end

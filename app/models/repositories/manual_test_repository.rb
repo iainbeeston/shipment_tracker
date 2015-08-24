@@ -10,8 +10,8 @@ module Repositories
 
     delegate :table_name, to: :store
 
-    def qa_submission_for(apps:, at: nil)
-      qa_submission(apps.values, at)
+    def qa_submission_for(versions:, at: nil)
+      qa_submission(versions, at)
     end
 
     def apply(event)

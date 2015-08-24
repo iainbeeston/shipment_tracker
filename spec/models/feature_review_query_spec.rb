@@ -15,9 +15,9 @@ RSpec.describe FeatureReviewQuery do
   let(:expected_uat_url) { "http://#{expected_uat_host}" }
 
   let(:time) { Time.current }
-  let(:url) { feature_review_url(expected_apps, expected_uat_url) }
+  let(:feature_review) { new_feature_review(expected_apps, expected_uat_url) }
 
-  subject(:query) { FeatureReviewQuery.new(url, at: time) }
+  subject(:query) { FeatureReviewQuery.new(feature_review, at: time) }
 
   before do
     allow(Repositories::BuildRepository).to receive(:new).and_return(build_repository)
@@ -63,7 +63,8 @@ RSpec.describe FeatureReviewQuery do
     let(:expected_qa_submission) { double('expected qa submission') }
 
     before do
-      allow(manual_test_repository).to receive(:qa_submission_for).with(apps: expected_apps, at: time)
+      allow(manual_test_repository).to receive(:qa_submission_for)
+        .with(versions: expected_apps.values, at: time)
         .and_return(expected_qa_submission)
     end
 
@@ -76,7 +77,7 @@ RSpec.describe FeatureReviewQuery do
     let(:expected_tickets) { double('expected tickets') }
 
     before do
-      allow(ticket_repository).to receive(:tickets_for).with(projection_url: url, at: time)
+      allow(ticket_repository).to receive(:tickets_for).with(projection_url: feature_review.url, at: time)
         .and_return(expected_tickets)
     end
 

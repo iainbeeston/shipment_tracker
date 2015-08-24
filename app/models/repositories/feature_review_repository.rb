@@ -1,4 +1,3 @@
-require 'feature_review_location'
 require 'events/jira_event'
 require 'snapshots/feature_review'
 
@@ -13,7 +12,7 @@ module Repositories
     def feature_reviews_for(versions)
       store.where('versions && ARRAY[?]::varchar[]', versions).group_by(&:url).map { |_, snapshots|
         latest_snapshot = snapshots.max(&:event_created_at)
-        FeatureReview.new(
+        Factories::FeatureReviewFactory.new.create(
           url: latest_snapshot.url,
           versions: latest_snapshot.versions,
         )
@@ -23,10 +22,10 @@ module Repositories
     def apply(event)
       return unless event.is_a?(Events::JiraEvent) && event.issue?
 
-      FeatureReviewLocation.from_text(event.comment).each do |location|
+      Factories::FeatureReviewFactory.new.create_from_text(event.comment).each do |feature_review|
         store.create!(
-          url: location.url,
-          versions: location.versions,
+          url: feature_review.url,
+          versions: feature_review.versions,
           event_created_at: event.created_at,
         )
       end

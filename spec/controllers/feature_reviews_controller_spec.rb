@@ -1,20 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe FeatureReviewsController do
-  context 'our routing' do
-    it 'matches the feature_review_location'do
-      actual_url = @routes.url_for host: 'www.example.com',
-                                   controller: 'feature_reviews',
-                                   action: 'show',
-                                   apps: { a: '123', b: '456' },
-                                   uat_url: 'http://foo.com'
-
-      feature_review_location = FeatureReviewLocation.new(actual_url)
-      expect(feature_review_location.app_versions).to eq('a' => '123', 'b' => '456')
-      expect(feature_review_location.uat_url).to eq('http://foo.com')
-    end
-  end
-
   context 'when logged out' do
     it { is_expected.to require_authentication_on(:get, :new) }
     it { is_expected.to require_authentication_on(:get, :show) }
@@ -103,53 +89,29 @@ RSpec.describe FeatureReviewsController do
   end
 
   describe 'GET #show', :logged_in do
-    let(:query) { instance_double(FeatureReviewQuery) }
-    let(:presenter) { instance_double(FeatureReviewPresenter) }
     let(:events) { [Events::BaseEvent.new, Events::BaseEvent.new, Events::BaseEvent.new] }
     let(:uat_url) { 'http://uat.fundingcircle.com' }
     let(:apps_with_versions) { { 'frontend' => 'abc', 'backend' => 'def' } }
 
-    let(:projection_url) {
-      @routes.url_for host: 'www.example.com',
-                      controller: 'feature_reviews',
-                      action: 'show',
-                      apps: apps_with_versions,
-                      uat_url: uat_url
-    }
-
     before do
       request.host = 'www.example.com'
-      allow(FeatureReviewPresenter).to receive(:new).with(query).and_return(presenter)
     end
 
-    it 'shows a report for each application' do
-      allow(FeatureReviewQuery).to receive(:new)
-        .with(projection_url, at: nil)
-        .and_return(query)
-
+    it 'sets up the correct query parameters' do
       get :show, apps: apps_with_versions, uat_url: uat_url
 
-      expect(assigns(:presenter)).to eq(presenter)
+      expect(assigns(:query).app_versions).to eq(apps_with_versions)
+      expect(assigns(:query).uat_url).to eq(uat_url)
+      expect(assigns(:query).time).to eq(nil)
     end
 
     context 'when time is specified' do
-      let(:projection_url) {
-        @routes.url_for host: 'www.example.com',
-                        controller: 'feature_reviews',
-                        action: 'show',
-                        apps: apps_with_versions,
-                        uat_url: uat_url,
-                        time: '1990-12-31T23:59:60Z'
-      }
+      it 'sets up the correct query parameters (including time)' do
+        get :show, apps: apps_with_versions, uat_url: uat_url, time: '1990-12-31T23:59:59Z'
 
-      it 'shows a report for each application' do
-        allow(FeatureReviewQuery).to receive(:new)
-          .with(projection_url, at: Time.zone.parse('1990-12-31T23:59:60Z'))
-          .and_return(query)
-
-        get :show, apps: apps_with_versions, uat_url: uat_url, time: '1990-12-31T23:59:60Z'
-
-        expect(assigns(:presenter)).to eq(presenter)
+        expect(assigns(:query).app_versions).to eq(apps_with_versions)
+        expect(assigns(:query).uat_url).to eq(uat_url)
+        expect(assigns(:query).time).to eq(Time.parse('1990-12-31T23:59:59Z'))
       end
     end
   end
