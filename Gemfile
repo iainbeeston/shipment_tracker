@@ -25,6 +25,7 @@ gem 'virtus'
 gem 'whenever'
 
 group :development do
+  gem 'foreman', require: false
   gem 'spring'
 end
 
