@@ -33,6 +33,9 @@ end
 
 require 'support/feature_review_helpers'
 
+require 'webmock/rspec'
+WebMock.disable_net_connect!(allow_localhost: true)
+
 RSpec.configure do |config|
   config.include Support::FeatureReviewHelpers
 

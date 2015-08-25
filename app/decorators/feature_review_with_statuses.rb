@@ -6,7 +6,7 @@ class FeatureReviewWithStatuses < SimpleDelegator
   def_delegators :@query, :tickets, :builds, :deploys, :qa_submission, :uatest
 
   def_delegators :@feature_review,
-    :uat_url, :app_versions
+    :url, :uat_url, :app_versions
 
   attr_reader :time
 
