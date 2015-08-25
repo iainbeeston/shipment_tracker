@@ -23,10 +23,6 @@ class FeatureReview
     uat_uri.try(:host)
   end
 
-  def ==(other)
-    versions == other.versions && uat_url == other.uat_url
-  end
-
   private
 
   def query_hash
