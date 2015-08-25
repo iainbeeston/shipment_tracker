@@ -27,6 +27,7 @@ gem 'whenever'
 group :development do
   gem 'foreman', require: false
   gem 'spring'
+  gem 'spring-commands-rspec'
 end
 
 group :development, :test do
