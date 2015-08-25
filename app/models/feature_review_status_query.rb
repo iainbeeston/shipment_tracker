@@ -5,10 +5,6 @@ class FeatureReviewStatusQuery
     @time = at
   end
 
-  def approved?
-    tickets.all?(&:approved?)
-  end
-
   def tickets
     @tickets ||= ticket_repository.tickets_for(projection_url: feature_review.url, at: time)
   end

@@ -100,18 +100,18 @@ RSpec.describe FeatureReviewsController do
     it 'sets up the correct query parameters' do
       get :show, apps: apps_with_versions, uat_url: uat_url
 
-      expect(assigns(:query).app_versions).to eq(apps_with_versions)
-      expect(assigns(:query).uat_url).to eq(uat_url)
-      expect(assigns(:query).time).to eq(nil)
+      expect(assigns(:feature_review_with_statuses).app_versions).to eq(apps_with_versions)
+      expect(assigns(:feature_review_with_statuses).uat_url).to eq(uat_url)
+      expect(assigns(:feature_review_with_statuses).time).to eq(nil)
     end
 
     context 'when time is specified' do
       it 'sets up the correct query parameters (including time)' do
         get :show, apps: apps_with_versions, uat_url: uat_url, time: '1990-12-31T23:59:59Z'
 
-        expect(assigns(:query).app_versions).to eq(apps_with_versions)
-        expect(assigns(:query).uat_url).to eq(uat_url)
-        expect(assigns(:query).time).to eq(Time.parse('1990-12-31T23:59:59Z'))
+        expect(assigns(:feature_review_with_statuses).app_versions).to eq(apps_with_versions)
+        expect(assigns(:feature_review_with_statuses).uat_url).to eq(uat_url)
+        expect(assigns(:feature_review_with_statuses).time).to eq(Time.parse('1990-12-31T23:59:59Z'))
       end
     end
   end

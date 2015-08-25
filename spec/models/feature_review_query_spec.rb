@@ -27,12 +27,6 @@ RSpec.describe FeatureReviewQuery do
     allow(Repositories::UatestRepository).to receive(:new).and_return(uatest_repository)
   end
 
-  describe '#app_versions' do
-    it 'returns the app versions from the URL' do
-      expect(query.app_versions).to eq(expected_apps)
-    end
-  end
-
   describe '#builds' do
     let(:expected_builds) { double('expected builds') }
 
@@ -89,12 +83,6 @@ RSpec.describe FeatureReviewQuery do
   describe '#time' do
     it 'returns the time that the Feature Review Query is for' do
       expect(query.time).to eq(time)
-    end
-  end
-
-  describe '#uat_url' do
-    it 'returns the URL of the UAT from the projection URL' do
-      expect(query.uat_url).to eq(expected_uat_url)
     end
   end
 
