@@ -19,7 +19,7 @@ RSpec.describe FeatureReviewWithStatuses do
 
   let(:feature_review_query) {
     instance_double(
-      FeatureReviewQuery,
+      Queries::FeatureReviewQuery,
       tickets: tickets,
       builds: builds,
       deploys: deploys,

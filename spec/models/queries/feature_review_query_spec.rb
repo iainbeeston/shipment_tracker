@@ -1,9 +1,6 @@
-require 'spec_helper'
-require 'feature_review_query'
+require 'rails_helper'
 
-require 'active_support/core_ext/time/calculations'
-
-RSpec.describe FeatureReviewQuery do
+RSpec.describe Queries::FeatureReviewQuery do
   let(:build_repository) { instance_double(Repositories::BuildRepository) }
   let(:deploy_repository) { instance_double(Repositories::DeployRepository) }
   let(:manual_test_repository) { instance_double(Repositories::ManualTestRepository) }
@@ -17,7 +14,7 @@ RSpec.describe FeatureReviewQuery do
   let(:time) { Time.current }
   let(:feature_review) { new_feature_review(expected_apps, expected_uat_url) }
 
-  subject(:query) { FeatureReviewQuery.new(feature_review, at: time) }
+  subject(:query) { Queries::FeatureReviewQuery.new(feature_review, at: time) }
 
   before do
     allow(Repositories::BuildRepository).to receive(:new).and_return(build_repository)
