@@ -1,4 +1,5 @@
-require 'rails_helper'
+require 'spec_helper'
+require 'queries/feature_review_query'
 
 RSpec.describe Queries::FeatureReviewQuery do
   let(:build_repository) { instance_double(Repositories::BuildRepository) }

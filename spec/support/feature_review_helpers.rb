@@ -1,5 +1,6 @@
 require 'uri'
 require 'active_support/core_ext/object/to_query'
+require 'factories/feature_review_factory'
 
 module Support
   module FeatureReviewHelpers

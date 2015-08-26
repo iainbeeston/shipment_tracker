@@ -1,3 +1,7 @@
+require 'uri'
+require 'rack/utils'
+require 'feature_review'
+
 module Factories
   class FeatureReviewFactory
     def create_from_text(text)
