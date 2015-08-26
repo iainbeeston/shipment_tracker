@@ -1,4 +1,5 @@
-require 'rails_helper'
+require 'spec_helper'
+require 'feature_review'
 
 RSpec.describe FeatureReview do
   let(:base_url) { 'http://localhost/feature_reviews' }

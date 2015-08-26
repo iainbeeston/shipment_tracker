@@ -1,3 +1,8 @@
+require 'virtus'
+require 'rack/utils'
+require 'addressable/uri'
+require 'active_support/core_ext/object'
+
 class FeatureReview
   include Virtus.value_object
 

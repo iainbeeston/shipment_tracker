@@ -24,7 +24,7 @@ require 'pathname'
 root = Pathname.new('..').expand_path(File.dirname(__FILE__))
 [
   root.join('app', 'models'),
-  root.join('app', 'presenters'),
+  root.join('app', 'decorators'),
 ].each do |path|
   $LOAD_PATH.unshift path.to_s
 end
