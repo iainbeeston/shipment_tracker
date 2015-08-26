@@ -1,12 +1,14 @@
 require 'support/git_test_repository'
-require 'support/feature_review_url'
-require 'repository_location'
+require 'support/feature_review_helpers'
+require 'git_repository_location'
 
 require 'rack/test'
 require 'factory_girl'
 
 module Support
   class ScenarioContext
+    include Support::FeatureReviewHelpers
+
     def initialize(app, host)
       @app = app # used by rack-test
       @host = host
@@ -22,7 +24,7 @@ module Support
       @application = name
       @repos[name] = Support::GitTestRepository.new(dir)
 
-      RepositoryLocation.create(uri: "file://#{dir}", name: name)
+      GitRepositoryLocation.create(uri: "file://#{dir}", name: name)
     end
 
     def repository_for(application)
@@ -59,7 +61,7 @@ module Support
         apps_hash[app[:app_name]] = resolve_version(app[:version])
       end
 
-      @review_url = Support::FeatureReviewUrl.new(@host).build(apps_hash, uat_url, time)
+      @review_url = UrlBuilder.new(@host).build(apps_hash, uat_url, time)
     end
 
     def link_ticket(jira_key)

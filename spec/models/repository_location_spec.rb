@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe RepositoryLocation do
+RSpec.describe GitRepositoryLocation do
   describe '.from_github_notification' do
     let(:github_payload) {
       JSON.parse(<<-END)
@@ -19,38 +19,38 @@ RSpec.describe RepositoryLocation do
     }
 
     before do
-      RepositoryLocation.create(name: 'some_other_repo', uri: 'ssh://git@github.com/some/other-repo.git')
+      GitRepositoryLocation.create(name: 'some_other_repo', uri: 'ssh://git@github.com/some/other-repo.git')
     end
 
-    context 'when the RepositoryLocation has a regular URI' do
+    context 'when the GitRepositoryLocation has a regular URI' do
       before do
-        RepositoryLocation.create(name: 'some_repo', uri: 'ssh://git@github.com/some/repo.git')
+        GitRepositoryLocation.create(name: 'some_repo', uri: 'ssh://git@github.com/some/repo.git')
       end
 
-      it 'updates remote_head for the correct RepositoryLocation' do
-        RepositoryLocation.update_from_github_notification(github_payload)
+      it 'updates remote_head for the correct GitRepositoryLocation' do
+        GitRepositoryLocation.update_from_github_notification(github_payload)
 
-        expect(RepositoryLocation.find_by_name('some_repo').remote_head).to eq('def456')
-        expect(RepositoryLocation.find_by_name('some_other_repo').remote_head).to be(nil)
+        expect(GitRepositoryLocation.find_by_name('some_repo').remote_head).to eq('def456')
+        expect(GitRepositoryLocation.find_by_name('some_other_repo').remote_head).to be(nil)
       end
     end
 
-    context 'when the RepositoryLocation has an SCP-like URI' do
+    context 'when the GitRepositoryLocation has an SCP-like URI' do
       before do
-        RepositoryLocation.create(name: 'some_repo', uri: 'git@github.com:some/repo.git')
+        GitRepositoryLocation.create(name: 'some_repo', uri: 'git@github.com:some/repo.git')
       end
 
-      it 'updates remote_head for the correct RepositoryLocation' do
-        RepositoryLocation.update_from_github_notification(github_payload)
+      it 'updates remote_head for the correct GitRepositoryLocation' do
+        GitRepositoryLocation.update_from_github_notification(github_payload)
 
-        expect(RepositoryLocation.find_by_name('some_repo').remote_head).to eq('def456')
-        expect(RepositoryLocation.find_by_name('some_other_repo').remote_head).to be(nil)
+        expect(GitRepositoryLocation.find_by_name('some_repo').remote_head).to eq('def456')
+        expect(GitRepositoryLocation.find_by_name('some_other_repo').remote_head).to be(nil)
       end
     end
 
-    context 'when no RepositoryLocation is found' do
+    context 'when no GitRepositoryLocation is found' do
       it 'fails silently' do
-        expect { RepositoryLocation.update_from_github_notification(github_payload) }.to_not raise_error
+        expect { GitRepositoryLocation.update_from_github_notification(github_payload) }.to_not raise_error
       end
     end
     context 'when payload does not have a repository key' do
@@ -63,7 +63,7 @@ RSpec.describe RepositoryLocation do
         END
       }
       it 'fails silently' do
-        expect { RepositoryLocation.update_from_github_notification(github_payload) }.to_not raise_error
+        expect { GitRepositoryLocation.update_from_github_notification(github_payload) }.to_not raise_error
       end
     end
   end

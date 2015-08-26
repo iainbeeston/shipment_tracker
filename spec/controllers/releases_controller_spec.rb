@@ -10,7 +10,7 @@ RSpec.describe ReleasesController do
     let(:app_names) { %w(frontend backend) }
 
     before do
-      allow(RepositoryLocation).to receive(:app_names).and_return(app_names)
+      allow(GitRepositoryLocation).to receive(:app_names).and_return(app_names)
     end
 
     it 'displays the list of apps' do
@@ -44,7 +44,7 @@ RSpec.describe ReleasesController do
         git_repository: repository,
         app_name: app_name,
       ).and_return(projection)
-      allow(Event).to receive(:in_order_of_creation).and_return(events)
+      allow(Events::BaseEvent).to receive(:in_order_of_creation).and_return(events)
     end
 
     it 'shows the list of commits for an app' do

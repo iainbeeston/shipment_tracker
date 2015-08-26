@@ -10,11 +10,11 @@ RSpec.describe GitRepositoryLoader do
   describe '#load' do
     let(:test_git_repo) { Support::GitTestRepository.new }
     let(:repo_uri) { "file://#{test_git_repo.dir}" }
-    let!(:repository_location) { RepositoryLocation.create(name: 'some_repo', uri: repo_uri) }
+    let!(:git_repository_location) { GitRepositoryLocation.create(name: 'some_repo', uri: repo_uri) }
 
     before do
       test_git_repo.create_commit
-      repository_location.update(remote_head: test_git_repo.head_oid)
+      git_repository_location.update(remote_head: test_git_repo.head_oid)
     end
 
     it 'returns a GitRepository' do
@@ -176,6 +176,6 @@ RSpec.describe GitRepositoryLoader do
 
   def create_remote_commit
     test_git_repo.create_commit
-    repository_location.update(remote_head: test_git_repo.head_oid)
+    git_repository_location.update(remote_head: test_git_repo.head_oid)
   end
 end

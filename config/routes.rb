@@ -16,7 +16,12 @@ Rails.application.routes.draw do
   end
 
   resources :releases, only: [:index, :show]
-  resources :repository_locations, only: [:index, :create]
+
+  resources :repository_locations,
+    controller: 'git_repository_locations',
+    as: 'git_repository_locations',
+    only: [:index, :create]
+
   resources :tokens, only: [:index, :create, :update, :destroy]
 
   resources :github_notifications, only: [:create]

@@ -1,6 +1,5 @@
-require 'feature_review_location'
 require 'git_repository'
-require 'jira_event'
+require 'events/jira_event'
 require 'projections/releases_tickets_projection'
 require 'release'
 require 'ticket'
@@ -34,11 +33,11 @@ module Projections
 
     def apply(event)
       case event
-      when DeployEvent
+      when Events::DeployEvent
         return unless event.environment == 'production'
         return unless event.app_name == app_name
         @production_deploys[event.version] = event.created_at
-      when JiraEvent
+      when Events::JiraEvent
         associate_releases_with_feature_review(event)
         tickets_projection.apply(event)
       end
@@ -101,16 +100,16 @@ module Projections
     end
 
     def associate_releases_with_feature_review(jira_event)
-      FeatureReviewLocation.from_text(jira_event.comment).each do |location|
-        commit_oids = extract_relevant_commit_from_location(location)
+      Factories::FeatureReviewFactory.new.create_from_text(jira_event.comment).each do |feature_review|
+        commit_oids = extract_relevant_commit_from_feature_review(feature_review)
         commit_oids.each do |commit_oid|
-          associate_feature_review(commit_oid, key: jira_event.key, path: location.path)
+          associate_feature_review(commit_oid, key: jira_event.key, path: feature_review.path)
         end
       end
     end
 
-    def extract_relevant_commit_from_location(feature_review_location)
-      feature_review_location.versions.select { |commit_oid|
+    def extract_relevant_commit_from_feature_review(feature_review)
+      feature_review.versions.select { |commit_oid|
         commits.find { |c| c.id == commit_oid }
       }
     end

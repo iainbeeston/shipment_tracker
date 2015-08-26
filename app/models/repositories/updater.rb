@@ -1,4 +1,4 @@
-require 'event'
+require 'events/base_event'
 require 'snapshots/event_count'
 
 require 'active_record'
@@ -43,7 +43,7 @@ module Repositories
     end
 
     def new_events_for(repository)
-      Event.between(last_id_for(repository))
+      Events::BaseEvent.between(last_id_for(repository))
     end
 
     def last_id_for(repository)

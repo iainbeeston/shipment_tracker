@@ -1,6 +1,6 @@
 require 'build'
-require 'circle_ci_event'
-require 'jenkins_event'
+require 'events/circle_ci_event'
+require 'events/jenkins_event'
 require 'snapshots/build'
 
 module Repositories
@@ -12,7 +12,7 @@ module Repositories
     delegate :table_name, to: :store
 
     def apply(event)
-      return unless event.is_a?(CircleCiEvent) || event.is_a?(JenkinsEvent)
+      return unless event.is_a?(Events::CircleCiEvent) || event.is_a?(Events::JenkinsEvent)
 
       store.create!(
         success: event.success,

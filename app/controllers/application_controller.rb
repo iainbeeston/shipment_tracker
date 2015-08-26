@@ -11,6 +11,6 @@ class ApplicationController < ActionController::Base
   end
 
   def event_factory
-    @event_factory ||= EventFactory.from_rails_config
+    @event_factory ||= Factories::EventFactory.from_rails_config
   end
 end

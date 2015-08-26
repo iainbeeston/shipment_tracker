@@ -1,6 +1,6 @@
 # rubocop:disable Style/BlockDelimiters
 FactoryGirl.define do
-  factory :jenkins_event do
+  factory :jenkins_event, class: Events::JenkinsEvent do
     transient do
       success? true
       sequence(:version)

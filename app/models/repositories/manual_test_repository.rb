@@ -1,4 +1,4 @@
-require 'manual_test_event'
+require 'events/manual_test_event'
 require 'qa_submission'
 require 'snapshots/manual_test'
 
@@ -15,7 +15,7 @@ module Repositories
     end
 
     def apply(event)
-      return unless event.is_a?(ManualTestEvent)
+      return unless event.is_a?(Events::ManualTestEvent)
 
       store.create!(
         email: event.email,

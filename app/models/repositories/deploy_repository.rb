@@ -1,4 +1,4 @@
-require 'deploy_event'
+require 'events/deploy_event'
 require 'snapshots/deploy'
 
 module Repositories
@@ -14,7 +14,7 @@ module Repositories
     end
 
     def apply(event)
-      return unless event.is_a?(DeployEvent)
+      return unless event.is_a?(Events::DeployEvent)
 
       store.create!(
         app_name: event.app_name,

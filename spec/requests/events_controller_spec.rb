@@ -2,10 +2,10 @@ require 'rails_helper'
 
 RSpec.describe 'EventsController' do
   describe 'POST #create' do
-    let(:event_factory) { instance_double(EventFactory) }
+    let(:event_factory) { instance_double(Factories::EventFactory) }
 
     before do
-      allow(EventFactory).to receive(:from_rails_config).and_return(event_factory)
+      allow(Factories::EventFactory).to receive(:from_rails_config).and_return(event_factory)
     end
 
     context 'with a cookie' do

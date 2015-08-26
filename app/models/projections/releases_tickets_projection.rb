@@ -5,7 +5,7 @@ module Projections
     end
 
     def apply(event)
-      return unless event.is_a?(JiraEvent) && event.issue?
+      return unless event.is_a?(Events::JiraEvent) && event.issue?
 
       new_attributes = { key: event.key, summary: event.summary, status: event.status }
 

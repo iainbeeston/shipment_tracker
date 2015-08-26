@@ -2,7 +2,7 @@ class GithubNotificationsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def create
-    RepositoryLocation.update_from_github_notification(request.request_parameters)
+    GitRepositoryLocation.update_from_github_notification(request.request_parameters)
     head :ok
   end
 

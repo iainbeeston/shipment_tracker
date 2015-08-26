@@ -1,20 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe FeatureReviewsController do
-  context 'our routing' do
-    it 'matches the feature_review_location'do
-      actual_url = @routes.url_for host: 'www.example.com',
-                                   controller: 'feature_reviews',
-                                   action: 'show',
-                                   apps: { a: '123', b: '456' },
-                                   uat_url: 'http://foo.com'
-
-      feature_review_location = FeatureReviewLocation.new(actual_url)
-      expect(feature_review_location.app_versions).to eq('a' => '123', 'b' => '456')
-      expect(feature_review_location.uat_url).to eq('http://foo.com')
-    end
-  end
-
   context 'when logged out' do
     it { is_expected.to require_authentication_on(:get, :new) }
     it { is_expected.to require_authentication_on(:get, :show) }
@@ -26,7 +12,7 @@ RSpec.describe FeatureReviewsController do
     let(:feature_review_form) { instance_double(Forms::FeatureReviewForm) }
 
     before do
-      allow(RepositoryLocation).to receive(:app_names).and_return(%w(frontend backend))
+      allow(GitRepositoryLocation).to receive(:app_names).and_return(%w(frontend backend))
       allow(Forms::FeatureReviewForm).to receive(:new).with(
         hash_including(
           apps: nil,
@@ -72,7 +58,7 @@ RSpec.describe FeatureReviewsController do
     context 'when the feature review form is invalid' do
       before do
         allow(feature_review_form).to receive(:valid?).and_return(false)
-        allow(RepositoryLocation).to receive(:app_names).and_return(%w(frontend backend))
+        allow(GitRepositoryLocation).to receive(:app_names).and_return(%w(frontend backend))
       end
 
       it 'renders the new page' do
@@ -103,53 +89,29 @@ RSpec.describe FeatureReviewsController do
   end
 
   describe 'GET #show', :logged_in do
-    let(:query) { instance_double(FeatureReviewQuery) }
-    let(:presenter) { instance_double(FeatureReviewPresenter) }
-    let(:events) { [Event.new, Event.new, Event.new] }
+    let(:events) { [Events::BaseEvent.new, Events::BaseEvent.new, Events::BaseEvent.new] }
     let(:uat_url) { 'http://uat.fundingcircle.com' }
     let(:apps_with_versions) { { 'frontend' => 'abc', 'backend' => 'def' } }
 
-    let(:projection_url) {
-      @routes.url_for host: 'www.example.com',
-                      controller: 'feature_reviews',
-                      action: 'show',
-                      apps: apps_with_versions,
-                      uat_url: uat_url
-    }
-
     before do
       request.host = 'www.example.com'
-      allow(FeatureReviewPresenter).to receive(:new).with(query).and_return(presenter)
     end
 
-    it 'shows a report for each application' do
-      allow(FeatureReviewQuery).to receive(:new)
-        .with(projection_url, at: nil)
-        .and_return(query)
-
+    it 'sets up the correct query parameters' do
       get :show, apps: apps_with_versions, uat_url: uat_url
 
-      expect(assigns(:presenter)).to eq(presenter)
+      expect(assigns(:feature_review_with_statuses).app_versions).to eq(apps_with_versions)
+      expect(assigns(:feature_review_with_statuses).uat_url).to eq(uat_url)
+      expect(assigns(:feature_review_with_statuses).time).to eq(nil)
     end
 
     context 'when time is specified' do
-      let(:projection_url) {
-        @routes.url_for host: 'www.example.com',
-                        controller: 'feature_reviews',
-                        action: 'show',
-                        apps: apps_with_versions,
-                        uat_url: uat_url,
-                        time: '1990-12-31T23:59:60Z'
-      }
+      it 'sets up the correct query parameters (including time)' do
+        get :show, apps: apps_with_versions, uat_url: uat_url, time: '1990-12-31T23:59:59Z'
 
-      it 'shows a report for each application' do
-        allow(FeatureReviewQuery).to receive(:new)
-          .with(projection_url, at: Time.zone.parse('1990-12-31T23:59:60Z'))
-          .and_return(query)
-
-        get :show, apps: apps_with_versions, uat_url: uat_url, time: '1990-12-31T23:59:60Z'
-
-        expect(assigns(:presenter)).to eq(presenter)
+        expect(assigns(:feature_review_with_statuses).app_versions).to eq(apps_with_versions)
+        expect(assigns(:feature_review_with_statuses).uat_url).to eq(uat_url)
+        expect(assigns(:feature_review_with_statuses).time).to eq(Time.parse('1990-12-31T23:59:59Z'))
       end
     end
   end
@@ -163,15 +125,18 @@ RSpec.describe FeatureReviewsController do
     let(:repo) { instance_double(GitRepository) }
     let(:related_versions) { %w(abc def ghi) }
     let(:expected_links) { ['/somelink'] }
+    let(:expected_feature_reviews) { [instance_double(FeatureReview, url: '/somelink')] }
     let(:version) { 'abc123' }
 
     before do
       allow(VersionResolver).to receive(:new).with(repo).and_return(version_resolver)
       allow(version_resolver).to receive(:related_versions).with(version).and_return(related_versions)
-      allow(RepositoryLocation).to receive(:app_names).and_return(applications)
+      allow(GitRepositoryLocation).to receive(:app_names).and_return(applications)
       allow(GitRepositoryLoader).to receive(:new).and_return(git_repository_loader)
       allow(Repositories::FeatureReviewRepository).to receive(:new).and_return(repository)
-      allow(repository).to receive(:feature_reviews_for).with(related_versions).and_return(expected_links)
+      allow(repository).to receive(:feature_reviews_for)
+        .with(related_versions)
+        .and_return(expected_feature_reviews)
 
       allow(git_repository_loader).to receive(:load).with('frontend').and_return(repo)
     end

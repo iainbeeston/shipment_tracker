@@ -1,6 +1,6 @@
 class FeatureReviewsController < ApplicationController
   def new
-    @app_names = RepositoryLocation.app_names
+    @app_names = GitRepositoryLocation.app_names
     @feature_review_form = feature_review_form
   end
 
@@ -9,21 +9,21 @@ class FeatureReviewsController < ApplicationController
     if @feature_review_form.valid?
       redirect_to @feature_review_form.url
     else
-      @app_names = RepositoryLocation.app_names
+      @app_names = GitRepositoryLocation.app_names
       render :new
     end
   end
 
   def show
     @return_to = request.original_fullpath
-    @presenter = FeatureReviewPresenter.new(
-      FeatureReviewQuery.new(request.original_url, at: time),
-    )
+    feature_review = Factories::FeatureReviewFactory.new.create_from_url_string(request.original_url)
+    @query = Queries::FeatureReviewQuery.new(feature_review, at: time)
+    @feature_review_with_statuses = FeatureReviewWithStatuses.new(feature_review, @query)
   end
 
   def search
     @links = []
-    @applications = RepositoryLocation.app_names
+    @applications = GitRepositoryLocation.app_names
     @version = params[:version]
     @application = params[:application]
 
@@ -31,7 +31,7 @@ class FeatureReviewsController < ApplicationController
 
     versions = VersionResolver.new(git_repository_for(@application)).related_versions(@version)
     repository = Repositories::FeatureReviewRepository.new
-    @links = repository.feature_reviews_for(versions)
+    @links = repository.feature_reviews_for(versions).map(&:url)
     flash[:error] = 'No Feature Reviews found.' if @links.empty?
   end
 

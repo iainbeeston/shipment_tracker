@@ -1,10 +1,10 @@
 class ReleasesController < ApplicationController
   def index
-    @app_names = RepositoryLocation.app_names
+    @app_names = GitRepositoryLocation.app_names
   end
 
   def show
-    projection = build_projection(Event.in_order_of_creation)
+    projection = build_projection(Events::BaseEvent.in_order_of_creation)
     @pending_releases = projection.pending_releases
     @deployed_releases = projection.deployed_releases
     @app_name = app_name

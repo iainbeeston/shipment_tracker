@@ -1,6 +1,6 @@
 # rubocop:disable Style/BlockDelimiters
 FactoryGirl.define do
-  factory :circle_ci_manual_webhook_event do
+  factory :circle_ci_manual_webhook_event, class: Events::CircleCiManualWebhookEvent do
     transient do
       success? true
       sequence(:version)

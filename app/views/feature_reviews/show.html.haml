@@ -1,50 +1,50 @@
 - title "Feature Review"
-- if @presenter.time
-  .lead.time= "Projecting events up to #{@presenter.time}"
+- if @feature_review_with_statuses.time
+  .lead.time= "Projecting events up to #{@feature_review_with_statuses.time}"
 
 .row
   .col-lg-6
-    - panel(heading: 'Summary', status: @presenter.summary_status, klass: 'summary') do
+    - panel(heading: 'Summary', status: @feature_review_with_statuses.summary_status, klass: 'summary') do
       %ul.list-group
         %li.list-group-item
           %strong
-            - icon(item_status_icon_class(@presenter.build_status))
+            - icon(item_status_icon_class(@feature_review_with_statuses.build_status))
             %span.title Test Results
         %li.list-group-item
           %strong
-            - icon(item_status_icon_class(@presenter.deploy_status))
+            - icon(item_status_icon_class(@feature_review_with_statuses.deploy_status))
             %span.title UAT Environment
         %li.list-group-item
           %strong
-            - icon(item_status_icon_class(@presenter.qa_status))
+            - icon(item_status_icon_class(@feature_review_with_statuses.qa_status))
             %span.title QA Acceptance
         %li.list-group-item
           %strong
-            - icon(item_status_icon_class(@presenter.uatest_status))
+            - icon(item_status_icon_class(@feature_review_with_statuses.uatest_status))
             %span.title User Acceptance Tests
 
   .col-lg-6
     - panel(heading: 'Apps Under Review', klass: 'app-info') do
       %ul.list-group
-        - @presenter.app_versions.each do |name, version|
+        - @feature_review_with_statuses.app_versions.each do |name, version|
           %li.list-group-item.app
             %strong.name= name
             %span.version.monospace= short_sha(version)
         %li.list-group-item
-          - if @presenter.uat_url
+          - if @feature_review_with_statuses.uat_url
             Deployed to UAT
-            %strong.uat-url= to_link(@presenter.uat_url, target: '_blank')
+            %strong.uat-url= to_link(@feature_review_with_statuses.uat_url, target: '_blank')
           - else
             No UAT specified
 
 .row
   .col-lg-12
     - panel(heading: 'Associated Tickets', klass: 'tickets') do
-      - if @presenter.tickets.empty?
+      - if @feature_review_with_statuses.tickets.empty?
         .panel-body No tickets found
       - else
         - table(headers: %w(Key Summary Status)) do
-          - @presenter.tickets.each do |ticket|
+          - @feature_review_with_statuses.tickets.each do |ticket|
             %tr.ticket
               %td= ticket.key
               %td= ticket.summary
@@ -52,12 +52,12 @@
 
 .row
   .col-lg-6
-    - panel(heading: 'UAT Environment', klass: 'deploys', status: @presenter.deploy_status) do
-      - if @presenter.deploys.empty?
+    - panel(heading: 'UAT Environment', klass: 'deploys', status: @feature_review_with_statuses.deploy_status) do
+      - if @feature_review_with_statuses.deploys.empty?
         .panel-body No deploys found
       - else
         - table(headers: %w(Correct App Version)) do
-          - @presenter.deploys.each do |deploy|
+          - @feature_review_with_statuses.deploys.each do |deploy|
             %tr.deploy
               %td
                 - icon(item_status_icon_class(deploy.correct))
@@ -65,12 +65,12 @@
               %td.monospace= short_sha(deploy.version)
 
   .col-lg-6
-    - panel(heading: 'Test Results', klass: 'builds', status: @presenter.build_status) do
-      - if @presenter.builds.empty?
+    - panel(heading: 'Test Results', klass: 'builds', status: @feature_review_with_statuses.build_status) do
+      - if @feature_review_with_statuses.builds.empty?
         .panel-body No builds found
       - else
         - table(headers: %w(Status App Source)) do
-          - @presenter.builds.each do |app_name, build|
+          - @feature_review_with_statuses.builds.each do |app_name, build|
             %tr.build
               %td
                 - icon(item_status_icon_class(build.success))
@@ -79,20 +79,20 @@
 
 .row
   .col-lg-6
-    - panel(heading: 'QA Acceptance', klass: 'qa-submission', status: @presenter.qa_status) do
+    - panel(heading: 'QA Acceptance', klass: 'qa-submission', status: @feature_review_with_statuses.qa_status) do
       .panel-body
-        - if @presenter.qa_submission
+        - if @feature_review_with_statuses.qa_submission
           %p
             %span.qa-email
-              %strong= @presenter.qa_submission.email
+              %strong= @feature_review_with_statuses.qa_submission.email
             at
-            %span.qa-time= @presenter.qa_submission.created_at
-          = simple_format(@presenter.qa_submission.comment, class: 'qa-comment')
+            %span.qa-time= @feature_review_with_statuses.qa_submission.created_at
+          = simple_format(@feature_review_with_statuses.qa_submission.comment, class: 'qa-comment')
         - else
           Not reviewed by QA
       .panel-footer
         = form_tag(events_path(type: 'manual_test', return_to: @return_to), method: 'post') do
-          - @presenter.app_versions.each do |app_name, version|
+          - @feature_review_with_statuses.app_versions.each do |app_name, version|
             = hidden_field_tag('apps[][name]', app_name)
             = hidden_field_tag('apps[][version]', version)
           %label.radio-inline.qa-accept
@@ -106,12 +106,12 @@
             = text_area_tag('comment', '', placeholder: 'Comment', class: 'form-control', required: true, rows: 4)
           = submit_tag('Submit', class: 'btn btn-primary')
   .col-lg-6
-    - panel(heading: 'User Acceptance Tests', klass: 'uatest', status: @presenter.uatest_status) do
+    - panel(heading: 'User Acceptance Tests', klass: 'uatest', status: @feature_review_with_statuses.uatest_status) do
       .panel-body
-        - if @presenter.uatest
+        - if @feature_review_with_statuses.uatest
           Ran test suite version
-          %span.uat-version= @presenter.uatest.test_suite_version
+          %span.uat-version= @feature_review_with_statuses.uatest.test_suite_version
         - else
           Could not find User Acceptance Tests that ran against expected UAT
-          = "(#{@presenter.uat_url})" if @presenter.uat_url
+          = "(#{@feature_review_with_statuses.uat_url})" if @feature_review_with_statuses.uat_url
           with the app versions that are under review.

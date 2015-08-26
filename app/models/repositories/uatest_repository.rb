@@ -1,6 +1,6 @@
 require 'repositories/deploy_repository'
 require 'snapshots/uatest'
-require 'uat_event'
+require 'events/uat_event'
 require 'uatest'
 
 module Repositories
@@ -17,7 +17,7 @@ module Repositories
     end
 
     def apply(event)
-      return unless event.is_a?(UatEvent)
+      return unless event.is_a?(Events::UatEvent)
 
       store.create!(
         server: event.server,

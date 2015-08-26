@@ -24,11 +24,11 @@ class GitRepositoryLoader
   end
 
   def load(repository_name)
-    repository_location = RepositoryLocation.find_by_name(repository_name)
-    fail GitRepositoryLoader::NotFound unless repository_location
+    git_repository_location = GitRepositoryLocation.find_by_name(repository_name)
+    fail GitRepositoryLoader::NotFound unless git_repository_location
 
-    options_for(repository_location.uri) do |options|
-      repository = updated_rugged_repository(repository_location, options)
+    options_for(git_repository_location.uri) do |options|
+      repository = updated_rugged_repository(git_repository_location, options)
       GitRepository.new(repository)
     end
   end
@@ -37,23 +37,23 @@ class GitRepositoryLoader
 
   attr_reader :cache_dir, :ssh_user, :ssh_private_key, :ssh_public_key
 
-  def updated_rugged_repository(repository_location, options)
-    dir = repository_dir_name(repository_location)
+  def updated_rugged_repository(git_repository_location, options)
+    dir = repository_dir_name(git_repository_location)
     Rugged::Repository.new(dir, options).tap do |r|
       instrument('fetch') do
-        r.fetch('origin', options) unless up_to_date?(repository_location, r)
+        r.fetch('origin', options) unless up_to_date?(git_repository_location, r)
       end
     end
   rescue Rugged::OSError, Rugged::RepositoryError, Rugged::InvalidError, Rugged::ReferenceError => error
     Rails.logger.warn "Exception while updating rugged repository: #{error.message}"
     FileUtils.rmtree(dir)
     instrument('clone') do
-      Rugged::Repository.clone_at(repository_location.uri, dir, options)
+      Rugged::Repository.clone_at(git_repository_location.uri, dir, options)
     end
   end
 
-  def repository_dir_name(repository_location)
-    File.join(cache_dir, "#{repository_location.id}-#{repository_location.name}")
+  def repository_dir_name(git_repository_location)
+    File.join(cache_dir, "#{git_repository_location.id}-#{git_repository_location.name}")
   end
 
   def options_for(uri, &block)
@@ -65,8 +65,8 @@ class GitRepositoryLoader
     end
   end
 
-  def up_to_date?(repository_location, rugged_repository)
-    repository_location.remote_head == rugged_repository.head.target_id
+  def up_to_date?(git_repository_location, rugged_repository)
+    git_repository_location.remote_head == rugged_repository.head.target_id
   end
 
   def create_temporary_file(key)
