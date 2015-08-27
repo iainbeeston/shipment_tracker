@@ -28,7 +28,11 @@ RSpec.describe FeatureReviewWithStatuses do
     )
   }
 
-  subject(:decorator) { described_class.new(feature_review, feature_review_query) }
+  let(:query_time) { 1.day.ago }
+  let(:time_now) { Time.now }
+  let(:query_class) { class_double(Queries::FeatureReviewQuery, new: feature_review_query) }
+
+  subject(:decorator) { described_class.new(feature_review, at: query_time, query_class: query_class) }
 
   it 'delegates #apps, #tickets, #builds, #deploys and #qa_submission to the feature_review_query' do
     expect(decorator.tickets).to eq(feature_review_query.tickets)
@@ -41,6 +45,23 @@ RSpec.describe FeatureReviewWithStatuses do
   it 'delegates #uat_url and #app_versions to the feature_review' do
     expect(decorator.uat_url).to eq(feature_review.uat_url)
     expect(decorator.app_versions).to eq(feature_review.app_versions)
+  end
+
+  describe '#time' do
+    context 'when initialized with a time' do
+      it 'returns the time it was initialized with' do
+        expect(decorator.time).to eq(query_time)
+      end
+    end
+
+    context 'when NOT initialized with a time' do
+      it 'returns the time when it was initialized' do
+        Timecop.freeze(time_now) do
+          decorator_without_specific_time = described_class.new(feature_review)
+          expect(decorator_without_specific_time.time).to eq(time_now)
+        end
+      end
+    end
   end
 
   describe '#build_status' do
