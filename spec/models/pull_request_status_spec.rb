@@ -93,7 +93,7 @@ RSpec.describe PullRequestStatus do
 
     context 'when there is one feature review' do
       let(:feature_reviews) {
-        [instance_double(FeatureReviewWithStatuses, url: 'http://foo.bar')]
+        [instance_double(FeatureReview, url: 'http://foo.bar')]
       }
 
       it 'is the url of the feature review' do
@@ -108,8 +108,8 @@ RSpec.describe PullRequestStatus do
     context 'when there is more than one feature review' do
       let(:feature_reviews) {
         [
-          instance_double(FeatureReviewWithStatuses, url: 'http://foo.bar'),
-          instance_double(FeatureReviewWithStatuses, url: 'http://baz.qux'),
+          instance_double(FeatureReview, url: 'http://foo.bar'),
+          instance_double(FeatureReview, url: 'http://baz.qux'),
         ]
       }
 
