@@ -5,12 +5,10 @@ class FeatureReviewWithStatuses < SimpleDelegator
 
   def_delegators :@query, :tickets, :builds, :deploys, :qa_submission, :uatest
 
-  def_delegators :@feature_review,
-    :uat_url, :app_versions
-
   attr_reader :time
 
   def initialize(feature_review, at: Time.now, query_class: Queries::FeatureReviewQuery)
+    super(feature_review)
     @feature_review = feature_review
     @time = at
     @query = query_class.new(feature_review, at: @time)
@@ -60,6 +58,10 @@ class FeatureReviewWithStatuses < SimpleDelegator
     tickets = query.tickets
     return false if tickets.empty?
     tickets.all?(&:approved?)
+  end
+
+  def approval_status
+    approved? ? :approved : :unapproved
   end
 
   private

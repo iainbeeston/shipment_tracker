@@ -68,4 +68,16 @@ namespace :jobs do
     end
     puts "[#{Time.current}] Completed update_git"
   end
+
+  desc 'Clear all Snapshots regenerates from events'
+  task clear_snapshots: :environment do
+    Snapshots::Build.destroy_all
+    Snapshots::Deploy.destroy_all
+    Snapshots::FeatureReview.destroy_all
+    Snapshots::ManualTest.destroy_all
+    Snapshots::Ticket.destroy_all
+    Snapshots::Uatest.destroy_all
+    Snapshots::EventCount.destroy_all
+    puts 'All snapshots cleared'
+  end
 end
