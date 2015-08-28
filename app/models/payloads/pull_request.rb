@@ -8,12 +8,8 @@ module Payloads
       pull_request.fetch('head', {})['sha']
     end
 
-    def base_repo_name
-      pull_request.fetch('base', {}).fetch('repo', {})['name']
-    end
-
-    def base_owner_login
-      pull_request.fetch('base', {}).fetch('repo', {}).fetch('owner', {})['login']
+    def base_repo_url
+      pull_request.fetch('base', {}).fetch('repo', {})['html_url']
     end
 
     def action

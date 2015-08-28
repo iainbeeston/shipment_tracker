@@ -39,8 +39,7 @@ class GithubNotificationsController < ApplicationController
     return unless relevant_pull_request?
 
     PullRequestStatus.new(
-      owner: payload.base_owner_login,
-      repo_name: payload.base_repo_name,
+      repo_url: payload.base_repo_url,
       sha: payload.head_sha,
     ).update
   end

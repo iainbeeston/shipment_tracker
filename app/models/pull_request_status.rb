@@ -4,13 +4,11 @@ require 'feature_review_with_statuses'
 require 'repositories/feature_review_repository'
 
 class PullRequestStatus
-  def initialize(owner:,
-                 repo_name:,
+  def initialize(repo_url:,
                  sha:,
                  token: Rails.application.config.github_access_token,
                  routes: Rails.application.routes.url_helpers)
-    @owner = owner
-    @repo_name = repo_name
+    @repo_url = repo_url.sub(/\.git$/, '')
     @sha = sha
     @token = token
     @routes = routes
@@ -30,7 +28,9 @@ class PullRequestStatus
   end
 
   def publish_status(status, description, url)
-    client.create_status("#{owner}/#{repo_name}", sha, status,
+    client = Octokit::Client.new(access_token: token)
+    repo = Octokit::Repository.from_url(repo_url)
+    client.create_status(repo, sha, status,
       context: 'shipment_tracker',
       target_url: url,
       description: description)
@@ -42,6 +42,7 @@ class PullRequestStatus
     elsif feature_reviews.length == 1
       feature_reviews.first.url
     else
+      repo_name = repo_url.split('/').last
       routes.search_feature_reviews_url(application: repo_name, versions: sha)
     end
   end
@@ -58,11 +59,7 @@ class PullRequestStatus
 
   private
 
-  attr_reader :owner, :repo_name, :sha, :token, :routes
-
-  def client
-    @client ||= Octokit::Client.new(access_token: token)
-  end
+  attr_reader :repo_url, :sha, :token, :routes
 
   def not_reviewed_status
     {

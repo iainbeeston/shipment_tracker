@@ -3,15 +3,13 @@ require 'pull_request_status'
 require 'feature_review_with_statuses'
 
 RSpec.describe PullRequestStatus do
-  let(:owner) { 'FundingCircle' }
-  let(:repo_name) { 'hello_world_rails' }
+  let(:repo_url) { 'https://github.com/FundingCircle/hello_world_rails' }
   let(:sha) { '123456' }
   let(:token) { 'a-token' }
   let(:routes) { double }
   subject(:pull_request_status) {
     described_class.new(
-      owner: owner,
-      repo_name: repo_name,
+      repo_url: repo_url,
       sha: sha,
       routes: routes,
       token: token,
@@ -37,8 +35,7 @@ RSpec.describe PullRequestStatus do
   end
 
   describe '#publish_status' do
-    let(:owner) { 'owner' }
-    let(:repo_name) { 'repo' }
+    let(:repo_url) { 'https://github.com/owner/repo' }
     let(:sha) { 'sha' }
 
     it 'sends a POST request to api.github.com with the correct path' do
@@ -85,7 +82,7 @@ RSpec.describe PullRequestStatus do
     end
 
     context 'when there is more than one feature review' do
-      let(:repo_name) { 'my-app' }
+      let(:repo_url) { 'https://github.com/FundingCircle/my-app' }
       let(:sha) { 'a-really-long-sha' }
       let(:feature_reviews) {
         [

@@ -9,8 +9,7 @@ RSpec.describe GithubNotificationsController do
 
       context 'when the pull request is newly opened' do
         let(:sha) { '12345' }
-        let(:owner) { 'FundingCircle' }
-        let(:repo_name) { 'hello_world_rails' }
+        let(:repo_url) { 'https://github.com/FundingCircle/hello_world_rails' }
         let(:payload) {
           {
             'action' => 'opened',
@@ -20,10 +19,7 @@ RSpec.describe GithubNotificationsController do
               },
               'base' => {
                 'repo' => {
-                  'owner' => {
-                    'login' => owner,
-                  },
-                  'name' => repo_name,
+                  'html_url' => repo_url,
                 },
               },
             },
@@ -33,8 +29,7 @@ RSpec.describe GithubNotificationsController do
         it 'sets the pull request status' do
           pull_request_status = instance_double(PullRequestStatus)
           expect(PullRequestStatus).to receive(:new).with(
-            repo_name: repo_name,
-            owner: owner,
+            repo_url: repo_url,
             sha: sha,
           ).and_return(pull_request_status)
           expect(pull_request_status).to receive(:update)
@@ -45,8 +40,7 @@ RSpec.describe GithubNotificationsController do
 
       context 'when the pull request receives a new commit' do
         let(:sha) { '12345' }
-        let(:owner) { 'FundingCircle' }
-        let(:repo_name) { 'hello_world_rails' }
+        let(:repo_url) { 'https://github.com/FundingCircle/hello_world_rails' }
         let(:payload) {
           {
             'action' => 'synchronize',
@@ -56,10 +50,7 @@ RSpec.describe GithubNotificationsController do
               },
               'base' => {
                 'repo' => {
-                  'owner' => {
-                    'login' => owner,
-                  },
-                  'name' => repo_name,
+                  'html_url' => repo_url,
                 },
               },
             },
@@ -69,8 +60,7 @@ RSpec.describe GithubNotificationsController do
         it 'sets the pull request status' do
           pull_request_status = instance_double(PullRequestStatus)
           expect(PullRequestStatus).to receive(:new).with(
-            repo_name: repo_name,
-            owner: owner,
+            repo_url: repo_url,
             sha: sha,
           ).and_return(pull_request_status)
           expect(pull_request_status).to receive(:update)
@@ -81,8 +71,7 @@ RSpec.describe GithubNotificationsController do
 
       context 'when the pull request activity is not relevant' do
         let(:sha) { '12345' }
-        let(:owner) { 'FundingCircle' }
-        let(:repo_name) { 'hello_world_rails' }
+        let(:repo_url) { 'https://github.com/FundingCircle/hello_world_rails' }
         let(:payload) {
           {
             'action' => 'reopened',
@@ -92,10 +81,7 @@ RSpec.describe GithubNotificationsController do
               },
               'base' => {
                 'repo' => {
-                  'owner' => {
-                    'login' => owner,
-                  },
-                  'name' => repo_name,
+                  'html_url' => repo_url,
                 },
               },
             },
