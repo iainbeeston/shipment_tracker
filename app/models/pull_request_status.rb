@@ -4,21 +4,23 @@ require 'feature_review_with_statuses'
 require 'repositories/feature_review_repository'
 
 class PullRequestStatus
-  def initialize(repo_url:,
-                 sha:,
-                 token: Rails.application.config.github_access_token,
+  def initialize(token: Rails.application.config.github_access_token,
                  routes: Rails.application.routes.url_helpers)
-    @repo_url = repo_url.sub(/\.git$/, '')
-    @sha = sha
     @token = token
     @routes = routes
   end
 
-  def update
+  def update(repo_url:, sha:)
+    repo_url = repo_url.sub(/\.git$/, '')
     feature_reviews = feature_reviews([sha])
     status, description = *status_for(feature_reviews).values_at(:status, :description)
-    url = url_for(feature_reviews)
-    publish_status(status, description, url)
+    target_url = target_url_for(repo_url: repo_url, sha: sha, feature_reviews: feature_reviews)
+    publish_status(
+      repo_url: repo_url,
+      sha: sha,
+      status: status,
+      description: description,
+      target_url: target_url)
   end
 
   def feature_reviews(commits)
@@ -27,16 +29,16 @@ class PullRequestStatus
     end
   end
 
-  def publish_status(status, description, url)
+  def publish_status(repo_url:, sha:, status:, description:, target_url:)
     client = Octokit::Client.new(access_token: token)
     repo = Octokit::Repository.from_url(repo_url)
     client.create_status(repo, sha, status,
       context: 'shipment_tracker',
-      target_url: url,
+      target_url: target_url,
       description: description)
   end
 
-  def url_for(feature_reviews)
+  def target_url_for(repo_url:, sha:, feature_reviews:)
     if feature_reviews.empty?
       routes.new_feature_reviews_url
     elsif feature_reviews.length == 1
@@ -59,7 +61,7 @@ class PullRequestStatus
 
   private
 
-  attr_reader :repo_url, :sha, :token, :routes
+  attr_reader :token, :routes
 
   def not_reviewed_status
     {

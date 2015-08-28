@@ -28,11 +28,11 @@ RSpec.describe GithubNotificationsController do
 
         it 'sets the pull request status' do
           pull_request_status = instance_double(PullRequestStatus)
-          expect(PullRequestStatus).to receive(:new).with(
+          allow(PullRequestStatus).to receive(:new).and_return(pull_request_status)
+          expect(pull_request_status).to receive(:update).with(
             repo_url: repo_url,
             sha: sha,
-          ).and_return(pull_request_status)
-          expect(pull_request_status).to receive(:update)
+          )
 
           post :create, github_notification: payload
         end
@@ -59,11 +59,11 @@ RSpec.describe GithubNotificationsController do
 
         it 'sets the pull request status' do
           pull_request_status = instance_double(PullRequestStatus)
-          expect(PullRequestStatus).to receive(:new).with(
+          allow(PullRequestStatus).to receive(:new).and_return(pull_request_status)
+          expect(pull_request_status).to receive(:update).with(
             repo_url: repo_url,
             sha: sha,
-          ).and_return(pull_request_status)
-          expect(pull_request_status).to receive(:update)
+          )
 
           post :create, github_notification: payload
         end

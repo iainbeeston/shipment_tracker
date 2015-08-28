@@ -3,34 +3,38 @@ require 'pull_request_status'
 require 'feature_review_with_statuses'
 
 RSpec.describe PullRequestStatus do
-  let(:repo_url) { 'https://github.com/FundingCircle/hello_world_rails' }
-  let(:sha) { '123456' }
   let(:token) { 'a-token' }
   let(:routes) { double }
   subject(:pull_request_status) {
     described_class.new(
-      repo_url: repo_url,
-      sha: sha,
       routes: routes,
       token: token,
     )
   }
 
   describe '#update' do
-    let(:sha) { '122333' }
-
-    it 'passes the results of #status_for and #url_for to #publish_status' do
+    it 'passes the results of #status_for and #target_url_for to #publish_status' do
       feature_review = instance_double(FeatureReview)
 
-      allow(pull_request_status).to receive(:feature_reviews).with([sha]).and_return([feature_review])
+      allow(pull_request_status).to receive(:feature_reviews).with(['12345']).and_return([feature_review])
       allow(pull_request_status).to receive(:status_for).with([feature_review]).and_return(
         status: 'great',
         description: 'stuff')
-      allow(pull_request_status).to receive(:url_for).with([feature_review]).and_return('http://foo.bar')
+      allow(pull_request_status).to receive(:target_url_for).with(
+        repo_url: 'ssh://github.com/some/thing',
+        sha: '12345',
+        feature_reviews: [feature_review],
+      ).and_return('http://foo.bar')
 
-      expect(pull_request_status).to receive(:publish_status).with('great', 'stuff', 'http://foo.bar')
+      expect(pull_request_status).to receive(:publish_status).with(
+        repo_url: 'ssh://github.com/some/thing',
+        sha: '12345',
+        status: 'great',
+        description: 'stuff',
+        target_url: 'http://foo.bar',
+      )
 
-      pull_request_status.update
+      pull_request_status.update(repo_url: 'ssh://github.com/some/thing', sha: '12345')
     end
   end
 
@@ -40,7 +44,13 @@ RSpec.describe PullRequestStatus do
 
     it 'sends a POST request to api.github.com with the correct path' do
       stub = stub_request(:post, 'https://api.github.com/repos/owner/repo/statuses/sha')
-      pull_request_status.publish_status('status', 'description', 'http://foo.bar')
+      pull_request_status.publish_status(
+        repo_url: 'https://github.com/owner/repo',
+        sha: 'sha',
+        status: 'status',
+        description: 'description',
+        target_url: 'http://foo.bar',
+      )
       expect(stub).to have_been_requested
     end
 
@@ -53,12 +63,18 @@ RSpec.describe PullRequestStatus do
           'state' => 'a-status',
         ),
       )
-      pull_request_status.publish_status('a-status', 'a-description', 'http://foo.bar')
+      pull_request_status.publish_status(
+        repo_url: 'https://github.com/owner/repo',
+        sha: 'sha',
+        status: 'a-status',
+        description: 'a-description',
+        target_url: 'http://foo.bar',
+      )
       expect(stub).to have_been_requested
     end
   end
 
-  describe '#url_for' do
+  describe '#target_url_for' do
     context 'when there are no feature reviews' do
       let(:feature_reviews) {
         []
@@ -67,7 +83,11 @@ RSpec.describe PullRequestStatus do
       it 'is the new feature review path' do
         allow(routes).to receive(:new_feature_reviews_url).and_return('http://example.com/new-feature-reviews')
 
-        expect(pull_request_status.url_for(feature_reviews)).to eq('http://example.com/new-feature-reviews')
+        expect(pull_request_status.target_url_for(
+                 repo_url: 'https://github.com/FundingCircle/app',
+                 sha: 'sha',
+                 feature_reviews: feature_reviews,
+        )).to eq('http://example.com/new-feature-reviews')
       end
     end
 
@@ -77,13 +97,15 @@ RSpec.describe PullRequestStatus do
       }
 
       it 'is the url of the feature review' do
-        expect(pull_request_status.url_for(feature_reviews)).to eq('http://foo.bar')
+        expect(pull_request_status.target_url_for(
+                 repo_url: 'https://github.com/FundingCircle/app',
+                 sha: 'sha',
+                 feature_reviews: feature_reviews,
+        )).to eq('http://foo.bar')
       end
     end
 
     context 'when there is more than one feature review' do
-      let(:repo_url) { 'https://github.com/FundingCircle/my-app' }
-      let(:sha) { 'a-really-long-sha' }
       let(:feature_reviews) {
         [
           instance_double(FeatureReviewWithStatuses, url: 'http://foo.bar'),
@@ -96,7 +118,11 @@ RSpec.describe PullRequestStatus do
           application: 'my-app',
           versions: 'a-really-long-sha',
         ).and_return('http://example.com/search-url')
-        expect(pull_request_status.url_for(feature_reviews)).to eq('http://example.com/search-url')
+        expect(pull_request_status.target_url_for(
+                 repo_url: 'https://github.com/FundingCircle/my-app',
+                 sha: 'a-really-long-sha',
+                 feature_reviews: feature_reviews,
+        )).to eq('http://example.com/search-url')
       end
     end
   end

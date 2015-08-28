@@ -38,10 +38,10 @@ class GithubNotificationsController < ApplicationController
   def process_pull_request
     return unless relevant_pull_request?
 
-    PullRequestStatus.new(
+    PullRequestStatus.new.update(
       repo_url: payload.base_repo_url,
       sha: payload.head_sha,
-    ).update
+    )
   end
 
   def relevant_pull_request?
