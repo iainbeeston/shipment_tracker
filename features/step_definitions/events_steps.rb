@@ -6,6 +6,7 @@ Given 'a ticket "$key" with summary "$summary" is started' do |key, summary|
 end
 
 Given 'adds the link to a comment for ticket "$jira_key"' do |jira_key|
+  stub_request(:any, %r{https://api.github.com/.*}).to_return(status: 200).times(1)
   scenario_context.link_ticket(jira_key)
 end
 

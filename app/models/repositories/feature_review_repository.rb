@@ -3,8 +3,13 @@ require 'snapshots/feature_review'
 
 module Repositories
   class FeatureReviewRepository
-    def initialize(store = Snapshots::FeatureReview)
+    def initialize(
+          store = Snapshots::FeatureReview,
+          git_repository_location: GitRepositoryLocation,
+          pull_request_status: PullRequestStatus.new)
       @store = store
+      @git_repository_location = git_repository_location
+      @pull_request_status = pull_request_status
     end
 
     delegate :table_name, to: :store
@@ -34,11 +39,22 @@ module Repositories
           versions: feature_review.versions,
           event_created_at: event.created_at,
         )
+
+        feature_review.app_versions.each do |app_name, version|
+          update_pull_requests(app_name, version)
+        end
       end
+    end
+
+    def update_pull_requests(app_name, version)
+      repository_location = git_repository_location.find_by_name(app_name)
+      pull_request_status.update(
+        repo_url: repository_location.uri,
+        sha: version) if repository_location
     end
 
     private
 
-    attr_reader :store
+    attr_reader :store, :git_repository_location, :pull_request_status
   end
 end

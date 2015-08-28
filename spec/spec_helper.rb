@@ -33,6 +33,8 @@ end
 
 require 'support/feature_review_helpers'
 
+require 'webmock/rspec'
+
 RSpec.configure do |config|
   config.include Support::FeatureReviewHelpers
 
